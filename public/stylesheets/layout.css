@@ -10,6 +10,6 @@ header {height: 60px; border: 1px solid #CCCCCC;}
 
 #summary {width: 200px; float: right; border: 1px solid #0000FF;}
 
-#drilldown {width: 820px; border: 1px solid #00FF00;}
+#drilldown {width: 820px; border: 1px solid #00FF00; clear: both}
 
 footer {height: 20px; border: 1px solid #CCCCCC;}
