@@ -4,38 +4,38 @@
     margin: 0 auto;
 }
 
-/* Set inner boxes width to 960px */
 header,
-footer,
-#chart-summary,
-#drilldown {
+footer {
     margin: 20px;
 }
 
 header {
     height: 60px;
-    border: 1px solid #CCCCCC;
+}
+
+footer {
+    height: 20px;
+}
+
+/* latency chart */
+
+#chart-summary,
+#drilldown {
+	/* Set inner boxes width to 960px */
+    margin: 20px;
 }
 
 #chart {
     width: 720px;
     float: left;
-    border: 1px solid #FF0000;
 }
 
 #summary {
     width: 200px;
     float: right;
-    border: 1px solid #0000FF;
 }
 
 #drilldown {
     width: 960px;
-    border: 1px solid #00FF00;
-    clear: both
-}
-
-footer {
-    height: 20px;
-    border: 1px solid #CCCCCC;
+    clear: both;
 }

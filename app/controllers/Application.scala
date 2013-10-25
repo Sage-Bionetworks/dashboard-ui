@@ -9,4 +9,7 @@ object Application extends Controller {
     Ok("dashboard")
   }
 
+  def latency = Action {
+    Ok(views.html.latency())
+  }
 }

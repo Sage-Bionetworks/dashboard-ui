@@ -1,0 +1,138 @@
+@(param: Any)
+<!doctype html>
+<html lang="en" class="no-js">
+<!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 ie-lt10 no-js" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. --> 
+
+<head id="dashboard.synapse.org" data-template-set="html5-reset">
+
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title></title>
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+
+    <link rel="stylesheet" href="/assets/stylesheets/reset.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/style.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/layout.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/chart.css" />
+
+    <script src="/assets/javascripts/modernizr-2.6.2.dev.js"></script>
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <header>
+        <h1>Latencies</h1>
+    </header>
+
+    <section id="chart-summary">
+        <section id="chart"><h2>chart</h2></section>
+        <aside id="summary"><h2>summary</h2></aside>
+    </section>
+    <section id="drilldown">
+        <h2>drilldown</h2>
+    </section>
+
+    <footer>
+    </footer>
+
+</div>
+
+<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+         http://chromium.org/developers/how-tos/chrome-frame-getting-started -->
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em>
+<a href="http://browsehappy.com/">Upgrade to a different browser</a> or
+<a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>
+to experience this site.</p><![endif]-->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src='/assets/javascripts/jquery-1.10.2.min.js'>\x3C/script>")</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
+<script>window.d3 || document.write("<script src='/assets/javascripts/d3-3.3.8.min.js'>\x3C/script>")</script>
+
+<script src="/assets/javascripts/functions.js"></script>
+
+
+<!-- To be replace with Scala -->
+<script>
+
+//Compact CSV-like structure to make data transfers more efficient
+var multiSeries = {
+    "fields": [
+        "timestamp",
+        "GET entity",
+        "GET ALL",
+        "ALL"
+    ],
+    "values": [
+        [1382713200, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382713800, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382714400, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382715000, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382715600, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382716200, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382716800, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382717400, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382718000, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382718600, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382719200, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382719800, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382720400, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382721000, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382721600, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382722200, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382722800, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382723400, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382724000, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382724600, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382725200, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382725800, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382726400, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382727000, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382727600, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382728200, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382728800, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382729400, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382730000, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152],
+        [1382730600, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152]
+    ]
+};
+
+// Make sure the values are sorted in descending order
+var drilldown = {
+    "fields": [
+        "web-20131025",
+        "python-0.50",
+        "python-0.51",
+        "r-0.29",
+        "r-0.31"
+    ],
+    "values": [
+        Math.floor(Math.random() * 1058) + 10000,
+        Math.floor(Math.random() * 320) + 5935,
+        Math.floor(Math.random() * 258) + 3891,
+        Math.floor(Math.random() * 201) + 2981,
+        Math.floor(Math.random() * 187) + 1056
+    ]
+};
+
+multiSeriesLineChart(720, 420, multiSeries);
+horizontalBarChart(960, 360, drilldown);
+
+</script>
+
+
+</body>
+</html>
