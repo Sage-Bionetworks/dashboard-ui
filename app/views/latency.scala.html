@@ -1,5 +1,6 @@
+@(param: Any)
 <!doctype html>
-<html>
+<html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
 <!--[if IE 7 ]>    <html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"> <![endif]-->
 <!--[if IE 8 ]>    <html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"> <![endif]-->
@@ -21,6 +22,7 @@
     <link rel="stylesheet" href="/assets/stylesheets/reset.css" />
     <link rel="stylesheet" href="/assets/stylesheets/style.css" />
     <link rel="stylesheet" href="/assets/stylesheets/layout.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/chart.css" />
 
     <script src="/assets/javascripts/modernizr-2.6.2.dev.js"></script>
 
@@ -31,7 +33,7 @@
 <div id="wrapper">
 
     <header>
-        <h1>metric name</h1>
+        <h1>Latencies</h1>
     </header>
 
     <section id="chart-summary">
@@ -43,7 +45,6 @@
     </section>
 
     <footer>
-        <p><small>footer</small></p>
     </footer>
 
 </div>
@@ -62,6 +63,53 @@ to experience this site.</p><![endif]-->
 <script>window.d3 || document.write("<script src='/assets/javascripts/d3-3.3.8.min.js'>\x3C/script>")</script>
 
 <script src="/assets/javascripts/functions.js"></script>
+
+<!-- To be replace with Scala -->
+<script>
+
+/*
+ * Compact CSV-like structure to make data transfers more efficient
+ * and yet does not need the parsing overhead of CSV files. 
+ */
+var multiSeries = {
+    "fields": [
+        "timestamp",
+        "GET entity",
+        "GET ALL",
+        "ALL"
+    ],
+    "values": [
+    ]
+};
+
+for (var i = 1382713200; i < 1382731200; i = i + 600) {
+    multiSeries.values.push(
+            [i, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152] );
+}
+
+multiSeriesLineChart(720, 420, multiSeries);
+
+// Make sure the values are sorted in descending order
+var drilldown = {
+    "fields": [
+        "web-20131025",
+        "python-0.50",
+        "python-0.51",
+        "r-0.29",
+        "r-0.31"
+    ],
+    "values": [
+        Math.floor(Math.random() * 1058) + 10000,
+        Math.floor(Math.random() * 320) + 5935,
+        Math.floor(Math.random() * 258) + 3891,
+        Math.floor(Math.random() * 201) + 2981,
+        Math.floor(Math.random() * 187) + 1056
+    ]
+};
+
+horizontalBarChart(960, 360, drilldown);
+
+</script>
 
 </body>
 </html>

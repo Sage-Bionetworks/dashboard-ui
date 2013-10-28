@@ -1,0 +1,92 @@
+@(param: Any)
+<!doctype html>
+<html lang="en" class="no-js">
+<!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 ie-lt10 no-js" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. --> 
+
+<head id="dashboard.synapse.org" data-template-set="html5-reset">
+
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title></title>
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+
+    <link rel="stylesheet" href="/assets/stylesheets/reset.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/style.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/layout.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/chart.css" />
+
+    <script src="/assets/javascripts/modernizr-2.6.2.dev.js"></script>
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <header>
+        <h1>Multi-series data. Metric name and description will go here.</h1>
+    </header>
+
+    <section id="chart-controls">
+        <section id="chart"><h2>Latencies</h2></section>
+        <aside id="controls"><h2>Controls</h2><br /><br /><p>(Controls will go here.)</p></aside>
+    </section>
+
+    <footer>
+    </footer>
+
+</div>
+
+<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+         http://chromium.org/developers/how-tos/chrome-frame-getting-started -->
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em>
+<a href="http://browsehappy.com/">Upgrade to a different browser</a> or
+<a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>
+to experience this site.</p><![endif]-->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src='/assets/javascripts/jquery-1.10.2.min.js'>\x3C/script>")</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
+<script>window.d3 || document.write("<script src='/assets/javascripts/d3-3.3.8.min.js'>\x3C/script>")</script>
+
+<script src="/assets/javascripts/functions.js"></script>
+
+<!-- To be done by Scala -->
+<script>
+
+/*
+ * Compact CSV-like structure to make data transfers more efficient
+ * and yet does not need the parsing overhead of CSV files. 
+ */
+var multiSeries = {
+    "fields": [
+        "timestamp",
+        "GET entity",
+        "GET ALL",
+        "ALL"
+    ],
+    "values": [
+    ]
+};
+
+for (var i = 1382713200; i < 1382731200; i = i + 600) {
+    multiSeries.values.push(
+            [i, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152] );
+}
+
+multiSeriesLineChart(720, 420, multiSeries);
+
+</script>
+
+</body>
+</html>

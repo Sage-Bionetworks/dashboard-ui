@@ -1,15 +1,43 @@
 
-#wrapper {width: 860px; margin: 0 auto;}
+#wrapper {
+    width: 1000px;
+    margin: 0 auto;
+}
 
-header, footer, #drilldown {margin: 20px;}
-#chart, #summary {margin: 20px;}
+header,
+footer {
+    margin: 20px;
+}
 
-header {height: 60px; border: 1px solid #CCCCCC;}
+header {
+    height: 60px;
+}
 
-#chart {width: 580px; float: left; border: 1px solid #FF0000;}
+footer {
+    height: 20px;
+}
 
-#summary {width: 200px; float: right; border: 1px solid #0000FF;}
+/* latency chart */
 
-#drilldown {width: 820px; border: 1px solid #00FF00;}
+#chart-summary,
+#chart-controls,
+#drilldown {
+	/* Set inner boxes width to 960px */
+    margin: 20px;
+}
 
-footer {height: 20px; border: 1px solid #CCCCCC;}
+#chart {
+    width: 720px;
+    float: left;
+}
+
+#summary,
+#controls {
+    width: 200px;
+    float: right;
+}
+
+#drilldown {
+    width: 960px;
+    clear: both;
+}
