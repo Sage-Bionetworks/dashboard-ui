@@ -7,9 +7,9 @@ function multiSeriesLineChart(width, height, data) {
     // Convert the timestamps to Date
     values.forEach(function(row) {row[0] = new Date(row[0] * 1000);});
 
-    // Convert the rest of the values matrix to annotated data series
+    // Convert the rest of the value matrix to annotated data series
     var multiSeries = fields
-        .filter(function(field) {return field !== "timestamp";})
+        .filter(function(field) { return field !== "timestamp"; })
         .map(function(field, i) {
             return {
                 field: field,
@@ -164,4 +164,99 @@ function horizontalBarChart(width, height, data) {
         .attr("text-anchor", "end")
         .attr('class', 'barLabel')
         .text(function(d) { return d.field; }); 
+}
+
+function groupedBarChart (width, height, data) {
+
+    var fields = data.fields.filter(function(field) { return field !== "timestamp"; }),
+        values = data.values;
+
+    // Convert the timestamps to formatted date strings
+    var formatter = d3.time.format("%m/%d");
+    values.forEach(function(row) { row[0] = formatter(new Date(row[0] * 1000)); });
+
+    values.forEach(function(row) {
+        row.group = fields.map(function(field, i) {
+            return {field: field, value: row[i + 1]};
+        });
+    });
+
+    // Conventional margins
+    var margin = {top: 20, right: 60, bottom: 20, left: 60},
+        width = width - margin.left - margin.right,
+        height = height - margin.top - margin.bottom;
+
+    var x0 = d3.scale.ordinal()
+        .domain(values.map(function(d) { return d[0]; }))
+        .rangeRoundBands([0, width], .1);
+
+    var x1 = d3.scale.ordinal()
+        .domain(fields)
+        .rangeRoundBands([0, x0.rangeBand()]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x0)
+        .orient("bottom");
+
+    var y = d3.scale.linear()
+        .domain([0, d3.max(values, function(d) {
+            return d3.max(d.group, function(d) { return d.value * 1.5; })})])
+        .range([height, 0]);
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .tickFormat(d3.format(".2s"));
+
+    var color = d3.scale.category10()
+        .domain(fields);
+
+    var svg = d3.select("#chart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    var ts = svg.selectAll(".timestamp")
+        .data(values)
+        .enter().append("g")
+        .attr("class", "g")
+        .attr("transform", function(d) { return "translate(" + x0(d[0]) + ",0)"; });
+
+    ts.selectAll("rect")
+        .data(function(d) { return d.group; })
+        .enter().append("rect")
+        .attr("width", x1.rangeBand())
+        .attr("x", function(d) { return x1(d.field); })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("fill", function(d) { return color(d.field); });
+
+    var legend = svg.selectAll(".legend")
+        .data(fields.slice())
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+        .attr("x", width - 18)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color);
+
+    legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d; });
 }

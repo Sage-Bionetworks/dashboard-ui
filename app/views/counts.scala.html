@@ -1,4 +1,5 @@
 @(param: Any)
+@(param: Any)
 <!doctype html>
 <html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -33,15 +34,12 @@
 <div id="wrapper">
 
     <header>
-        <h1>Latencies</h1>
+        <h1>Counts. Metric name and description will go here.</h1>
     </header>
 
-    <section id="chart-summary">
-        <section id="chart"><h2>chart</h2></section>
-        <aside id="summary"><h2>summary</h2></aside>
-    </section>
-    <section id="drilldown">
-        <h2>drilldown</h2>
+    <section id="chart-controls">
+        <section id="chart"><h2>Unique users (file downloads, errors, etc.)</h2></section>
+        <aside id="controls"><h2>Controls</h2><br /><br /><p>(Controls will go here.)</p></aside>
     </section>
 
     <footer>
@@ -64,7 +62,7 @@ to experience this site.</p><![endif]-->
 
 <script src="/assets/javascripts/functions.js"></script>
 
-<!-- To be replace with Scala -->
+<!-- To be done by Scala -->
 <script>
 
 /*
@@ -74,40 +72,27 @@ to experience this site.</p><![endif]-->
 var multiSeries = {
     "fields": [
         "timestamp",
-        "GET entity",
-        "GET ALL",
-        "ALL"
+        "All Users",
+        "Non-sage Users",
+        "All Users, Public",
+        "Non-sage Users, Public"
     ],
     "values": [
     ]
 };
 
-for (var i = 1382713200; i < 1382731200; i = i + 600) {
+for (var i = 1382713200; i < 1383318000; i = i + 86400) {
     multiSeries.values.push(
-            [i, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152] );
+            [
+                i,
+                Math.floor(Math.random() * 29) + 168, 
+                Math.floor(Math.random() * 17) + 151,
+                Math.floor(Math.random() * 9) + 121,
+                Math.floor(Math.random() * 3) + 96,
+            ]);
 }
 
-multiSeriesLineChart(720, 420, multiSeries);
-
-// Make sure the values are sorted in descending order
-var drilldown = {
-    "fields": [
-        "web-20131025",
-        "python-0.50",
-        "python-0.51",
-        "r-0.29",
-        "r-0.31"
-    ],
-    "values": [
-        Math.floor(Math.random() * 1058) + 10000,
-        Math.floor(Math.random() * 320) + 5935,
-        Math.floor(Math.random() * 258) + 3891,
-        Math.floor(Math.random() * 201) + 2981,
-        Math.floor(Math.random() * 187) + 1056
-    ]
-};
-
-horizontalBarChart(960, 360, drilldown);
+groupedBarChart(720, 420, multiSeries);
 
 </script>
 

@@ -6,3 +6,6 @@
 GET     /                               controllers.Application.index
 GET     /assets/*file                   controllers.Assets.at(path="/public", file)
 GET     /chart/latency                  controllers.Application.latency
+GET     /chart/series                   controllers.Application.series
+GET     /chart/drilldown                controllers.Application.drilldown
+GET     /chart/counts                   controllers.Application.counts

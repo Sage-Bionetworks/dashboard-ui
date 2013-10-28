@@ -20,6 +20,7 @@ footer {
 /* latency chart */
 
 #chart-summary,
+#chart-controls,
 #drilldown {
 	/* Set inner boxes width to 960px */
     margin: 20px;
@@ -30,7 +31,8 @@ footer {
     float: left;
 }
 
-#summary {
+#summary,
+#controls {
     width: 200px;
     float: right;
 }

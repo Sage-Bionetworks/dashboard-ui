@@ -33,15 +33,11 @@
 <div id="wrapper">
 
     <header>
-        <h1>Latencies</h1>
+        <h1>Drill-down data. Metric name and description will go here.</h1>
     </header>
 
-    <section id="chart-summary">
-        <section id="chart"><h2>chart</h2></section>
-        <aside id="summary"><h2>summary</h2></aside>
-    </section>
     <section id="drilldown">
-        <h2>drilldown</h2>
+        <h2>Drill-down by clients (by users, etc.)</h2>
     </section>
 
     <footer>
@@ -64,50 +60,32 @@ to experience this site.</p><![endif]-->
 
 <script src="/assets/javascripts/functions.js"></script>
 
-<!-- To be replace with Scala -->
+<!-- To be done by Scala -->
 <script>
 
 /*
  * Compact CSV-like structure to make data transfers more efficient
  * and yet does not need the parsing overhead of CSV files. 
  */
-var multiSeries = {
-    "fields": [
-        "timestamp",
-        "GET entity",
-        "GET ALL",
-        "ALL"
-    ],
-    "values": [
-    ]
-};
+//Make sure the values are sorted in descending order
+ var drilldown = {
+     "fields": [
+         "web-20131025",
+         "python-0.50",
+         "python-0.51",
+         "r-0.29",
+         "r-0.31"
+     ],
+     "values": [
+         Math.floor(Math.random() * 1058) + 10000,
+         Math.floor(Math.random() * 320) + 5935,
+         Math.floor(Math.random() * 258) + 3891,
+         Math.floor(Math.random() * 201) + 2981,
+         Math.floor(Math.random() * 187) + 1056
+     ]
+ };
 
-for (var i = 1382713200; i < 1382731200; i = i + 600) {
-    multiSeries.values.push(
-            [i, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152] );
-}
-
-multiSeriesLineChart(720, 420, multiSeries);
-
-// Make sure the values are sorted in descending order
-var drilldown = {
-    "fields": [
-        "web-20131025",
-        "python-0.50",
-        "python-0.51",
-        "r-0.29",
-        "r-0.31"
-    ],
-    "values": [
-        Math.floor(Math.random() * 1058) + 10000,
-        Math.floor(Math.random() * 320) + 5935,
-        Math.floor(Math.random() * 258) + 3891,
-        Math.floor(Math.random() * 201) + 2981,
-        Math.floor(Math.random() * 187) + 1056
-    ]
-};
-
-horizontalBarChart(960, 360, drilldown);
+ horizontalBarChart(960, 360, drilldown);
 
 </script>
 
