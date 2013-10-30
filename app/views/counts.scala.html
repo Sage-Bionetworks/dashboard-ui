@@ -1,5 +1,4 @@
 @(param: Any)
-@(param: Any)
 <!doctype html>
 <html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -60,40 +59,10 @@ to experience this site.</p><![endif]-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
 <script>window.d3 || document.write("<script src='/assets/javascripts/d3-3.3.8.min.js'>\x3C/script>")</script>
 
-<script src="/assets/javascripts/functions.js"></script>
-
-<!-- To be done by Scala -->
+<script src="/assets/javascripts/multiseries.js"></script>
+<script src="/assets/javascripts/chart.js"></script>
 <script>
-
-/*
- * Compact CSV-like structure to make data transfers more efficient
- * and yet does not need the parsing overhead of CSV files. 
- */
-var multiSeries = {
-    "fields": [
-        "timestamp",
-        "All Users",
-        "Non-sage Users",
-        "All Users, Public",
-        "Non-sage Users, Public"
-    ],
-    "values": [
-    ]
-};
-
-for (var i = 1382713200; i < 1383318000; i = i + 86400) {
-    multiSeries.values.push(
-            [
-                i,
-                Math.floor(Math.random() * 29) + 168, 
-                Math.floor(Math.random() * 17) + 151,
-                Math.floor(Math.random() * 9) + 121,
-                Math.floor(Math.random() * 3) + 96,
-            ]);
-}
-
-groupedBarChart(720, 420, multiSeries);
-
+    // TODO
 </script>
 
 </body>

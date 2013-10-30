@@ -59,33 +59,10 @@ to experience this site.</p><![endif]-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
 <script>window.d3 || document.write("<script src='/assets/javascripts/d3-3.3.8.min.js'>\x3C/script>")</script>
 
-<script src="/assets/javascripts/functions.js"></script>
-
-<!-- To be done by Scala -->
+<script src="/assets/javascripts/multiseries.js"></script>
+<script src="/assets/javascripts/chart.js"></script>
 <script>
-
-/*
- * Compact CSV-like structure to make data transfers more efficient
- * and yet does not need the parsing overhead of CSV files. 
- */
-var multiSeries = {
-    "fields": [
-        "timestamp",
-        "GET entity",
-        "GET ALL",
-        "ALL"
-    ],
-    "values": [
-    ]
-};
-
-for (var i = 1382713200; i < 1382731200; i = i + 600) {
-    multiSeries.values.push(
-            [i, Math.random() * 59 + 288, Math.random() * 157 + 203, Math.random() * 239 + 152] );
-}
-
-multiSeriesLineChart(720, 420, multiSeries);
-
+    // TODO
 </script>
 
 </body>
