@@ -1,5 +1,164 @@
+/**
+ * Takes a CSV/TSV-like JSON data structure and returns the annotated series of name-value pairs.
+ * Compact CSV-like structure makes data transfers more efficient and yet does not have
+ * the parsing overhead of CSV files. The first column must be the timestamps.
+ */
+function getSeries(data) {
 
-function multiSeriesLineChart(width, height, data) {
+    var xLabel = data.headers[0],
+        yLabel = data.valueName;
+
+    var headers = data.headers.filter(function(header) { return header !== xLabel; });
+
+    var xSeries = data.values.map(function(row) { return row[0]; });
+
+    var xMin = d3.min(xSeries),
+        xMax = d3.max(xSeries);
+
+    var ySeries = headers.map(function(header, index) {
+        return {
+            header: header,
+            values: data.values.map(function(row) {
+                return {
+                    name: row[0],
+                    value: row[index + 1]
+                };
+            }
+        )};
+    });
+
+    var yMin = d3.min(ySeries, function(oneSeries) {
+        return d3.min(oneSeries.values, function(oneValue) {
+            return oneValue.value;
+        });
+    });
+
+    var yMax = d3.max(ySeries, function(oneSeries) {
+        return d3.max(oneSeries.values, function(oneValue) {
+            return oneValue.value;
+        });
+    });
+
+    return {
+        xLabel: xLabel,
+        yLabel: yLabel,
+        xMin: xMin,
+        xMax: xMax,
+        yMin: yMin,
+        yMax: yMax,
+        headers: headers,
+        xSeries: xSeries,
+        ySeries: ySeries
+    };
+}
+
+function getTimeSeries(data) {
+
+    var dataSeries = getSeries(data);
+
+    var dateFormat = d3.time.format(data.dateFormat);
+
+    dataSeries.xSeries = dataSeries.xSeries.map(function(dateStr) {
+        return dateFormat.parse(dateStr);
+    });
+
+    dataSeries.xMin = d3.min(dataSeries.xSeries);
+    dataSeries.xMax = d3.max(dataSeries.xSeries);
+
+    dataSeries.ySeries = dataSeries.ySeries.map(function(oneSeries) {
+        return {
+            header: oneSeries.header,
+            values: oneSeries.values.map(function(oneValue) {
+                return {
+                  timestamp: dateFormat.parse(oneValue.name),
+                  value: oneValue.value
+                };
+            })
+        };
+    });
+
+    return dataSeries;
+}
+
+function multiSeriesLineChart(data, width, height) {
+
+    var timeSeries = getTimeSeries(data);
+
+    // Conventional margins
+    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+        width = width - margin.left - margin.right,
+        height = height - margin.top - margin.bottom;
+
+    // Set up the x-axis
+    var xScale = d3.time.scale()
+        .range([0, width])
+        .domain([timeSeries.start, timeSeries.end]);
+
+    var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+    // Set up the y-axis
+    var yScale = d3.scale.linear()
+        .range([height, 0])
+        .domain([timeSeries.min, timeSeries.max]);
+
+    var yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+    // Set up line
+    var line = d3.svg.line()
+        .interpolate("linear")
+        .x(function(d) { return xScale(d.timestamp); })
+        .y(function(d) { return yScale(d.value); });
+
+    // Set up color
+    var color = d3.scale.category10().domain(timeSeries.headers);
+
+    // Render SVG
+    var svg = d3.select("#chart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Render the x-axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // Render the y-axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(timeSeries.yLabel);
+
+    // Render the lines
+    var dataSeries = svg.selectAll(".dataSeries")
+        .data(multiSeries)
+        .enter().append("g")
+        .attr("class", "dataSeries");
+
+    dataSeries.append("path")
+        .attr("class", "line")
+        .attr("d", function(d) { return line(d.values); })
+        .style("stroke", function(d) { return color(d.field); });
+
+    // Render the labels
+    dataSeries.append("text")
+        .datum(function(d) {
+            return {field: d.field, value: d.values[d.values.length - 1]}; })
+        .attr("transform", function(d) {
+            return "translate(" + xScale(d.value.timestamp) + "," + yScale(d.value.value) + ")"; })
+        .attr("x", 3)
+        .attr("dy", ".35em")
+        .text(function(d) { return d.field; });
+}
+
+function multiSeriesLineChart2(width, height, data) {
 
     var fields = data.fields,
         values = data.values;
