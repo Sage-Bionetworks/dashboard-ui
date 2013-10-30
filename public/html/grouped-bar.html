@@ -14,7 +14,7 @@
     <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title></title>
+    <title>Grouped Bar Chart</title>
 
     <link rel="shortcut icon" href="/assets/images/favicon.ico" />
 
@@ -32,20 +32,13 @@
 <div id="wrapper">
 
     <header>
-        <h1>metric name</h1>
+        <h1>Grouped Bar Chart</h1>
     </header>
 
-    <section id="chart-summary">
-        <section id="chart"><h2>chart</h2></section>
-        <aside id="summary"><h2>summary</h2></aside>
+    <section id="chart-controls">
+        <section id="chart"><h2>Chart</h2></section>
+        <aside id="controls"><h2>Controls</h2></aside>
     </section>
-    <section id="drilldown">
-        <h2>drilldown</h2>
-    </section>
-
-    <footer>
-        <p><small>footer</small></p>
-    </footer>
 
 </div>
 
@@ -62,7 +55,29 @@ to experience this site.</p><![endif]-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
 <script>window.d3 || document.write("<script src='/assets/javascripts/d3-3.3.8.min.js'>\x3C/script>")</script>
 
-<script src="/assets/javascripts/functions.js"></script>
+<script src="/assets/javascripts/multiseries.js"></script>
+<script src="/assets/javascripts/chart.js"></script>
+<script>
 
+    var data = {
+        dateFormat: "%Y-%m-%d",
+        name: "Count",
+        headers: ["Day", "All", "Public", "Non-Sage", "Public, Non-Sage"],
+        values: []
+    };
+
+    for (var day = 15; day < 22; day++) {
+        data.values.push([
+            "2013-10-" + day,
+            Math.floor(Math.random() * 29) + 168, 
+            Math.floor(Math.random() * 17) + 151,
+            Math.floor(Math.random() * 9) + 121,
+            Math.floor(Math.random() * 3) + 96
+        ]);
+    }
+
+    groupedBarChart(data, 720, 420);
+
+</script>
 </body>
 </html>

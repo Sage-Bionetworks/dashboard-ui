@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Chart Functions Tests</title>
+    <link rel="stylesheet" href="qunit-1.12.0.css">
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="qunit-1.12.0.js"></script>
+    <script src="../../public/javascripts/d3-3.3.8.min.js"></script>
+    <script src="../../public/javascripts/multiseries.js"></script>
+    <script>
+
+        test( "getSeriesTest", function() {
+            var counts = {
+                name: "Count",
+                headers: ["Client", "All", "Public", "Non-Sage", "Public, Non-Sage"],
+                values: [
+                    ["web", 151, 121, 93, 77],
+                    ["python", 95, 62, 79, 39],
+                    ["r", 55, 32, 29, 6]
+                ]
+            };
+            var expectedDataSeries = {
+                xLabel: "Client",
+                yLabel: "Count",
+                headers: ["All", "Public", "Non-Sage", "Public, Non-Sage"],
+                xSeries: ["web", "python", "r"],
+                ySeries: [
+                    {
+                        header: "All",
+                        values: [
+                            {x: "web", y: 151},
+                            {x: "python", y: 95},
+                            {x: "r", y: 55}
+                        ]
+                    },{
+                        header: "Public",
+                        values: [
+                            {x: "web", y: 121},
+                            {x: "python", y: 62},
+                            {x: "r", y: 32}
+                        ]
+                    },{
+                        header: "Non-Sage",
+                        values: [
+                            {x: "web", y: 93},
+                            {x: "python", y: 79},
+                            {x: "r", y: 29}
+                        ]
+                    },{
+                        header: "Public, Non-Sage",
+                        values: [
+                            {x: "web", y: 77},
+                            {x: "python", y: 39},
+                            {x: "r", y: 6}
+                        ]
+                    }
+                ],
+                xMin: "python",
+                xMax: "web",
+                yMin: 6,
+                yMax: 151
+            };
+            var dataSeries = getSeries(counts);
+            deepEqual(dataSeries, expectedDataSeries);
+        });
+
+        test( "getTimeSeriesTest", function() {
+            var temperatures = {
+                dateFormat: "%Y-%m",
+                name: "Temperature",
+                headers: ["Month", "Austin", "New York", "Seattle"],
+                values: [
+                    ["2013-01", 50, 33, 47],
+                    ["2013-02", 52, 35, 51],
+                    ["2013-03", 55, 42, 56]
+                ]
+            };
+            var expectedTimeSeries = {
+                xLabel: "Month",
+                yLabel: "Temperature",
+                xMin: new Date(2013, 0),
+                xMax: new Date(2013, 2),
+                yMin: 33,
+                yMax: 56,
+                headers: ["Austin", "New York", "Seattle"],
+                xSeries: [new Date(2013, 0), new Date(2013, 1), new Date(2013, 2)],
+                ySeries: [
+                    {
+                        header: "Austin",
+                        values: [
+                            {x: new Date(2013, 0), y: 50},
+                            {x: new Date(2013, 1), y: 52},
+                            {x: new Date(2013, 2), y: 55}
+                        ]
+                    },{
+                        header: "New York",
+                        values: [
+                            {x: new Date(2013, 0), y: 33},
+                            {x: new Date(2013, 1), y: 35},
+                            {x: new Date(2013, 2), y: 42}
+                        ]
+                    },{
+                        header: "Seattle",
+                        values: [
+                            {x: new Date(2013, 0), y: 47},
+                            {x: new Date(2013, 1), y: 51},
+                            {x: new Date(2013, 2), y: 56}
+                        ]
+                    }
+                ]
+            };
+            var timeSeries = getTimeSeries(temperatures);
+            deepEqual(timeSeries, expectedTimeSeries);
+        });
+
+        test( "groupByXTest", function() {
+            var timeSeries = {
+                xLabel: "Month",
+                yLabel: "Temperature",
+                xMin: new Date(2013, 0),
+                xMax: new Date(2013, 2),
+                yMin: 33,
+                yMax: 56,
+                headers: ["Austin", "New York", "Seattle"],
+                xSeries: [new Date(2013, 0), new Date(2013, 1), new Date(2013, 2)],
+                ySeries: [
+                    {
+                        header: "Austin",
+                        values: [
+                            {x: new Date(2013, 0), y: 50},
+                            {x: new Date(2013, 1), y: 52},
+                            {x: new Date(2013, 2), y: 55}
+                        ]
+                    },{
+                        header: "New York",
+                        values: [
+                            {x: new Date(2013, 0), y: 33},
+                            {x: new Date(2013, 1), y: 35},
+                            {x: new Date(2013, 2), y: 42}
+                        ]
+                    },{
+                        header: "Seattle",
+                        values: [
+                            {x: new Date(2013, 0), y: 47},
+                            {x: new Date(2013, 1), y: 51},
+                            {x: new Date(2013, 2), y: 56}
+                        ]
+                    }
+                ]
+            };
+            var expectedGroups = [
+                {
+                    x: new Date(2013, 0),
+                    values: [
+                        {header: "Austin", y: 50},
+                        {header: "New York", y: 33},
+                        {header: "Seattle", y: 47}
+                    ]
+                }, {
+                    x: new Date(2013, 1),
+                    values: [
+                        {header: "Austin", y: 52},
+                        {header: "New York", y: 35},
+                        {header: "Seattle", y: 51}
+                    ]
+                }, {
+                    x: new Date(2013, 2),
+                    values: [
+                        {header: "Austin", y: 55},
+                        {header: "New York", y: 42},
+                        {header: "Seattle", y: 56}
+                    ]
+                }
+            ];
+            var groups = groupByX(timeSeries);
+            deepEqual(groups, expectedGroups);
+        });
+
+    </script>
+</body>
+</html>

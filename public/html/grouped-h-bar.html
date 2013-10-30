@@ -1,4 +1,3 @@
-@(param: Any)
 <!doctype html>
 <html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -15,7 +14,7 @@
     <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title></title>
+    <title>Grouped Horizontal Bar Chart</title>
 
     <link rel="shortcut icon" href="/assets/images/favicon.ico" />
 
@@ -33,19 +32,13 @@
 <div id="wrapper">
 
     <header>
-        <h1>Latencies</h1>
+        <h1>Grouped Horizontal Bar Chart</h1>
     </header>
 
-    <section id="chart-summary">
-        <section id="chart"><h2>chart</h2></section>
-        <aside id="summary"><h2>summary</h2></aside>
+    <section id="chart-controls">
+        <section id="chart"><h2>Chart</h2></section>
+        <aside id="controls"><h2>Controls</h2></aside>
     </section>
-    <section id="drilldown">
-        <h2>drilldown</h2>
-    </section>
-
-    <footer>
-    </footer>
 
 </div>
 
@@ -65,8 +58,19 @@ to experience this site.</p><![endif]-->
 <script src="/assets/javascripts/multiseries.js"></script>
 <script src="/assets/javascripts/chart.js"></script>
 <script>
-    // TODO
-</script>
 
+    var data = {
+        name: "Count",
+        headers: ["Client", "All", "Public", "Public, Non-Sage"],
+        values: [
+            ["web", Math.floor(Math.random() * 1058) + 10000, Math.floor(Math.random() * 105) + 1000, Math.floor(Math.random() * 100) + 1000],
+            ["python", Math.floor(Math.random() * 320) + 5935, Math.floor(Math.random() * 66) + 1233, Math.floor(Math.random() * 30) + 679],
+            ["r", Math.floor(Math.random() * 187) + 1056, Math.floor(Math.random() * 62) + 305, Math.floor(Math.random() * 71) + 105]
+        ]
+    };
+
+    hGroupedBarChart(data, 720, 420);
+
+</script>
 </body>
 </html>

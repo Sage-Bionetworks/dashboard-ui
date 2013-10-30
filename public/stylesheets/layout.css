@@ -15,6 +15,7 @@ header {
 
 footer {
     height: 20px;
+    clear: both;
 }
 
 /* latency chart */
