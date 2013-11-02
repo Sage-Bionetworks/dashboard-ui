@@ -1,0 +1,10 @@
+@*
+ * Multi-series line chart.
+ *@
+@(dataSeries: DataSeries)
+@layout(title = "Multi-series Line Chart", description = "") {
+  <Script>
+    var data = @dataSeries.toJson;
+    multiSeriesLineChart(data, 720, 420);
+  </Script>
+}
