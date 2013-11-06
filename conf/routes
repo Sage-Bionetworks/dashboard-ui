@@ -17,7 +17,7 @@ GET     /assets/*file                   controllers.Assets.at(path="/public", fi
 GET     /metrics                        controllers.Metrics.all
 
 # Gets the list of metrics by prefix
-GET     /metrics/:prefix                controllers.Metrics.prefix(prefix)
+GET     /metrics/prefix/:prefix         controllers.Metrics.prefix(prefix)
 
 # Gets the name of a metric given its ID
 GET     /metrics/name/:id               controllers.Metrics.name(id)
