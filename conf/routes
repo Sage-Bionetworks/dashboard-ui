@@ -2,10 +2,38 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+# Home
+# ~~~~
 GET     /                               controllers.Application.index
+
+# Static content
+# ~~~~
 GET     /assets/*file                   controllers.Assets.at(path="/public", file)
-GET     /chart/latency                  controllers.Application.latency
-GET     /chart/series                   controllers.Application.series
-GET     /chart/drilldown                controllers.Application.drilldown
-GET     /chart/counts                   controllers.Application.counts
+
+# Metrics
+# ~~~~
+
+# Gets all the available metrics, their names and ids
+GET     /metrics                        controllers.Metrics.all
+
+# Gets the list of metrics by prefix
+GET     /metrics/prefix/:prefix         controllers.Metrics.prefix(prefix)
+
+# Charts
+#
+# For all the charts, the query parameters include metric, start, and end
+#   metric: required, is a list of metric IDs concatenated via colon e.g. '3ed5:871a:3210'
+#   start: optional, is the starting timestamp (inclusive), the default is 7 days ago
+#   end: optional, is the ending timestamp (inclusive), the default is now
+#   interval: optional, is one of 3m, h, d, default is d
+#   stat: optional, statistic, one of the n, sum, avg, max, the default is n
+#
+# ~~~~
+# Grouped bar chart
+GET     /chart/bar                      controllers.Charts.bar(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
+
+# Grouped horizontal bar chart
+GET     /chart/hbar                     controllers.Charts.hbar(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
+
+# Multi-series line chart
+GET     /chart/line                     controllers.Charts.line(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
