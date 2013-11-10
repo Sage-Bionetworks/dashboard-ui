@@ -1,4 +1,4 @@
-@(metrics: List[Metric])
+@(metrics: List[DataMetric])
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -21,6 +21,7 @@
 
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/reset.css")' />
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/style.css")' />
+    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/metrics.css")' />
 
     <script src='@routes.Assets.at("javascripts/modernizr-2.6.2.dev.js")'></script>
 
@@ -29,16 +30,16 @@
 <body>
 
 <div id="wrapper">
-
-    <section style="font-size:2em;margin:100px;">
+    <header></header>
+    <section class="metric-list">
         <dl>
             @for(metric <- metrics) {
-                <dt><a href='chart/bar?metric=@metric.id'>@metric.name</a></dt>
+                <dt><a href='chart/@metric.chartType?metric=@metric.id&@metric.queryString'>@metric.name -- @metric.chartName</a></dt>
                 <dd>@metric.description</dd>
             }
         </dl>
     </section>
-
+    <footer></footer>
 </div>
 
 <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.

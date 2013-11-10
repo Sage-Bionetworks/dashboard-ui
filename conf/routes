@@ -16,9 +16,6 @@ GET     /assets/*file                   controllers.Assets.at(path="/public", fi
 # Gets all the available metrics, their names and ids
 GET     /metrics                        controllers.Metrics.all
 
-# Gets the list of metrics by prefix
-GET     /metrics/prefix/:prefix         controllers.Metrics.prefix(prefix)
-
 # Charts
 #
 # For all the charts, the query parameters include metric, start, and end
@@ -30,10 +27,10 @@ GET     /metrics/prefix/:prefix         controllers.Metrics.prefix(prefix)
 #
 # ~~~~
 # Grouped bar chart
-GET     /chart/bar                      controllers.Charts.bar(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
+GET     /chart/bar                      controllers.Charts.bar(metric, start: Option[String], end: Option[String])
 
 # Grouped horizontal bar chart
-GET     /chart/hbar                     controllers.Charts.hbar(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
+GET     /chart/hbar                     controllers.Charts.hbar(metric, start: Option[String])
 
 # Multi-series line chart
 GET     /chart/line                     controllers.Charts.line(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])

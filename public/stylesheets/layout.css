@@ -1,6 +1,6 @@
 
 #wrapper {
-    width: 1000px;
+    width: 1200px;
     margin: 0 auto;
 }
 
@@ -20,25 +20,20 @@ footer {
 
 /* latency chart */
 
-#chart-summary,
-#chart-controls,
-#drilldown {
-	/* Set inner boxes width to 960px */
-    margin: 20px;
-}
-
 #chart {
-    width: 720px;
-    float: left;
-}
-
-#summary,
-#controls {
-    width: 200px;
+    width: 800px;
+    margin: 80px 20px 80px;
     float: right;
 }
 
-#drilldown {
-    width: 960px;
-    clear: both;
+#summary {
+    width: 220px;
+    margin: 80px 60px 80px;
+    float: left;
+}
+
+#summary h3,
+#summary p {
+    margin-top: 60px;
+    font-size: 1.1em;
 }

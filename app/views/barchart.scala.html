@@ -2,9 +2,9 @@
  * Grouped bar chart.
  *@
 @(dataSeries: DataSeries)
-@layout(title = "Grouped Bar Chart", description = "") {
+@layout(title = dataSeries.name, description = dataSeries.description) {
   <Script>
-    var data = @dataSeries.toJson;
-    groupedBarChart(data, 720, 420);
+    var data = @Html(dataSeries.toJson);
+    groupedBarChart(data, 800, 500);
   </Script>
 }

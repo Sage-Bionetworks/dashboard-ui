@@ -2,9 +2,9 @@
  * Multi-series line chart.
  *@
 @(dataSeries: DataSeries)
-@layout(title = "Multi-series Line Chart", description = "") {
+@layout(title = dataSeries.name, description = dataSeries.description) {
   <Script>
-    var data = @dataSeries.toJson;
-    multiSeriesLineChart(data, 720, 420);
+    var data = @Html(dataSeries.toJson);
+    multiSeriesLineChart(data, 800, 500);
   </Script>
 }
