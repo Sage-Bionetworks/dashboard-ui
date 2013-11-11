@@ -1,0 +1,30 @@
+#wrapper {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+header,
+footer {
+    margin: 20px;
+}
+
+header {
+    height: 60px;
+}
+
+footer {
+    height: 20px;
+    clear: both;
+}
+
+.metric-list {
+	font-size: 2em;
+}
+
+.metric-list dt {
+	margin-top: 20px;
+}
+
+.metric-list dd {
+	margin-top: 10px;
+}

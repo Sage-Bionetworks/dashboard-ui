@@ -1,7 +1,7 @@
 
 function multiSeriesLineChart(data, width, height) {
 
-    var timeSeries = getTimeSeries(data);
+    var timeSeries = getSeries(data);
 
     // Conventional margins
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
