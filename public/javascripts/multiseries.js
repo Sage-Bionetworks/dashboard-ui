@@ -24,7 +24,7 @@ function getSeries(data) {
             values: data.values.map(function(row) {
                 return {
                     x: row[0],
-                    y: row[index + 1]
+                    y: Number(row[index + 1])
                 };
             }
         )};
