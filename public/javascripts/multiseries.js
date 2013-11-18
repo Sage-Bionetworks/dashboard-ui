@@ -96,7 +96,7 @@ function groupByX(dataSeries) {
             values: dataSeries.ySeries.map(function(series) {
                 return {
                     header: series.header,
-                    y: series.values[i].y
+                    y: Number(series.values[i].y)
                 };
             })
         };
