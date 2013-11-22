@@ -35,7 +35,7 @@
     <section class="metric-list">
         <dl>
             @for(metric <- metrics) {
-                <dt><a href='chart/@metric.chartType?metric=@metric.id&@metric.queryString'>@metric.name -- @metric.chartName</a></dt>
+                <dt><a href='chart?type=@metric.chartType&metric=@metric.id'>@metric.name -- @metric.chartName</a></dt>
                 <dd>@metric.description</dd>
             }
         </dl>

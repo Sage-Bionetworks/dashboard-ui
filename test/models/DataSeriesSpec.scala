@@ -17,9 +17,10 @@ class DataSeriesSpec extends Specification {
       List("10-22", "372", "311")
     )
     val dataSeries = new DataSeries(name, "description", headers, values)
-    val jsString = dataSeries.toJson
-    println(jsString)
-    val json: JsValue = Json.parse(jsString)
+    val json = dataSeries.toJson
+    val jsonString = Json.stringify(json)
+
+    println(jsonString)
 
     "have the correct name" in {
       val jsName = json\"name"
@@ -27,7 +28,7 @@ class DataSeriesSpec extends Specification {
     }
 
     "output the correct string" in {
-      jsString must beEqualTo("""{"name":"User Count","headers":["Day","All","Non-Sage"],"values":[["10-21","366","305"],["10-22","372","311"]]}""")
+      jsonString must beEqualTo("""{"name":"User Count","headers":["Day","All","Non-Sage"],"values":[["10-21","366","305"],["10-22","372","311"]]}""")
     }
   }
 }

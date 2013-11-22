@@ -17,7 +17,7 @@ object Metrics extends Controller {
           m.getDescription,
           chartTypeAndName(m.getType)._1,
           chartTypeAndName(m.getType)._2,
-          queryString(m))).toList
+          "")).toList
     Ok(views.html.metrics(dataMetrics))
   }
 
@@ -25,27 +25,5 @@ object Metrics extends Controller {
     case MetricType.TIME_SERIES => ("line", "multi-line chart")
     case MetricType.TOP => ("hbar", "horizontal bar chart")
     case MetricType.UNIQUE_COUNT => ("bar", "bar chart")
-  }
-
-  def queryString(metric: MetricToRead) = metric.getType() match {
-    case MetricType.TIME_SERIES => {
-      "start=" +
-      metric.getDefaultStart().minusDays(14).toString("yyyyMMddHH") +
-      "&end=" +
-      metric.getDefaultEnd().minusDays(14).toString("yyyyMMddHH") +
-      "&interval=" +
-      metric.getDefaultAggregation +
-      "&stat=" +
-      metric.getDefaultStatistic
-    }
-    case MetricType.TOP => {
-      "start=" + metric.getDefaultStart().minusDays(14).toString("yyyyMMdd")
-    }
-    case MetricType.UNIQUE_COUNT => {
-      "start=" +
-      metric.getDefaultStart().minusDays(14).toString("yyyyMMdd") +
-      "&end=" +
-      metric.getDefaultEnd().minusDays(14).toString("yyyyMMdd")
-    }
   }
 }

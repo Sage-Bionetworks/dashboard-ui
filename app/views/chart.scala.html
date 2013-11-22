@@ -1,7 +1,4 @@
-@*
- * Basic layout for the charts.
- *@
-@(title: String, description: String)(chartScript: Html)
+@(metricType: String, metricId: String, title: String, description: String)
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -58,7 +55,11 @@ to experience this site.</p><![endif]-->
 
 <script src='@routes.Assets.at("javascripts/multiseries.min.js")'></script>
 <script src='@routes.Assets.at("javascripts/chart.min.js")'></script>
-@chartScript
+<Script>
+    d3.json('data?type=@metricType&metric=@metricId', function(error, d) {
+        chart("@metricType", d, 800, 500);
+    });
+</Script>
 
 </body>
 </html>

@@ -2,8 +2,7 @@ package controllers
 
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.sagebionetworks.dashboard.model.MetricType
-import org.sagebionetworks.dashboard.service.MetricRegistry
-import org.sagebionetworks.dashboard.service.MetricToRead
+import org.sagebionetworks.dashboard.service.{MetricRegistry, MetricToRead}
 
 object ApplicationContext {
 
