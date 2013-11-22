@@ -71,7 +71,7 @@ object Charts extends Controller {
     val dataSeries = new DataSeries(
       name = metric.getName,
       description = metric.getDescription,
-      headers = List("A", "B"), // TODO
+      headers = List("x", ""), // TODO
       values = dataPoints.map(m => List(
           m.getX(),
           m.getY())).toList
