@@ -1,9 +1,8 @@
 package controllers
 
-import scala.collection.JavaConversions._
-import play.api.mvc.{Action, Controller}
+import scala.collection.JavaConversions.asScalaBuffer
 import org.sagebionetworks.dashboard.model.MetricType
-import org.sagebionetworks.dashboard.service.MetricToRead
+import play.api.mvc.{Action, Controller}
 import models.DataMetric
 
 object Metrics extends Controller {
