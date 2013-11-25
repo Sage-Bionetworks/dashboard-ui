@@ -10,33 +10,67 @@
 
 <head id="dashboard.synapse.org" data-template-set="html5-reset">
 
-    <meta charset="utf-8">
+  <meta charset="utf-8">
 
-    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>Synapse Dashboard - @title</title>
+  <title>Synapse Dashboard - @title</title>
 
-    <link rel="shortcut icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
-    <link rel="icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
+  <link rel="shortcut icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
+  <link rel="icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
 
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/reset.css")' />
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/style.css")' />
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/layout.css")' />
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/chart.css")' />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/reset.css")' />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/style.css")' />
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.css" />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/layout.css")' />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/chart.css")' />
 
-    <script src='@routes.Assets.at("javascripts/modernizr-2.6.2.dev.js")'></script>
+  <script src='@routes.Assets.at("javascripts/modernizr-2.6.2.dev.js")'></script>
 
 </head>
 
 <body>
 
-<div id="wrapper">
-    <aside id="summary">
-        <h3>@title</h3>
-        <p>@description</p>
-    </aside>
-    <section id="chart">
+<div id="wrapper" class="ui-widget ui-helper-reset ui-helper-clearfix">
+  <aside id="summary">
+    <h3>@title</h3>
+    <p>@description</p>
+  </aside>
+  <section id="chart">
+    <div id="controls">
+      <div id="dtControls">
+        @metricType match {
+          case "bar" | "line" => {
+            <button class="button" id="plusPrev">+prev</button>
+            <button class="button" id="prev">prev</button>
+            From: <input id="dtFrom" type="text" />
+            To: <input id="dtTo" type="text" />
+            <button class="button" id="next">next</button>
+            <button class="button" id="plusNext">+next</button>
+          }
+          case "hbar" => {
+            <button class="button" id="prev">prev</button>
+            <input id="dtFrom" type="text"/>
+            <button class="button" id="next">next</button>
+          }
+        }
+      </div>
+      @if("line" == metricType) {
+          <div id="statCtrls">
+            Statistic:
+            <input type="radio" id="statAvg" name="statCtrls"><label for="statAvg">avg</label></input>
+            <input type="radio" id="statMax" name="statCtrls"><label for="statMax">max</label></input>
+            <input type="radio" id="statN" name="statCtrls"><label for="statN">n</label></input>
+          </div>
+          <div id="intvlCtrls">
+            Interval:
+            <input type="radio" id="intvlDay" name="intvlCtrls"><label for="intvlDay">day</label></input>
+            <input type="radio" id="intvlHr" name="intvlCtrls"><label for="intvlHr">hour</label></input>
+            <input type="radio" id="intvlM3" name="intvlCtrls"><label for="intvlM3">3-minute</label></input>
+          </div>
+      }
+      </div>
     </section>
 </div>
 
@@ -50,15 +84,42 @@ to experience this site.</p><![endif]-->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>window.jQuery || document.write("<script src='@routes.Assets.at("javascripts/jquery-1.10.2.min.js")'>\x3C/script>")</script>
 
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.10/d3.min.js"></script>
 <script>window.d3 || document.write("<script src='@routes.Assets.at("javascripts/d3-3.3.10.min.js")'>\x3C/script>")</script>
 
 <script src='@routes.Assets.at("javascripts/multiseries.min.js")'></script>
 <script src='@routes.Assets.at("javascripts/chart.min.js")'></script>
 <Script>
-    d3.json('data?type=@metricType&metric=@metricId', function(error, d) {
-        chart("@metricType", d, 800, 500);
+
+  d3.json('data?type=@metricType&metric=@metricId', function(error, d) {
+    chart("@metricType", d, 900, 550);
+  });
+
+  $(function() {
+    $("#dtFrom").datepicker({
+      defaultDate: "-1w",
+      minDate: "-6M",
+      maxDate: "+0D",
+      onClose: function(selectedDate) {
+        $("#dtTo").datepicker("option", "minDate", selectedDate);
+      }
     });
+    $("#dtTo").datepicker({
+      defaultDate: "+0D",
+      minDate: "-6M",
+      maxDate: "+0D",
+      onClose: function(selectedDate) {
+        $("#dtFrom").datepicker("option", "maxDate", selectedDate);
+      }
+    });
+
+    $(".button").button();
+
+    $("#statCtrls").buttonset();
+    $("#intvlCtrls").buttonset();
+  });
 </Script>
 
 </body>
