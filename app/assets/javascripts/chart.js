@@ -1,5 +1,18 @@
+function chart(type, data, width, height) {
+    switch(type) {
+    case "bar":
+        barChart(data, width, height);
+        break;
+    case "hbar":
+        hbarChart(data, width, height);
+        break;
+    case "line":
+        lineChart(data, width, height);
+        break;
+    }
+}
 
-function multiSeriesLineChart(data, width, height) {
+function lineChart(data, width, height) {
 
     var timeSeries = getSeries(data);
 
@@ -81,7 +94,7 @@ function multiSeriesLineChart(data, width, height) {
         .text(function(d) { return d.header; });
 }
 
-function groupedBarChart(data, width, height) {
+function barChart(data, width, height) {
 
     var dataSeries = getSeries(data);
 
@@ -165,7 +178,7 @@ function groupedBarChart(data, width, height) {
         .text(function(d) { return d; });
 }
 
-function hGroupedBarChart(data, width, height) {
+function hbarChart(data, width, height) {
 
     var dataSeries = getSeries(data);
 

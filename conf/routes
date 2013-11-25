@@ -4,21 +4,22 @@
 
 # Home
 # ~~~~
-GET     /                               controllers.Application.index
+GET     /                       controllers.Application.index
 
 # Static content
 # ~~~~
-GET     /assets/*file                   controllers.Assets.at(path="/public", file)
+GET     /assets/*file           controllers.Assets.at(path="/public", file)
 
 # Metrics
 # ~~~~
 
 # Gets all the available metrics, their names and ids
-GET     /metrics                        controllers.Metrics.all
+GET     /metrics                controllers.Metrics.all
 
 # Charts
 #
 # For all the charts, the query parameters include metric, start, and end
+#   type: required, chart type, one of the bar, hbar, line
 #   metric: required, is a list of metric IDs concatenated via colon e.g. '3ed5:871a:3210'
 #   start: optional, is the starting timestamp (inclusive), the default is 7 days ago
 #   end: optional, is the ending timestamp (inclusive), the default is now
@@ -26,11 +27,8 @@ GET     /metrics                        controllers.Metrics.all
 #   stat: optional, statistic, one of the n, sum, avg, max, the default is n
 #
 # ~~~~
-# Grouped bar chart
-GET     /chart/bar                      controllers.Charts.bar(metric, start: Option[String], end: Option[String])
+# Renders a chart page
+GET     /chart                  controllers.Charts.chart(type, metric)
 
-# Grouped horizontal bar chart
-GET     /chart/hbar                     controllers.Charts.hbar(metric, start: Option[String])
-
-# Multi-series line chart
-GET     /chart/line                     controllers.Charts.line(metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
+# For loading data the ajax way
+GET     /data                   controllers.Charts.data(type, metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
