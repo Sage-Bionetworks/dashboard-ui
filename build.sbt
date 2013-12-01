@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.springframework.data" % "spring-data-redis" % "1.1.0.RELEASE",
   "redis.clients" % "jedis" % "2.1.0",
   "joda-time" % "joda-time" % "2.3",
+  "net.sf.opencsv" % "opencsv" % "2.3",
   "com.amazonaws" % "aws-java-sdk" % "1.6.6"
 )     
 
