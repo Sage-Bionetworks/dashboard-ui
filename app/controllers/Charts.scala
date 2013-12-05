@@ -23,7 +23,11 @@ object Charts extends Controller {
     val metric = ApplicationContext.getMetric(metricId, mType)
     val metricName = metric.getName()
     val metricDesc = metric.getDescription()
-    Ok(views.html.chart(metricType, metricId, metricName, metricDesc))
+    metric.getDefaultAggregation()
+    metric.getDefaultStatistic()
+    metric.getDefaultStart()
+    metric.getDefaultEnd()
+    Ok(views.html.chart(metricType, metricId, metricName, metricDesc, None, None, None, None))
   }
 
   def data(metricType: String, metricId: String, start: Option[String], end: Option[String],

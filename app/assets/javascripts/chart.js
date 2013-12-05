@@ -1,17 +1,3 @@
-function chart(type, data, width, height) {
-    switch(type) {
-    case "bar":
-        barChart(data, width, height);
-        break;
-    case "hbar":
-        hbarChart(data, width, height);
-        break;
-    case "line":
-        lineChart(data, width, height);
-        break;
-    }
-}
-
 function lineChart(data, width, height) {
 
     var timeSeries = getSeries(data);
