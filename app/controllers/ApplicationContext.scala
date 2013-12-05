@@ -6,7 +6,7 @@ import org.sagebionetworks.dashboard.service.{MetricRegistry, MetricToRead}
 
 object ApplicationContext {
 
-  private val context = new ClassPathXmlApplicationContext("/META-INF/spring/app-context.xml")
+  private val context = new ClassPathXmlApplicationContext("/META-INF/spring/scheduler-context.xml")
   private val registry = getBean(classOf[MetricRegistry])
 
   def getBean[T](clazz: Class[T]): T = {
