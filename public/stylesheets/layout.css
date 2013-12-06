@@ -22,13 +22,13 @@ footer {
 
 #chart {
     width: 900px;
-    margin: 80px 20px 80px;
+    margin: 40px 20px 80px;
     float: right;
 }
 
 #summary {
     width: 220px;
-    margin: 80px 20px 80px;
+    margin: 40px 20px 80px;
     float: left;
 }
 
