@@ -131,6 +131,24 @@ var dashboard = function($, metric) {
     $('#dtTo').datepicker('setDate', dtEnd);
     updateChart(metric);
   });
+  $('#prevDay').click(function() {
+    var start = Number(metric.start);
+    start = start - 86400000;
+    metric.start = String(start);
+    metric.end = String(start);
+    var dtStart = new Date(start);
+    $('#dtFrom').datepicker('setDate', dtStart);
+    updateChart(metric);
+  });
+  $('#nextDay').click(function() {
+    var start = Number(metric.start);
+    start = start + 86400000;
+    metric.start = String(start);
+    metric.end = String(start);
+    var dtStart = new Date(start);
+    $('#dtFrom').datepicker('setDate', dtStart);
+    updateChart(metric);
+  });
 
   var bindData = function(type, data) {
     switch(type) {
