@@ -82,6 +82,10 @@ function lineChart(data, width, height) {
 
 function barChart(data, width, height) {
 
+    var dateFormat = d3.time.format("%m/%d");
+    var xSeries = data.values.forEach(function(row) {
+        row[0] = dateFormat(new Date(Number(row[0])));
+    });
     var dataSeries = getSeries(data);
 
     var margin = {top: 20, right: 60, bottom: 20, left: 60},
