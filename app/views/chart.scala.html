@@ -43,12 +43,10 @@
       <div id="dtControls">
         @metricType match {
           case "bar" | "line" => {
-            <button class="button" id="plusPrev">+prev</button>
             <button class="button" id="prev">prev</button>
             From: <input id="dtFrom" type="text" />
             To: <input id="dtTo" type="text" />
             <button class="button" id="next">next</button>
-            <button class="button" id="plusNext">+next</button>
           }
           case "hbar" => {
             <button class="button" id="prev">prev</button>
@@ -57,22 +55,22 @@
           }
         }
       </div>
-      @if("line" == metricType) {
+      <div>
+        @if("line" == metricType) {
           <div id="statCtrls">
-            Statistic:
             <input type="radio" id="statAvg" name="statCtrls"><label for="statAvg">avg</label></input>
             <input type="radio" id="statMax" name="statCtrls"><label for="statMax">max</label></input>
             <input type="radio" id="statN" name="statCtrls"><label for="statN">n</label></input>
           </div>
           <div id="intvlCtrls">
-            Interval:
             <input type="radio" id="intvlDay" name="intvlCtrls"><label for="intvlDay">day</label></input>
             <input type="radio" id="intvlHr" name="intvlCtrls"><label for="intvlHr">hour</label></input>
             <input type="radio" id="intvlM3" name="intvlCtrls"><label for="intvlM3">3-minute</label></input>
           </div>
-      }
+        }
       </div>
-    </section>
+    </div>
+  </section>
 </div>
 
 <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.

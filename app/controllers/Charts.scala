@@ -2,7 +2,7 @@ package controllers
 
 import scala.collection.JavaConversions.asScalaBuffer
 
-import org.joda.time.format.DateTimeFormat
+import org.joda.time.DateTime
 import org.sagebionetworks.dashboard.model.{Aggregation, MetricType, Statistic}
 import org.sagebionetworks.dashboard.service.MetricQueryService
 
@@ -21,13 +21,13 @@ object Charts extends Controller {
       case "line" => MetricType.TIME_SERIES
     }
     val metric = ApplicationContext.getMetric(metricId, mType)
-    val metricName = metric.getName()
-    val metricDesc = metric.getDescription()
-    metric.getDefaultAggregation()
-    metric.getDefaultStatistic()
-    metric.getDefaultStart()
-    metric.getDefaultEnd()
-    Ok(views.html.chart(metricType, metricId, metricName, metricDesc, None, None, None, None))
+    val metricName = metric.getName
+    val metricDesc = metric.getDescription
+    val start = Option(metric.getDefaultStart.getMillis.toString)
+    val end = Option(metric.getDefaultEnd.getMillis.toString)
+    val interval = Option(metric.getDefaultAggregation.name)
+    val stat = Option(metric.getDefaultStatistic.name)
+    Ok(views.html.chart(metricType, metricId, metricName, metricDesc, start, end, interval, stat))
   }
 
   def data(metricType: String, metricId: String, start: Option[String], end: Option[String],
@@ -41,18 +41,12 @@ object Charts extends Controller {
     
     val metric = ApplicationContext.getMetric(metricId, mType)
 
-    val format = metricType match {
-      case "bar" => DateTimeFormat.forPattern("yyyyMMdd")
-      case "hbar" => DateTimeFormat.forPattern("yyyyMMdd")
-      case "line" => DateTimeFormat.forPattern("yyyyMMddHH")
-    }
-
     val from = start match {
-      case Some(t) => format.parseDateTime(t)
+      case Some(t) => new DateTime(t.toLong)
       case None => metric.getDefaultStart
     }
     val to = end match {
-      case Some(t) => format.parseDateTime(t)
+      case Some(t) => new DateTime(t.toLong)
       case None => metric.getDefaultEnd()
     }
 

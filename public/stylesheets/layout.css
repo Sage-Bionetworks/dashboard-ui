@@ -37,3 +37,10 @@ footer {
     margin-top: 60px;
     font-size: 1.1em;
 }
+
+#statCtrls,
+#intvlCtrls {
+    float:left;
+    margin-top:20px;
+    margin-right:20px;
+}
