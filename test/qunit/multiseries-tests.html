@@ -9,8 +9,8 @@
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
     <script src="qunit-1.12.0.js"></script>
-    <script src="../../public/javascripts/d3-3.3.8.min.js"></script>
-    <script src="../../public/javascripts/multiseries.js"></script>
+    <script src="../../public/javascripts/d3-3.3.10.min.js"></script>
+    <script src="../../app/assets/javascripts/multiseries.js"></script>
     <script>
 
         test( "getSeriesTest", function() {
@@ -156,23 +156,23 @@
                 {
                     x: new Date(2013, 0),
                     values: [
-                        {header: "Austin", y: 50},
-                        {header: "New York", y: 33},
-                        {header: "Seattle", y: 47}
+                        {header: "Austin", x: new Date(2013, 0), y: 50},
+                        {header: "New York", x: new Date(2013, 0), y: 33},
+                        {header: "Seattle", x: new Date(2013, 0), y: 47}
                     ]
                 }, {
                     x: new Date(2013, 1),
                     values: [
-                        {header: "Austin", y: 52},
-                        {header: "New York", y: 35},
-                        {header: "Seattle", y: 51}
+                        {header: "Austin", x: new Date(2013, 1), y: 52},
+                        {header: "New York", x: new Date(2013, 1), y: 35},
+                        {header: "Seattle", x: new Date(2013, 1), y: 51}
                     ]
                 }, {
                     x: new Date(2013, 2),
                     values: [
-                        {header: "Austin", y: 55},
-                        {header: "New York", y: 42},
-                        {header: "Seattle", y: 56}
+                        {header: "Austin", x: new Date(2013, 2), y: 55},
+                        {header: "New York", x: new Date(2013, 2), y: 42},
+                        {header: "Seattle", x: new Date(2013, 2), y: 56}
                     ]
                 }
             ];
