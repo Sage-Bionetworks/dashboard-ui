@@ -110,7 +110,7 @@ function barChart(data, width, height) {
         .tickFormat(d3.format(".2s"));
 
     var color = d3.scale.category10()
-        .domain(dataSeries.headers);
+        .domain(dataSeries.headers.concat("__hover__"));
 
     var svg = d3.select("#chart").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -142,8 +142,28 @@ function barChart(data, width, height) {
         .attr("x", function(d) { return x1(d.header); })
         .attr("y", function(d) { return y(d.y); })
         .attr("height", function(d) { return height - y(d.y); })
-        .style("fill", function(d) { return color(d.header); });
+        .style("fill", function(d) { return color(d.header); })
+        .on("mouseover", function(d) {
+            d3.select(this).style("fill", color("__hover__"));
+            svg.append("text")
+                .text(d.y)
+                .attr("id", "hovertext")
+                .attr("text-anchor", "middle")
+                // TODO: The line below should use "x1(d.header)".
+                // But currently the header is empty.
+                // So "x0(d.x)" is used here as a temporary hack.
+                .attr("x", x0(d.x) + x1.rangeBand() / 2)
+                .attr("y", y(d.y) - 10)
+                .attr("fill", "black");
+         })
+        .on("mouseout", function(d) {
+            d3.select(this).style("fill", color(d.header));
+            svg.select("#hovertext").remove();
+         });
 
+/*
+ * Disable legend for now
+ *
     var legend = svg.selectAll(".legend")
         .data(dataSeries.headers.slice())
         .enter().append("g")
@@ -162,6 +182,7 @@ function barChart(data, width, height) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
+*/
 }
 
 function hbarChart(data, width, height) {
