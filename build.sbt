@@ -8,14 +8,13 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  "dashboard" % "dashboard" % "0.2.6",
+  "dashboard" % "dashboard" % "0.2.7",
   "org.springframework" % "spring-context" % "3.1.4.RELEASE",
   "org.springframework.data" % "spring-data-redis" % "1.1.0.RELEASE",
   "redis.clients" % "jedis" % "2.1.0",
   "joda-time" % "joda-time" % "2.3",
   "net.sf.opencsv" % "opencsv" % "2.3",
   "com.amazonaws" % "aws-java-sdk" % "1.6.7"
-)     
+)
 
 play.Project.playScalaSettings
-

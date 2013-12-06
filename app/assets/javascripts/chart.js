@@ -1,6 +1,6 @@
 function lineChart(data, width, height) {
 
-    var timeSeries = getSeries(data);
+    var timeSeries = getTimeSeries(data);
 
     // Conventional margins
     var margin = {top: 20, right: 80, bottom: 30, left: 50},

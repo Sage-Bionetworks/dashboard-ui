@@ -62,10 +62,16 @@ function getTimeSeries(data) {
 
     var dataSeries = getSeries(data);
 
-    var dateFormat = d3.time.format(data.dateFormat);
+    var dateFormat = null;
+    if ('dateFormat' in data) {
+        dateFormat = d3.time.format(data.dateFormat);
+    }
 
     dataSeries.xSeries = dataSeries.xSeries.map(function(dateStr) {
-        return dateFormat.parse(dateStr);
+        if (dateFormat != null) {
+            return dateFormat.parse(dateStr);
+        }
+        return new Date(Number(dateStr));
     });
 
     dataSeries.xMin = d3.min(dataSeries.xSeries);
@@ -75,8 +81,14 @@ function getTimeSeries(data) {
         return {
             header: series.header,
             values: series.values.map(function(d) {
+                var xVal = null;
+                if (dateFormat != null) {
+                    xVal = dateFormat.parse(d.x);
+                } else {
+                    xVal = new Date(Number(d.x));
+                }
                 return {
-                  x: dateFormat.parse(d.x),
+                  x: xVal,
                   y: d.y
                 };
             })
