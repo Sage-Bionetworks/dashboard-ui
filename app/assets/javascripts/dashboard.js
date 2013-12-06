@@ -28,14 +28,30 @@ var dashboard = function($, metric) {
     $('#statCtrls').buttonset();
     switch(metric.stat) {
     case 'avg':
+      $('#statAvg').attr('checked', 'checked');
       break;
     case 'max':
+      $('#statMax').attr('checked', 'checked');
       break;
     case 'n':
+      $('#statN').attr('checked', 'checked');
       break;
     }
+    $('#statCtrls').buttonset('refresh');
 
     $('#intvlCtrls').buttonset();
+    switch(metric.interval) {
+    case 'day':
+      $('#intvlDay').attr('checked', 'checked');
+      break;
+    case 'hour':
+      $('#intvlHr').attr('checked', 'checked');
+      break;
+    case 'm3':
+      $('#intvlM3').attr('checked', 'checked');
+      break;
+    }
+    $('#intvlCtrls').buttonset('refresh');
 
     $('.button').button();
   });
@@ -109,8 +125,10 @@ var dashboard = function($, metric) {
     end = end + diff;
     metric.start = String(start);
     metric.end = String(end);
-    $('#dtFrom').datepicker('setDate', new Date(start));
-    $('#dtTo').datepicker('setDate', new Date(end));
+    var dtStart = new Date(start);
+    var dtEnd = new Date(end);
+    $('#dtFrom').datepicker('setDate', dtStart);
+    $('#dtTo').datepicker('setDate', dtEnd);
     updateChart(metric);
   });
 
