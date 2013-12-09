@@ -263,5 +263,5 @@ function hbarChart(data, width, height) {
         .attr("dy", ".36em")
         .attr("text-anchor", "end")
         .attr('class', 'barLabel')
-        .text(function(group) { return group.x; });
+        .text(function(group) { return group.x.substr(0, 18); });
 }

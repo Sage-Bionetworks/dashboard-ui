@@ -50,9 +50,10 @@ object Charts extends Controller {
       case None => metric.getDefaultEnd()
     }
 
+    val singleMetric = metricId.split(":")(0) // TODO: Temporary code to load only the first metric
     val dataPoints = metricType match {
-      case "bar" => metricQuerySrv.getUniqueCount(metricId, from, to)
-      case "hbar" => metricQuerySrv.getTop25(metricId, from)
+      case "bar" => metricQuerySrv.getUniqueCount(singleMetric, from, to)
+      case "hbar" => metricQuerySrv.getTop25(singleMetric, from)
       case "line" => {
         val a = interval match {
           case Some(aggr) => Aggregation.valueOf(aggr)
@@ -62,7 +63,7 @@ object Charts extends Controller {
           case Some(a) => Statistic.valueOf(a)
           case None => Statistic.avg
         }
-        metricQuerySrv.getTimeSeries(metricId, from, to, s, a)
+        metricQuerySrv.getTimeSeries(singleMetric, from, to, s, a)
       }
     }
 
