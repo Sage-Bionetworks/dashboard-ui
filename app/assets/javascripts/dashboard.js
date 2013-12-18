@@ -25,61 +25,41 @@ var dashboard = function($, metric) {
     var dtEnd = new Date(Number(metric.end));
     $('#dtTo').datepicker('setDate', dtEnd);
 
-    $('#statCtrls').buttonset();
-    switch(metric.stat) {
-    case 'avg':
-      $('#statAvg').attr('checked', 'checked');
-      break;
-    case 'max':
-      $('#statMax').attr('checked', 'checked');
-      break;
-    case 'n':
-      $('#statN').attr('checked', 'checked');
-      break;
-    }
-    $('#statCtrls').buttonset('refresh');
+    $('#stats').buttonset();
+    $('#stats #' + metric.stat).attr('checked', 'checked');
+    $('#stats').buttonset('refresh');
 
-    $('#intvlCtrls').buttonset();
-    switch(metric.interval) {
-    case 'day':
-      $('#intvlDay').attr('checked', 'checked');
-      break;
-    case 'hour':
-      $('#intvlHr').attr('checked', 'checked');
-      break;
-    case 'm3':
-      $('#intvlM3').attr('checked', 'checked');
-      break;
-    }
-    $('#intvlCtrls').buttonset('refresh');
+    $('#intvls').buttonset();
+    $('#intvls #' + metric.interval).attr('checked', 'checked');
+    $('#intvls').buttonset('refresh');
 
     $('.button').button();
   });
 
   // Statistic button events
-  $('#statAvg').click(function() {
+  $('#stats #avg').click(function() {
     metric.stat = 'avg';
     updateChart(metric);
   });
-  $('#statMax').click(function() {
+  $('#stats #max').click(function() {
     metric.stat = 'max';
     updateChart(metric);
   });
-  $('#statN').click(function() {
+  $('#stats #n').click(function() {
     metric.stat = 'n';
     updateChart(metric);
   });
 
   // Interval button events
-  $('#intvlDay').click(function() {
+  $('#intvls #day').click(function() {
     metric.interval = 'day';
     updateChart(metric);
   });
-  $('#intvlHr').click(function() {
+  $('#intvls #hour').click(function() {
     metric.interval = 'hour';
     updateChart(metric);
   });
-  $('#intvlM3').click(function() {
+  $('#intvls #m3').click(function() {
     metric.interval = 'm3';
     updateChart(metric);
   });
