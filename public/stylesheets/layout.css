@@ -38,8 +38,8 @@ footer {
     font-size: 1.1em;
 }
 
-#statCtrls,
-#intvlCtrls {
+#stats,
+#intvls {
     float:left;
     margin-top:20px;
     margin-right:20px;
