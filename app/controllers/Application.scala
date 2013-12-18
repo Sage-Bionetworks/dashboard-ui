@@ -1,9 +1,9 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc._;
 
 object Application extends Controller {
   def index = Action {
-    Ok("dashboard")
+    Redirect(routes.Metrics.all)
   }
 }
