@@ -1,4 +1,4 @@
-@(metrics: List[DataMetric])
+@(metrics: Map[MetricId, Metric])
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -10,37 +10,39 @@
 
 <head id="dashboard.synapse.org" data-template-set="html5-reset">
 
-    <meta charset="utf-8">
+  <meta charset="utf-8">
 
-    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>Synapse Dashboard - List of Metrics</title>
+  <title>Synapse Dashboard - List of Metrics</title>
 
-    <link rel="shortcut icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
-    <link rel="icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
+  <link rel="shortcut icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
+  <link rel="icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
 
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/reset.css")' />
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/style.css")' />
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/metrics.css")' />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/reset.css")' />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/style.css")' />
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/metrics.css")' />
 
-    <script src='@routes.Assets.at("javascripts/modernizr-2.6.2.dev.js")'></script>
+  <script src='@routes.Assets.at("javascripts/modernizr-2.6.2.dev.js")'></script>
 
 </head>
 
 <body>
 
 <div id="wrapper">
-    <header></header>
-    <section class="metric-list">
-        <dl>
-            @for(metric <- metrics) {
-                <dt><a href='chart?type=@metric.chartType&metric=@metric.id'>@metric.name -- @metric.chartName</a></dt>
-                <dd>@metric.description</dd>
-            }
-        </dl>
-    </section>
-    <footer></footer>
+  <header></header>
+  <section class="metric-list">
+    <dl>
+      @for(key <- metrics.keys) {
+        @defining(metrics(key)) { metric =>
+          <dt><a href='chart?type=@key.chartType&metric=@key.metricName'>@metric.fullName</a></dt>
+          <dd>@metric.description</dd>
+        }
+      }
+    </dl>
+  </section>
+  <footer></footer>
 </div>
 
 <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
@@ -49,9 +51,6 @@
 <a href="http://browsehappy.com/">Upgrade to a different browser</a> or
 <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>
 to experience this site.</p><![endif]-->
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script>window.jQuery || document.write("<script src='/assets/javascripts/jquery-1.10.2.min.js'>\x3C/script>")</script>
 
 </body>
 </html>

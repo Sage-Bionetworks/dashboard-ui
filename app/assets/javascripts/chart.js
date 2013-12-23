@@ -193,7 +193,7 @@ function hbarChart(data, width, height) {
 
     var dataSeries = getSeries(data);
 
-    var margin = {top: 60, right: 200, bottom: 20, left: 160},
+    var margin = {top: 60, right: 100, bottom: 20, left: 320},
         width = width - margin.left - margin.right,
         height = height - margin.top - margin.bottom;
 
@@ -262,6 +262,28 @@ function hbarChart(data, width, height) {
         .attr("y", function(group) { return yScale0(group.x) + yScale0.rangeBand() / 2; } )
         .attr("dy", ".36em")
         .attr("text-anchor", "end")
-        .attr('class', 'barLabel')
-        .text(function(group) { return group.x.substr(0, 18); });
+        .attr("class", "barLabel")
+        .text(function(group) {
+            var txt = group.x;
+            if (txt.length > 39) {
+              txt = txt.substring(0, 36);
+              txt = txt + "...";
+            }
+            return txt;
+        })
+        .on("mouseover", function(d) {
+            if (d.x.length > 39) {
+                svg.append("text")
+                    .text(d.x)
+                    .attr("id", "hovertext")
+                    .attr("text-anchor", "start")
+                    .attr("x", 10)
+                    .attr("y", yScale0(d.x) + yScale0.rangeBand() / 2)
+                    .attr("dy", ".36em")
+                    .attr("fill", "orange");
+            }
+        })
+        .on("mouseout", function(d) {
+            svg.select("#hovertext").remove();
+        });
 }

@@ -1,4 +1,4 @@
-@(metricType: String, metricId: String, title: String, description: String,
+@(chartType: String, metricName: String, title: String, description: String,
 	start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
 <!DOCTYPE html>
 <html lang="en" class="no-js">
@@ -41,7 +41,7 @@
   <section id="chart">
     <div id="controls">
       <div id="dtControls">
-        @metricType match {
+        @chartType match {
           case "bar" | "line" => {
             <button class="button" id="prev">prev</button>
             From: <input id="dtFrom" type="text" />
@@ -56,7 +56,7 @@
         }
       </div>
       <div>
-        @if("line" == metricType) {
+        @if("line" == chartType) {
           <div id="stats">
             <input type="radio" id="avg" name="stats"><label for="avg">avg</label></input>
             <input type="radio" id="max" name="stats"><label for="max">max</label></input>
@@ -93,8 +93,8 @@ to experience this site.</p><![endif]-->
 <script src='@routes.Assets.at("javascripts/dashboard.min.js")'></Script>
 <script>
   var metricProto = {
-    type: '@metricType',
-    id: '@metricId'
+    type: '@chartType',
+    id: '@metricName'
   };
   var metric = Object.create(metricProto);
   @if(!start.isEmpty) {
