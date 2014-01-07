@@ -34,10 +34,10 @@
   <header></header>
   <section class="metric-list">
     <dl>
-      @for(key <- metrics.keys) {
-        @defining(metrics(key)) { metric =>
-          <dt><a href='chart?type=@key.chartType&metric=@key.metricName'>@metric.fullName</a></dt>
-          <dd>@metric.description</dd>
+      @for(metricTuple <- metrics) {
+        @defining(metricTuple) { metric =>
+          <dt><a href='chart?type=@metric._1.chartType&metric=@metric._1.metricName'>@metric._2.fullName</a></dt>
+          <dd>@metric._2.description</dd>
         }
       }
     </dl>
