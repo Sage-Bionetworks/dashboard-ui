@@ -54,6 +54,11 @@ function lineChart(data, width, height) {
         .style("text-anchor", "end")
         .text(timeSeries.yLabel);
 
+    // Attach tick clicks
+    svg.selectAll(".y.axis g text").forEach(function(tickText) {
+        console.debug(tickText);
+    });
+
     // Render the lines
     var dataSeries = svg.selectAll(".timeSeries")
         .data(timeSeries.ySeries)

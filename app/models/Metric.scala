@@ -28,15 +28,15 @@ object Metric {
   private val entityIdToName = AppContext.getBean(classOf[EntityIdToName])
   private val userIdToName = AppContext.getBean(classOf[UserIdToName])
 
-  val metrics = Map(
+  val metrics = collection.immutable.ListMap(
 
       MetricId("bar", "uniqueUser") -> Metric(
         "Daily Unique Users",
         "The number of unique users that logged activities on a daily basis.",
         Aggregation.day,
         Statistic.n,
-        8,
-        1,
+        7,
+        0,
         List.empty),
 
       MetricId("hbar", "uniqueUser") -> Metric(
@@ -44,8 +44,8 @@ object Metric {
         "Users registered the most activitities.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List(userIdToName)),
 
       MetricId("hbar", "topEntity") -> Metric(
@@ -53,8 +53,8 @@ object Metric {
         "List of entities that are accessed most often.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List(entityIdToName)),
 
       MetricId("hbar", "topMethod") -> Metric(
@@ -62,8 +62,8 @@ object Metric {
         "Most accessed REST APIs.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List.empty),
 
       MetricId("hbar", "topClient") -> Metric(
@@ -71,8 +71,8 @@ object Metric {
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List.empty),
 
       MetricId("hbar", "topWebClient") -> Metric(
@@ -80,8 +80,8 @@ object Metric {
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List.empty),
 
       MetricId("hbar", "topPythonClient") -> Metric(
@@ -89,8 +89,8 @@ object Metric {
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List.empty),
 
       MetricId("hbar", "topRClient") -> Metric(
@@ -98,8 +98,8 @@ object Metric {
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        1,
-        1,
+        0,
+        0,
         List.empty),
 
       MetricId("bar", "errorCount") -> Metric(
@@ -107,8 +107,17 @@ object Metric {
         "Daily counts of errors.",
         Aggregation.day,
         Statistic.n,
-        8,
-        1,
+        7,
+        0,
+        List.empty),
+
+      MetricId("line", "postEntityHeader") -> Metric(
+        "POST Entity Header Latencies",
+        "Latency in milliseconds for the POST entity header REST API.",
+        Aggregation.hour,
+        Statistic.avg,
+        7,
+        0,
         List.empty),
 
       MetricId("line", "getEntityBundle") -> Metric(
@@ -116,8 +125,8 @@ object Metric {
         "Latency in milliseconds for the GET entity bundle REST API.",
         Aggregation.hour,
         Statistic.avg,
-        4,
-        1,
+        7,
+        0,
         List.empty),
 
       MetricId("line", "query") -> Metric(
@@ -125,8 +134,8 @@ object Metric {
         "Latency in milliseconds for the query API.",
         Aggregation.hour,
         Statistic.avg,
-        4,
-        1,
+        7,
+        0,
         List.empty)
   )
 
