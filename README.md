@@ -41,17 +41,17 @@ To launch a local instance that reads the production S3 bucket for real metric d
     3. Choose the security group "dashboard"
 3. Once the instance is active, upload the distribution package to the instance.
 
-    $ scp -i prod-key-pair.pem target/universal/dashboard.zip admin@ec2-52-192-252-222.compute-1.amazonaws.com:/home/admin
+        $ scp -i prod-key-pair.pem target/universal/dashboard.zip admin@ec2-52-192-252-222.compute-1.amazonaws.com:/home/admin
 
 4. Go to the EC2 instance, unpack the package, and launch the dashboard app
 
-    $ dashboard-ui-1.0-SNAPSHOT/bin/dashboard-ui -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret>
-    -DsynapseUsr=dashboard@sagebase.org -DsynapsePwd=<synapse-password> -Dprod=true -Dhttp.port=9001
+        $ dashboard-ui-1.0-SNAPSHOT/bin/dashboard-ui -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret>
+        -DsynapseUsr=dashboard@sagebase.org -DsynapsePwd=<synapse-password> -Dprod=true -Dhttp.port=9001
 
 5. Send the process to run in the background
 
-    $ <ctrl-z>
-    $ bg
+        $ \<ctrl-z\>
+        $ bg
 
 6. After maybe 3 hours, cross-validate with the current dashboard
 7. Once validated, swap CNAMEs at Route53
