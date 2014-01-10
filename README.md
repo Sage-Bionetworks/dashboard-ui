@@ -50,7 +50,7 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 5. Send the process to run in the background
 
-        $ \<ctrl-z\>
+        $ <ctrl-z>
         $ bg
 
 6. After maybe 3 hours, cross-validate with the current dashboard
