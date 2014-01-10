@@ -16,9 +16,14 @@ class ApplicationSpec extends Specification {
 
     "render the index page" in new WithApplication{
       val home = route(FakeRequest(GET, "/")).get
+      status(home) must equalTo(SEE_OTHER)
+    }
 
-      status(home) must equalTo(OK)
-      contentAsString(home) must contain ("dashboard")
+    "render the metric list page" in new WithApplication{
+      val metrics = route(FakeRequest(GET, "/metrics")).get
+      status(metrics) must equalTo(OK)
+      contentAsString(metrics) must contain ("Top")
+      contentAsString(metrics) must contain ("Latencies")
     }
   }
 }
