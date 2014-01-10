@@ -10,8 +10,10 @@ GET     /                       controllers.Application.index
 # ~~~~
 GET     /assets/*file           controllers.Assets.at(path="/public", file)
 
+# Authentication and authorization
+# ~~~~
 GET     /login                  controllers.Auth.login
-GET     /authenticate           controllers.Auth.authenticate
+GET     /auth                   controllers.Auth.auth
 
 # Metrics
 # ~~~~
