@@ -4,7 +4,7 @@ import scala.collection.JavaConversions.asScalaBuffer
 
 import org.joda.time.DateTime
 import org.sagebionetworks.dashboard.model.{Aggregation, Statistic}
-import org.sagebionetworks.dashboard.service.MetricQueryService
+import org.sagebionetworks.dashboard.service.MetricReader
 
 import context.AppContext
 import models.{DataSeries, Metric, MetricId}
@@ -12,7 +12,7 @@ import play.api.mvc.{Action, Controller}
 
 object Charts extends Controller {
 
-  private val metricQuerySrv = AppContext.getBean(classOf[MetricQueryService])
+  private val metricReader = AppContext.getBean(classOf[MetricReader])
 
   def chart(chartType: String, metricName: String) = Action {
     val metric = Metric.getMetric(MetricId(chartType, metricName))
@@ -40,9 +40,9 @@ object Charts extends Controller {
     }
 
     val dataPoints = chartType match {
-      case "bar" => metricQuerySrv.getUniqueCount(metricName, from, to)
+      case "bar" => metricReader.getUniqueCount(metricName, from, to)
       case "hbar" => {
-        val data = metricQuerySrv.getTop(metricName, from, 25)
+        val data = metricReader.getTop(metricName, from, 25)
         var i = 0
         for (d <- data) {
           var tmp = d
@@ -63,7 +63,7 @@ object Charts extends Controller {
           case Some(a) => Statistic.valueOf(a)
           case None => Statistic.avg
         }
-        metricQuerySrv.getTimeSeries(metricName, from, to, s, a)
+        metricReader.getTimeSeries(metricName, from, to, s, a)
       }
     }
 
