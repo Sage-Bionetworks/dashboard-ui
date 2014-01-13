@@ -12,7 +12,6 @@ GET     /assets/*file           controllers.Assets.at(path="/public", file)
 
 # Authentication and authorization
 # ~~~~
-GET     /login                  controllers.Auth.login
 GET     /auth                   controllers.Auth.auth
 
 # Metrics
