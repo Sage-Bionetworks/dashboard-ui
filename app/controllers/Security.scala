@@ -1,53 +1,64 @@
 package controllers
 
-import java.util.UUID
-import collection.JavaConversions._
-import concurrent.Future
-import concurrent.ExecutionContext.Implicits._
-import play.api.mvc._
-import play.api.mvc.Results._
-import org.joda.time.DateTime
+import scala.collection.JavaConversions.mapAsJavaMap
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.HOURS
+
 import org.openid4java.consumer.ConsumerManager
-import org.openid4java.message.AuthRequest
 import org.openid4java.message.AuthSuccess
 import org.openid4java.message.ParameterList
 import org.openid4java.message.ax.AxMessage
 import org.openid4java.message.ax.FetchRequest
 import org.openid4java.message.ax.FetchResponse
 
+import play.api.Play.current
+import play.api.cache.Cache
+import play.api.mvc.ActionBuilder
+import play.api.mvc.Request
+import play.api.mvc.Results.Redirect
+import play.api.mvc.Results.Unauthorized
+import play.api.mvc.SimpleResult
+
 trait Security {
 
   object AuthorizedAction extends ActionBuilder[Request] {
 
-    private val providerUrl = "https://www.google.com/accounts/o8/id"
-    private val openIdMgr = new ConsumerManager
-    private val discovered = openIdMgr.associate(openIdMgr.discover(providerUrl))
+    private object GoogleOpenId {
+      val ProviderUrl = "https://www.google.com/accounts/o8/id"
+      val Manager = new ConsumerManager
+      val Discovered = Manager.associate(Manager.discover(ProviderUrl))
+      val CallbackQueryParameter = "openid.mode"
+    }
 
-    // TODO: Do this in the cache
-    // (session-token -> timestamp)
-    private val sessions = scala.collection.mutable.Map[String, DateTime]()
+    private val tokenKey = "token"
+    private val tokenExpire = 3        // Expire after 3 hours on the server side
+    private val protocol = "http://"
 
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
-      request.session.get("session-token").map { session =>
-        sessions.get(session).map { timestamp =>
-          // Make sure the session has not expired
-          if (timestamp.plusHours(3).isAfterNow()) {
-            // Continue with the original request
-            // and save the session in the response
-            block(request).map {result => 
-              result.withSession("session-token" -> session)
-            }
-          } else {
-            // Expired session
-            openIdCallback(request, block)
+      request.session.get(tokenKey).map { token =>
+        Cache.get(token).map { t =>
+          // Session tokens match => continue with the request
+          block(request).map { result =>
+            // Save the session token in the response
+            result.withSession(tokenKey -> token)
           }
         } getOrElse {
-          // Missing session in the server
-          openIdCallback(request, block)
+          // Missing session on the server side
+          login(request, block)
         }
       } getOrElse {
         // Missing session in the request
-        openIdCallback(request, block)
+        login(request, block)
+      }
+    }
+
+    def login[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+      // Check if this is OpenID callback
+      request.queryString.get(GoogleOpenId.CallbackQueryParameter) match {
+        case Some(p) => openIdCallback(request, block)
+        case None => openIdLogin(request) // When this is not a callback, log in 
       }
     }
 
@@ -55,38 +66,34 @@ trait Security {
      * Verifies the OpenID login and reads the user email address.
      */
     def openIdCallback[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
-      val receivingURL = "http://" + request.host + request.uri
+      val receivingURL = protocol + request.host + request.uri
       val response = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
-      if (!response.hasParameter("openid.mode")) {
-        // Not a callback
-        Future.successful(openIdLogin(request))
+      val verification = GoogleOpenId.Manager.verify(
+          receivingURL.toString(),
+          response,
+          GoogleOpenId.Discovered)
+      val verifiedId = verification.getVerifiedId()
+      if (verifiedId == null) {
+        // Invalid callback
+        openIdLogin(request)
       } else {
-        val verification = openIdMgr.verify(
-            receivingURL.toString(),
-            response, discovered)
-        val verifiedId = verification.getVerifiedId()
-        if (verifiedId == null) {
-          // Invalid callback
-          Future.successful(openIdLogin(request))
-        } else {
-          val authSuccess = verification.getAuthResponse().asInstanceOf[AuthSuccess]
-          val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
-          val emails = fetchResp.getAttributeValues("email")
-          val email = emails.get(0).toString
-          if (email == null) {
-            Future.successful(Unauthorized("Missing email address."))
-          } else if (isAuthorized(email)) {
-            // Save session in server
-            val session = java.util.UUID.randomUUID.toString
-            sessions.put(session, new DateTime)
-            // Continue with the original request
-            // and save the session in the response
-            block(request).map {result => 
-              result.withSession("session-token" -> session)
-            }
-          } else {
-            Future.successful(Unauthorized(email + " is not authorized."))
+        val authSuccess = verification.getAuthResponse().asInstanceOf[AuthSuccess]
+        val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
+        val emails = fetchResp.getAttributeValues("email")
+        val email = emails.get(0).toString
+        if (email == null) {
+          Future.successful(Unauthorized("Missing email address from the login."))
+        } else if (isAuthorized(email)) {
+          // Save the session on the server side
+          val session = java.util.UUID.randomUUID.toString
+          Cache.set(session, session, Duration(3, HOURS))
+          // Continue with the original request
+          // and save the session token in the response
+          block(request).map { result =>
+            result.withSession(tokenKey -> session)
           }
+        } else {
+          Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
         }
       }
     }
@@ -95,15 +102,15 @@ trait Security {
      * Logs in the user using Google OpenID 2.0.
      */
     def openIdLogin[A](request: Request[A]) = {
-      val returnToUrl = "http://" + request.host + request.uri
-      val authReq = openIdMgr.authenticate(discovered, returnToUrl)
+      val returnToUrl = protocol + request.host + request.uri
+      val authReq = GoogleOpenId.Manager.authenticate(GoogleOpenId.Discovered, returnToUrl)
       val fetchReq = FetchRequest.createFetchRequest
       fetchReq.addAttribute(
           "email",
           "http://schema.openid.net/contact/email",
           true)
       authReq.addExtension(fetchReq)
-      Redirect(authReq.getDestinationUrl(true))
+      Future.successful(Redirect(authReq.getDestinationUrl(true)))
     }
 
     /**
