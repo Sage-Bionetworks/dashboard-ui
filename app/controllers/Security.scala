@@ -67,10 +67,10 @@ trait Security {
      */
     def openIdCallback[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       val receivingURL = protocol + request.host + request.uri
-      val response = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
+      val parameterMap = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
       val verification = GoogleOpenId.Manager.verify(
           receivingURL.toString(),
-          response,
+          parameterMap,
           GoogleOpenId.Discovered)
       val verifiedId = verification.getVerifiedId()
       if (verifiedId == null) {
@@ -86,7 +86,7 @@ trait Security {
         } else if (isAuthorized(email)) {
           // Save the session on the server side
           val session = java.util.UUID.randomUUID.toString
-          Cache.set(session, session, Duration(3, HOURS))
+          Cache.set(session, session, Duration(tokenExpire, HOURS))
           // Continue with the original request
           // and save the session token in the response
           block(request).map { result =>
