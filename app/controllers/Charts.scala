@@ -10,11 +10,11 @@ import context.AppContext
 import models.{DataSeries, Metric, MetricId}
 import play.api.mvc.{Action, Controller}
 
-object Charts extends Controller {
+object Charts extends Controller with Security {
 
   private val metricReader = AppContext.getBean(classOf[MetricReader])
 
-  def chart(chartType: String, metricName: String) = Action {
+  def chart(chartType: String, metricName: String) = AuthorizedAction {
     val metric = Metric.getMetric(MetricId(chartType, metricName))
     val title = metric.fullName
     val desc = metric.description
@@ -26,7 +26,7 @@ object Charts extends Controller {
   }
 
   def data(chartType: String, metricName: String, start: Option[String], end: Option[String],
-      interval: Option[String], stat: Option[String]) = Action {
+      interval: Option[String], stat: Option[String]) = AuthorizedAction {
 
     val metric = Metric.getMetric(MetricId(chartType, metricName))
 

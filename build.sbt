@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   "redis.clients" % "jedis" % "2.1.0",
   "joda-time" % "joda-time" % "2.3",
   "net.sf.opencsv" % "opencsv" % "2.3",
-  "com.amazonaws" % "aws-java-sdk" % "1.6.11"
+  "com.amazonaws" % "aws-java-sdk" % "1.6.11",
+  "org.openid4java" % "openid4java" % "0.9.8"
 )
 
 play.Project.playScalaSettings
