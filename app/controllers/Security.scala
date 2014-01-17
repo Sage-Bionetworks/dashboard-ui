@@ -37,8 +37,7 @@ trait Security {
     }
 
     private val tokenKey = "token"
-    private val tokenExpire = 3        // Expire after 3 hours on the server side
-    private val protocol = "http://"
+    private val tokenExpire = 3 // Expire after 3 hours on the server side
 
     private val securityService = AppContext.getBean(classOf[SecurityService])
 
@@ -72,7 +71,7 @@ trait Security {
      * Verifies the OpenID login and reads the user email address.
      */
     def openIdCallback[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
-      val receivingURL = protocol + request.host + request.uri
+      val receivingURL = scheme(request) + "://" + request.host + request.uri
       val parameterMap = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
       val verification = GoogleOpenId.Manager.verify(
           receivingURL.toString(),
@@ -108,7 +107,7 @@ trait Security {
      * Logs in the user using Google OpenID 2.0.
      */
     def openIdLogin[A](request: Request[A]) = {
-      val returnToUrl = protocol + request.host + request.uri
+      val returnToUrl = scheme(request) + "://" + request.host + request.uri
       val authReq = GoogleOpenId.Manager.authenticate(GoogleOpenId.Discovered, returnToUrl)
       val fetchReq = FetchRequest.createFetchRequest
       fetchReq.addAttribute(
@@ -124,6 +123,14 @@ trait Security {
      */
     def isAuthorized(email: String) = {
       securityService.isDashboardUser(email)
+    }
+
+    def scheme[A](request: Request[A]) = {
+      // $X-Scheme is set by the nginx reverse proxy
+      request.headers.get("X-Scheme") match {
+        case Some(scheme) => scheme
+        case None => "http"
+      }
     }
   }
 }
