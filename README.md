@@ -58,5 +58,6 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 ### AWS Notes
 
-<script src="https://gist.github.com/eric-wu/8483112.js"></script>
+<script src="https://gist.github.com/eric-wu/8483112.js">
+</script>
 
