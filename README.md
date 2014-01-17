@@ -55,3 +55,8 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 6. After maybe 3 hours, cross-validate with the current dashboard.
 7. Once validated, swap CNAMEs at Route53.
+
+### AWS Notes
+
+<script src="https://gist.github.com/eric-wu/8483112.js"></script>
+
