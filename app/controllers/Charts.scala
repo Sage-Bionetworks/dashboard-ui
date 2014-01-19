@@ -1,18 +1,16 @@
 package controllers
 
 import scala.collection.JavaConversions.asScalaBuffer
-
 import org.joda.time.DateTime
 import org.sagebionetworks.dashboard.model.{Aggregation, Statistic}
 import org.sagebionetworks.dashboard.service.MetricReader
-
-import context.AppContext
 import models.{DataSeries, Metric, MetricId}
 import play.api.mvc.{Action, Controller}
+import context.SpringContext
 
 object Charts extends Controller with Security {
 
-  private val metricReader = AppContext.getBean(classOf[MetricReader])
+  private val metricReader = SpringContext.getBean(classOf[MetricReader])
 
   def chart(chartType: String, metricName: String) = AuthorizedAction {
     val metric = Metric.getMetric(MetricId(chartType, metricName))
@@ -41,6 +39,7 @@ object Charts extends Controller with Security {
 
     val dataPoints = chartType match {
       case "bar" => metricReader.getUniqueCount(metricName, from, to)
+      case "bar2" => metricReader.getCount(metricName, from, to)
       case "hbar" => {
         val data = metricReader.getTop(metricName, from, 25)
         var i = 0

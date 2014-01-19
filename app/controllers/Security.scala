@@ -5,14 +5,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.HOURS
-
 import org.openid4java.consumer.ConsumerManager
 import org.openid4java.message.AuthSuccess
 import org.openid4java.message.ParameterList
 import org.openid4java.message.ax.AxMessage
 import org.openid4java.message.ax.FetchRequest
 import org.openid4java.message.ax.FetchResponse
-
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.mvc.ActionBuilder
@@ -20,10 +18,8 @@ import play.api.mvc.Request
 import play.api.mvc.Results.Redirect
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc.SimpleResult
-
 import org.sagebionetworks.dashboard.service.SecurityService
-
-import context.AppContext
+import context.SpringContext
 
 trait Security {
 
@@ -39,7 +35,7 @@ trait Security {
     private val tokenKey = "token"
     private val tokenExpire = 3 // Expire after 3 hours on the server side
 
-    private val securityService = AppContext.getBean(classOf[SecurityService])
+    private val securityService = SpringContext.getBean(classOf[SecurityService])
 
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       request.session.get(tokenKey).map { token =>
