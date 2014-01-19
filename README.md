@@ -58,6 +58,5 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 ### AWS Notes
 
-<script src="https://gist.github.com/eric-wu/8483112.js">
-</script>
+[Nginx reverse proxy set up behind a elastic load balancer and in front of a Play web app.](https://gist.github.com/eric-wu/8483112)
 
