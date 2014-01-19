@@ -135,6 +135,9 @@ var dashboard = function($, metric) {
       case 'bar':
         barChart(data, configMap.width, configMap.height);
         break;
+      case 'bar2':
+        barChart(data, configMap.width, configMap.height);
+        break;
       case 'hbar':
         hbarChart(data, configMap.width, configMap.height);
         break;
