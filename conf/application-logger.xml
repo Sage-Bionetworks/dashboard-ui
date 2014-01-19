@@ -3,12 +3,18 @@
 
   <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-     <file>${application.home}/logs/application.log</file>
-     <encoder>
-       <pattern>%date - [%level] - from %logger in %thread %n%message%n%xException%n</pattern>
-     </encoder>
-   </appender>
+  <appender name="FILE" class="ch.qos.logback.core.RollingFileAppender">
+    <file>${application.home}/logs/application.log</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- hourly rollover -->
+        <fileNamePattern>${application.home}/logs/application-%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+        <!-- keep at most 200 log files -->
+        <maxHistory>200</maxHistory>
+      </rollingPolicy>
+    <encoder>
+      <pattern>%date - [%level] - from %logger in %thread %n%message%n%xException%n</pattern>
+    </encoder>
+  </appender>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -17,10 +23,17 @@
   </appender>
 
   <logger name="play" level="INFO" />
-  <logger name="application" level="INFO" />
-  <logger name="org.sagebionetworks.dashboard" level="INFO" />
-  <logger name="org.springframework" level="INFO" />
-  <logger name="org.openid4java" level="INFO" />
+  <logger name="application" level="DEBUG" />
+
+  <logger name="org.sagebionetworks.dashboard" level="INFO" additivity="false">
+    <appender-ref ref="FILE" />
+  </logger>
+  <logger name="org.springframework" level="INFO" additivity="false">
+    <appender-ref ref="FILE" />
+  </logger>
+  <logger name="org.openid4java" level="INFO" additivity="false">
+    <appender-ref ref="FILE" />
+  </logger>
 
   <root level="ERROR">
     <appender-ref ref="STDOUT" />
