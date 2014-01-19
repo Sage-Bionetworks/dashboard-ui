@@ -39,7 +39,6 @@ object Charts extends Controller with Security {
 
     val dataPoints = chartType match {
       case "bar" => metricReader.getUniqueCount(metricName, from, to)
-      case "bar2" => metricReader.getCount(metricName, from, to)
       case "hbar" => {
         val data = metricReader.getTop(metricName, from, 25)
         var i = 0

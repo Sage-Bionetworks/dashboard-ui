@@ -102,15 +102,6 @@ object Metric {
         0,
         List.empty),
 
-      MetricId("bar2", "errorCount") -> Metric(
-        "Counts of Errors",
-        "Daily counts of errors.",
-        Aggregation.day,
-        Statistic.n,
-        7,
-        0,
-        List.empty),
-
       MetricId("line", "postEntityHeader") -> Metric(
         "POST Entity Header Latencies",
         "Latency in milliseconds for the POST entity header REST API.",
