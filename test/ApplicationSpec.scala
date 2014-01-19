@@ -21,9 +21,7 @@ class ApplicationSpec extends Specification {
 
     "render the metric list page" in new WithApplication{
       val metrics = route(FakeRequest(GET, "/metrics")).get
-      status(metrics) must equalTo(OK)
-      contentAsString(metrics) must contain ("Top")
-      contentAsString(metrics) must contain ("Latencies")
+      status(metrics) must equalTo(SEE_OTHER)
     }
   }
 }
