@@ -3,7 +3,7 @@ package models
 import org.joda.time.DateTime
 import org.sagebionetworks.dashboard.model.{Aggregation, Statistic}
 import org.sagebionetworks.dashboard.service.{CountDataPointConverter, EntityIdToName, UserIdToName}
-import context.AppContext
+import context.SpringContext
 
 /**
  * @param fullName     The descriptive name of the metric
@@ -25,8 +25,8 @@ case class Metric(
 
 object Metric {
 
-  private val entityIdToName = AppContext.getBean(classOf[EntityIdToName])
-  private val userIdToName = AppContext.getBean(classOf[UserIdToName])
+  private val entityIdToName = SpringContext.getBean(classOf[EntityIdToName])
+  private val userIdToName = SpringContext.getBean(classOf[UserIdToName])
 
   val metrics = collection.immutable.ListMap(
 
@@ -101,18 +101,6 @@ object Metric {
         0,
         0,
         List.empty),
-//
-// 1) A bug with this metric that the counts are always zero
-// 2) Also needs a better chart/page to view the error counts (and even the errors)
-//
-//      MetricId("bar", "errorCount") -> Metric(
-//        "Counts of Errors",
-//        "Daily counts of errors.",
-//        Aggregation.day,
-//        Statistic.n,
-//        7,
-//        0,
-//        List.empty),
 
       MetricId("line", "postEntityHeader") -> Metric(
         "POST Entity Header Latencies",
