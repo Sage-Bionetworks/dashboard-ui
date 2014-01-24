@@ -2,10 +2,10 @@ package controllers
 
 import scala.collection.JavaConversions.asScalaBuffer
 import org.joda.time.DateTime
+import play.api.mvc.{Action, Controller}
 import org.sagebionetworks.dashboard.model.{Aggregation, Statistic}
 import org.sagebionetworks.dashboard.service.MetricReader
 import models.{DataSeries, Metric, MetricId}
-import play.api.mvc.{Action, Controller}
 import context.SpringContext
 
 object Charts extends Controller with Security {

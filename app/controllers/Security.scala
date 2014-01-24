@@ -1,16 +1,16 @@
 package controllers
 
-import scala.collection.JavaConversions.mapAsJavaMap
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.duration.Duration
-import scala.concurrent.duration.HOURS
 import org.openid4java.consumer.ConsumerManager
 import org.openid4java.message.AuthSuccess
 import org.openid4java.message.ParameterList
 import org.openid4java.message.ax.AxMessage
 import org.openid4java.message.ax.FetchRequest
 import org.openid4java.message.ax.FetchResponse
+import scala.collection.JavaConversions.mapAsJavaMap
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.HOURS
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.mvc.ActionBuilder
