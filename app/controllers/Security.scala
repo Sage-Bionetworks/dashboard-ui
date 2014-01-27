@@ -118,7 +118,7 @@ trait Security {
      * Authorizes based on Synapse user info.
      */
     def isAuthorized(email: String) = {
-      securityService.isDashboardUser(email)
+      email != null && email.toLowerCase().endsWith("sagebase.org");
     }
 
     def scheme[A](request: Request[A]) = {
