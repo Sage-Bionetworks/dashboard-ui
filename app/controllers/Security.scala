@@ -18,8 +18,6 @@ import play.api.mvc.Request
 import play.api.mvc.Results.Redirect
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc.SimpleResult
-import org.sagebionetworks.dashboard.service.SecurityService
-import context.SpringContext
 
 trait Security {
 
@@ -34,8 +32,6 @@ trait Security {
 
     private val tokenKey = "token"
     private val tokenExpire = 3 // Expire after 3 hours on the server side
-
-    private val securityService = SpringContext.getBean(classOf[SecurityService])
 
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       request.session.get(tokenKey).map { token =>
@@ -118,7 +114,7 @@ trait Security {
      * Authorizes based on Synapse user info.
      */
     def isAuthorized(email: String) = {
-      securityService.isDashboardUser(email)
+      email != null && email.toLowerCase().endsWith("sagebase.org");
     }
 
     def scheme[A](request: Request[A]) = {
