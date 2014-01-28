@@ -36,7 +36,7 @@ trait Security {
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       request.session.get(tokenKey).map { token =>
         Cache.get(token).map { t =>
-          // Session tokens match => continue with the request
+          // Session tokens match, continue with the request
           block(request).map { result =>
             // Save the session token in the response
             result.withSession(tokenKey -> token)
@@ -51,7 +51,7 @@ trait Security {
       }
     }
 
-    def login[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+    private def login[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       // Check if this is OpenID callback
       request.queryString.get(GoogleOpenId.CallbackQueryParameter) match {
         case Some(p) => openIdCallback(request, block)
@@ -62,7 +62,7 @@ trait Security {
     /**
      * Verifies the OpenID login and reads the user email address.
      */
-    def openIdCallback[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+    private def openIdCallback[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       val receivingURL = scheme(request) + "://" + request.host + request.uri
       val parameterMap = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
       val verification = GoogleOpenId.Manager.verify(
@@ -98,7 +98,7 @@ trait Security {
     /**
      * Logs in the user using Google OpenID 2.0.
      */
-    def openIdLogin[A](request: Request[A]) = {
+    private def openIdLogin[A](request: Request[A]) = {
       val returnToUrl = scheme(request) + "://" + request.host + request.uri
       val authReq = GoogleOpenId.Manager.authenticate(GoogleOpenId.Discovered, returnToUrl)
       val fetchReq = FetchRequest.createFetchRequest
@@ -113,11 +113,11 @@ trait Security {
     /**
      * Authorizes based on Synapse user info.
      */
-    def isAuthorized(email: String) = {
+    private def isAuthorized(email: String) = {
       email != null && email.toLowerCase().endsWith("sagebase.org");
     }
 
-    def scheme[A](request: Request[A]) = {
+    private def scheme[A](request: Request[A]) = {
       // $X-Scheme is set by the nginx reverse proxy
       request.headers.get("X-Scheme") match {
         case Some(scheme) => scheme
