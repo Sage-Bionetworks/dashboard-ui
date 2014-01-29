@@ -58,6 +58,6 @@ To launch a local instance that reads the production S3 bucket for real metric d
 3. Log locations
     1. Access logs: /var/log/nginx/access.log
     2. Application logs: [/path/to/app]/logs/application.log
-4. The AMIs, security groups, with "single" in the names, are for running a single dashboard instance where the Redis cache, the web app,
-the reverse proxy all co-exist on a single host. But dashboard can easily configured to run on multiple hosts in a distributed manner.
-
+4. The AMIs, the security groups, with "single" in the names, are for running a single dashboard instance where the Redis cache,
+the web app, the reverse proxy all co-exist on a single host. But dashboard can be easily configured to run on multiple hosts
+in a distributed setup.
