@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.HOURS
+import play.api.Logger
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.mvc.ActionBuilder
@@ -36,17 +37,17 @@ trait Security {
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
       request.session.get(tokenKey).map { token =>
         Cache.get(token).map { t =>
-          // Session tokens match, continue with the request
+          Logger.info("Session tokens match, continue with the request.")
           block(request).map { result =>
             // Save the session token in the response
             result.withSession(tokenKey -> token)
           }
         } getOrElse {
-          // Missing session on the server side
+          Logger.info("Missing session on the server side, log in.")
           login(request, block)
         }
       } getOrElse {
-        // Missing session in the request
+        Logger.info("Missing session in the request, log in.")
         login(request, block)
       }
     }
@@ -71,7 +72,7 @@ trait Security {
           GoogleOpenId.Discovered)
       val verifiedId = verification.getVerifiedId()
       if (verifiedId == null) {
-        // Invalid callback
+        // Invalid callback, log in again
         openIdLogin(request)
       } else {
         val authSuccess = verification.getAuthResponse().asInstanceOf[AuthSuccess]
@@ -99,7 +100,13 @@ trait Security {
      * Logs in the user using Google OpenID 2.0.
      */
     private def openIdLogin[A](request: Request[A]) = {
-      val returnToUrl = scheme(request) + "://" + request.host + request.uri
+      // Skip the query parameters if they are polluted with 'openid' parameters
+      val skipQueryStr = request.queryString.filterKeys(key => key.startsWith("openid")).size > 0
+      val uri = skipQueryStr match {
+        case true => "/"
+        case false => request.uri
+      }
+      val returnToUrl = scheme(request) + "://" + request.host + uri
       val authReq = GoogleOpenId.Manager.authenticate(GoogleOpenId.Discovered, returnToUrl)
       val fetchReq = FetchRequest.createFetchRequest
       fetchReq.addAttribute(
