@@ -1,89 +1,104 @@
-function lineChart(data, width, height) {
+var charts = {};
 
-    var timeSeries = getTimeSeries(data);
+// ==============================================
+// Appends a new SVG.
+// ==============================================
+charts.svg = function(width, height, margin) {
+  var svg = d3.select('#chart')
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+  return svg;
+};
 
-    // Conventional margins
-    var margin = {top: 20, right: 80, bottom: 30, left: 50},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+// ==============================================
+// Renders a multi-line chart.
+// ==============================================
+charts.line = function(data, width, height, margin) {
 
-    // Set up the x-axis
-    var xScale = d3.time.scale()
-        .range([0, width])
-        .domain([timeSeries.xMin, timeSeries.xMax]);
+  var svg = charts.svg(width, height, margin);
 
-    var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+  // Empty data
+  if (data.xSeries.length === 0) {
+    svg.append('text')
+      .attr("y", margin.top)
+      .text("[Empty data set. Please select a different time range.]");
+    return svg;
+  }
 
-    // Set up the y-axis
-    var yScale = d3.scale.linear()
-        .range([height, 0])
-        .domain([timeSeries.yMin, timeSeries.yMax]);
+  // Compute chart width and height
+  var width = width - margin.left - margin.right
+    , height = height - margin.top - margin.bottom
+    ;
 
-    var yAxis = d3.svg.axis().scale(yScale).orient("left");
+  // The x-axis
+  var xScale = d3.time.scale()
+    .range([0, width])
+    .domain([data.xMin, data.xMax]);
 
-    // Set up line
-    var line = d3.svg.line()
-        .interpolate("linear")
-        .x(function(d) { return xScale(d.x); })
-        .y(function(d) { return yScale(d.y); });
+  var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-    // Set up color
-    var color = d3.scale.category10().domain(timeSeries.headers);
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
 
-    // Render SVG
-    var svg = d3.select("#chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  // The y-axis
+  var yScale = d3.scale.linear()
+    .range([height, 0])
+    .domain([data.yMin, data.yMax]);
 
-    // Render the x-axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+  var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-    // Render the y-axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text(timeSeries.yLabel);
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
 
-    // Attach tick clicks
-    svg.selectAll(".y.axis g text").forEach(function(tickText) {
-        console.debug(tickText);
-    });
+  svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 10)
+    .attr("dy", 10)
+    .style("text-anchor", "end")
+    .text(data.yLabel);
 
-    // Render the lines
-    var dataSeries = svg.selectAll(".timeSeries")
-        .data(timeSeries.ySeries)
-        .enter().append("g")
-        .attr("class", "timeSeries");
+  svg.selectAll(".y.axis g text").forEach(function(tickText) {
+    console.debug(tickText);
+  });
 
-    dataSeries.append("path")
-        .attr("class", "line")
-        .attr("d", function(d) { return line(d.values); })
-        .style("stroke", function(d) { return color(d.header); });
+  // The lines
+  var line = d3.svg.line()
+    .interpolate("linear")
+    .x(function(d) { return xScale(d.x); })
+    .y(function(d) { return yScale(d.y); });
 
-    // Render the labels
-    dataSeries.append("text")
-        .datum(function(oneSeries) {
-            return {
-                header: oneSeries.header,
-                lastVal: oneSeries.values[oneSeries.values.length - 1]
-            }; })
-        .attr("transform", function(d) {
-            return "translate(" + xScale(d.lastVal.x) + "," + yScale(d.lastVal.y) + ")";
-            })
-        .attr("x", 3)
-        .attr("dy", ".35em")
-        .text(function(d) { return d.header; });
-}
+  var color = d3.scale.category10().domain(data.headers);
+
+  var lines = svg.selectAll(".lines")
+    .data(data.ySeries)
+    .enter().append("g")
+    .attr("class", "lines");
+
+  lines.append("path")
+    .attr("class", "line")
+    .attr("d", function(d) { return line(d.values); })
+    .style("stroke", function(d) { return color(d.header); });
+
+  lines.append("text")
+    .datum(function(oneSeries) {
+      return {
+        header: oneSeries.header,
+        lastVal: oneSeries.values[oneSeries.values.length - 1]}; })
+    .attr("transform", function(d) {
+        return "translate(" + xScale(d.lastVal.x) + ","
+          + yScale(d.lastVal.y) + ")"; })
+    .attr("x", 5)
+    .attr("dy", 10)
+    .text(function(d) { return d.header; });
+
+  return svg;
+};
 
 function barChart(data, width, height) {
 

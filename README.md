@@ -36,8 +36,8 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 1. Generate a distribution package. Launch the Play console and run the "dist" command.
 2. Launch a m1.small EC2 instance.
-    1. Choose the latest dashboard AMI ("dashboard-single-instance-20131220")
-    2. Tag it with a good name (e.g. "dashboard-20140110")
+    1. Choose the latest dashboard AMI (e.g "dashboard-single-20140118")
+    2. Tag it with a good name (e.g. "dashboard-20140127")
     3. Choose the security group "dashboard"
 3. Once the instance is active, upload the distribution package to the instance.
 
@@ -45,18 +45,17 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 4. Go to the EC2 instance, unpack the package, and launch the dashboard app.
 
-        $ dashboard-ui-1.0-SNAPSHOT/bin/dashboard-ui -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret>
-        -DsynapseUsr=dashboard@sagebase.org -DsynapsePwd=<synapse-password> -Dprod=true -Dhttp.port=9001
+        $ dashboard-ui-1.0-20140127/bin/dashboard-ui -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret>
+        -DsynapseUsr=dashboard@sagebase.org -DsynapsePwd=<synapse-password> -Dprod=true -Dhttp.port=9001 2> /dev/null &
 
-5. Send the process to run in the background.
-
-        $ <ctrl-z>
-        $ bg
-
-6. After maybe 3 hours, cross-validate with the current dashboard.
-7. Once validated, swap CNAMEs at Route53.
+5. After maybe 3 hours, cross-validate with the current dashboard.
+6. Once validated, add the instance to the dashboard load balancer.
 
 ### AWS Notes
 
-[Nginx reverse proxy set up behind a elastic load balancer and in front of a Play web app.](https://gist.github.com/eric-wu/8483112)
+1. [Dashboard AMI creation](https://gist.github.com/eric-wu/8658696)
+2. [Nginx reverse proxy setup](https://gist.github.com/eric-wu/8483112) behind a elastic load balancer and in front of a Play web app.
+3. Log locations
+    1. Access logs: /var/log/nginx/access.log
+    2. Application logs: /path/to/app/logs/application.log
 
