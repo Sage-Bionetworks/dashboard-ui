@@ -139,7 +139,9 @@ var dashboard = function($, metric) {
         hbarChart(data, configMap.width, configMap.height);
         break;
       case 'line':
-        lineChart(data, configMap.width, configMap.height);
+        data = getTimeSeries(data);
+        var margin = {top: 20, right: 80, bottom: 30, left: 50};
+        charts.line(data, configMap.width, configMap.height, margin);
         break;
     }
   };
