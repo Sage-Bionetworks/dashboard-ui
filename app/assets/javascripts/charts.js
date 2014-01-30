@@ -229,7 +229,8 @@ function hbarChart(data, width, height) {
 
     var xAxis = d3.svg.axis()
         .scale(xScale)
-        .orient("top");
+        .orient("top")
+        .ticks(5, 'd'); // TODO: Make this a function parameter
 
     var yScale0 = d3.scale.ordinal()
         .domain(dataSeries.xSeries)
