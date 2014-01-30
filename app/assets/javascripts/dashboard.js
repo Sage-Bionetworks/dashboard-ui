@@ -133,7 +133,9 @@ var dashboard = function($, metric) {
   var bindData = function(type, data) {
     switch(type) {
       case 'bar':
-        barChart(data, configMap.width, configMap.height);
+        data = getSeries(data);
+        var margin = {top: 20, right: 60, bottom: 20, left: 60};
+        charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'hbar':
         hbarChart(data, configMap.width, configMap.height);

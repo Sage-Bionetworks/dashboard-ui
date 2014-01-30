@@ -75,10 +75,10 @@ charts.line = function(data, width, height, margin) {
 
   var color = d3.scale.category10().domain(data.headers);
 
-  var lines = svg.selectAll(".lines")
+  var lines = svg.selectAll(".plot")
     .data(data.ySeries)
     .enter().append("g")
-    .attr("class", "lines");
+    .attr("class", "plot");
 
   lines.append("path")
     .attr("class", "line")
@@ -100,74 +100,80 @@ charts.line = function(data, width, height, margin) {
   return svg;
 };
 
-function barChart(data, width, height) {
+// ==============================================
+// Renders a grouped bar chart.
+// ==============================================
+charts.bar = function(data, width, height, margin) {
 
-    var dateFormat = d3.time.format("%m/%d");
-    var xSeries = data.values.forEach(function(row) {
-        row[0] = dateFormat(new Date(Number(row[0])));
-    });
-    var dataSeries = getSeries(data);
+  var svg = charts.svg(width, height, margin);
 
-    var margin = {top: 20, right: 60, bottom: 20, left: 60},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+  // Empty data set
+  if (data.xSeries.length === 0) {
+    svg.append('text')
+      .attr("y", margin.top)
+      .text("[Empty data set. Please select a different time range.]");
+    return svg;
+  }
 
-    var x0 = d3.scale.ordinal()
-        .domain(dataSeries.xSeries)
-        .rangeRoundBands([0, width], 0.2);
+  // Compute chart width and height
+  var width = width - margin.left - margin.right
+    , height = height - margin.top - margin.bottom
+    ;
 
-    var x1 = d3.scale.ordinal()
-        .domain(dataSeries.headers)
-        .rangeRoundBands([0, x0.rangeBand()]);
+  // The x-axis
+  var x0 = d3.scale.ordinal()
+    .domain(data.xSeries)
+    .rangeRoundBands([0, width], 0.2);
 
-    var xAxis = d3.svg.axis()
-        .scale(x0)
-        .orient("bottom");
+  var xAxis = d3.svg.axis()
+    .scale(x0)
+    .orient("bottom");
 
-    var y = d3.scale.linear()
-        .domain([0, dataSeries.yMax * 1.5])
-        .range([height, 0]);
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
 
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left")
-        .tickFormat(d3.format(".2s"));
+  // The y-axis
+  var y = d3.scale.linear()
+    .domain([0, data.yMax * 1.5])
+    .range([height, 0]);
 
-    var color = d3.scale.category10()
-        .domain(dataSeries.headers.concat("__hover__"));
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format(".2s"));
 
-    var svg = d3.select("#chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+  // The plot
+  var color = d3.scale.category10()
+    .domain(data.headers.concat("__hover__"));
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+  // TODO: Move this to models and the controller
+  var xGroups = groupByX(data);
 
-    var xGroups = groupByX(dataSeries);
+  var xGroup = svg.selectAll(".plot")
+    .data(xGroups)
+    .enter().append("g")
+    .attr("class", "plot")
+    .attr("transform", function(d) { return "translate(" + x0(d.x) + ",0)"; });
 
-    var xGroup = svg.selectAll(".group")
-        .data(xGroups)
-        .enter().append("g")
-        .attr("class", "group")
-        .attr("transform", function(d) { return "translate(" + x0(d.x) + ",0)"; });
+  var x1 = d3.scale.ordinal()
+    .domain(data.headers)
+    .rangeRoundBands([0, x0.rangeBand()]);
 
-    xGroup.selectAll("rect")
-        .data(function(group) { return group.values; })
-        .enter().append("rect")
-        .attr("width", x1.rangeBand())
-        .attr("x", function(d) { return x1(d.header); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("height", function(d) { return height - y(d.y); })
-        .style("fill", function(d) { return color(d.header); })
-        .on("mouseover", function(d) {
+  xGroup.selectAll("rect")
+    .data(function(group) { return group.values; })
+    .enter().append("rect")
+    .attr("width", x1.rangeBand())
+    .attr("x", function(d) { return x1(d.header); })
+    .attr("y", function(d) { return y(d.y); })
+    .attr("height", function(d) { return height - y(d.y); })
+    .style("fill", function(d) { return color(d.header); })
+    .on("mouseover", function(d) {
             d3.select(this).style("fill", color("__hover__"));
             svg.append("text")
                 .text(d.y)
@@ -178,12 +184,12 @@ function barChart(data, width, height) {
                 // So "x0(d.x)" is used here as a temporary hack.
                 .attr("x", x0(d.x) + x1.rangeBand() / 2)
                 .attr("y", y(d.y) - 10)
-                .attr("fill", "black");
-         })
-        .on("mouseout", function(d) {
+                .attr("fill", "black");} )
+    .on("mouseout", function(d) {
             d3.select(this).style("fill", color(d.header));
-            svg.select("#hovertext").remove();
-         });
+            svg.select("#hovertext").remove();} );
+  
+  return svg;
 
 /*
  * Disable legend for now
@@ -207,7 +213,7 @@ function barChart(data, width, height) {
         .style("text-anchor", "end")
         .text(function(d) { return d; });
 */
-}
+};
 
 function hbarChart(data, width, height) {
 
