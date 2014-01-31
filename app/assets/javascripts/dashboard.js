@@ -138,11 +138,13 @@ var dashboard = function($, metric) {
         charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'hbar':
-        hbarChart(data, configMap.width, configMap.height);
+        data = getSeries(data);
+        var margin = {top: 60, right: 100, bottom: 20, left: 320};
+        charts.hbar(data, configMap.width, configMap.height, margin);
         break;
       case 'line':
         data = getTimeSeries(data);
-        var margin = {top: 20, right: 80, bottom: 30, left: 50};
+        var margin = {top: 20, right: 80, bottom: 20, left: 60};
         charts.line(data, configMap.width, configMap.height, margin);
         break;
     }

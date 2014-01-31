@@ -215,102 +215,108 @@ charts.bar = function(data, width, height, margin) {
 */
 };
 
-function hbarChart(data, width, height) {
+// ==============================================
+// Renders a grouped horizontal bar chart.
+// ==============================================
+charts.hbar = function(data, width, height, margin) {
 
-    var dataSeries = getSeries(data);
+  var svg = charts.svg(width, height, margin);
 
-    var margin = {top: 60, right: 100, bottom: 20, left: 320},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+  // Empty data set
+  if (data.xSeries.length === 0) {
+    svg.append('text')
+      .attr("y", margin.top)
+      .text("[Empty data set. Please select a different time range.]");
+    return svg;
+  }
 
-    var xScale = d3.scale.log()
-        .domain([1, dataSeries.yMax])
-        .range([0, width]);
+  var width = width - margin.left - margin.right
+    , height = height - margin.top - margin.bottom;
 
-    var xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("top")
-        .ticks(5, 'd'); // TODO: Make this a function parameter
+  // The x-axis
+  var xScale = d3.scale.log()
+    .domain([1, data.yMax])
+    .range([0, width]);
 
-    var yScale0 = d3.scale.ordinal()
-        .domain(dataSeries.xSeries)
-        .rangeRoundBands([0, height], 0.2);
+  var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("top")
+    .ticks(5, 'd'); // TODO: Make this a function parameter
 
-    var yScale1 = d3.scale.ordinal()
-        .domain(dataSeries.headers)
-        .rangeRoundBands([0, yScale0.rangeBand()]);
+  svg.append("g")
+      .attr("class", "x axis")
+      .call(xAxis);
 
-    var color = d3.scale.category10()
-        .domain(dataSeries.headers);
+  // The y scales
+  var yScale0 = d3.scale.ordinal()
+    .domain(data.xSeries)
+    .rangeRoundBands([0, height], 0.2);
 
-    var svg = d3.select("#chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var yScale1 = d3.scale.ordinal()
+    .domain(data.headers)
+    .rangeRoundBands([0, yScale0.rangeBand()]);
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .call(xAxis);
+  // The plot
+  var color = d3.scale.category10()
+    .domain(data.headers);
 
-    var groups = groupByX(dataSeries);
+  // TODO: Move this to models and controllers
+  var groups = groupByX(data);
 
-    var yGroup = svg.selectAll(".group")
-        .data(groups)
-        .enter().append("g")
-        .attr("class", "group")
-        .attr("transform", function(d) { return "translate(0," + yScale0(d.x) + ")"; });
+  var yGroup = svg.selectAll(".plot")
+    .data(groups)
+    .enter().append("g")
+    .attr("class", "plot")
+    .attr("transform", function(d) { return "translate(0," + yScale0(d.x) + ")"; });
 
-    yGroup.selectAll("rect")
-        .data(function(group) { return group.values; })
-        .enter().append("rect")
-        .attr("class", "rect")
-        .attr("x", function(d) { return xScale(1); })
-        .attr("y", function(d) { return yScale1(d.header); })
-        .attr("width", function(d) { return xScale(d.y); })
-        .attr("height", yScale1.rangeBand())
-        .style("fill", function(d) { return color(d.header); });
+  yGroup.selectAll("rect")
+    .data(function(group) { return group.values; })
+    .enter().append("rect")
+    .attr("class", "rect")
+    .attr("x", function(d) { return xScale(1); })
+    .attr("y", function(d) { return yScale1(d.header); })
+    .attr("width", function(d) { return xScale(d.y); })
+    .attr("height", yScale1.rangeBand())
+    .style("fill", function(d) { return color(d.header); });
 
-    yGroup.selectAll(".score")
-        .data(function(group) { return group.values; })
-        .enter().append("text")
-        .attr("x", function(d) { return xScale(d.y); })
-        .attr("y", function(d) { return yScale1(d.header) + yScale1.rangeBand() / 2; })
-        .attr("dx", 10)
-        .attr("dy", ".36em")
-        .attr("text-anchor", "start")
-        .attr("class", "score")
-        .text(function(d) { return d.y; });
+  yGroup.selectAll(".score")
+    .data(function(group) { return group.values; })
+    .enter().append("text")
+    .attr("x", function(d) { return xScale(d.y); })
+    .attr("y", function(d) { return yScale1(d.header) + yScale1.rangeBand() / 2; })
+    .attr("dx", 10)
+    .attr("dy", ".36em")
+    .attr("text-anchor", "start")
+    .attr("class", "score")
+    .text(function(d) { return d.y; });
 
-    svg.selectAll(".label")
-        .data(groups)
-        .enter().append("text")
-        .attr("x", -10)
-        .attr("y", function(group) { return yScale0(group.x) + yScale0.rangeBand() / 2; } )
-        .attr("dy", ".36em")
-        .attr("text-anchor", "end")
-        .attr("class", "barLabel")
-        .text(function(group) {
-            var txt = group.x;
-            if (txt.length > 39) {
-              txt = txt.substring(0, 36);
-              txt = txt + "...";
-            }
-            return txt;
-        })
-        .on("mouseover", function(d) {
-            if (d.x.length > 39) {
-                svg.append("text")
-                    .text(d.x)
-                    .attr("id", "hovertext")
-                    .attr("text-anchor", "start")
-                    .attr("x", 10)
-                    .attr("y", yScale0(d.x) + yScale0.rangeBand() / 2)
-                    .attr("dy", ".36em")
-                    .attr("fill", "orange");
-            }
-        })
-        .on("mouseout", function(d) {
-            svg.select("#hovertext").remove();
-        });
+  svg.selectAll(".label")
+    .data(groups)
+    .enter().append("text")
+    .attr("x", -10)
+    .attr("y", function(group) {
+      return yScale0(group.x) + yScale0.rangeBand() / 2; })
+    .attr("dy", ".36em")
+    .attr("text-anchor", "end")
+    .attr("class", "barLabel")
+    .text(function(group) {
+      var txt = group.x;
+      // TODO: Replace the magic numbers. Hook them up instead to width or margin
+      if (txt.length > 39) {
+        txt = txt.substring(0, 36);
+        txt = txt + "...";
+      }
+      return txt; })
+    .on("mouseover", function(d) {
+      if (d.x.length > 39) {
+        svg.append("text")
+          .text(d.x)
+          .attr("id", "hovertext")
+          .attr("text-anchor", "start")
+          .attr("x", 10)
+          .attr("y", yScale0(d.x) + yScale0.rangeBand() / 2)
+          .attr("dy", ".36em")
+          .attr("fill", "orange");
+      }})
+    .on("mouseout", function(d) { svg.select("#hovertext").remove(); });
 }
