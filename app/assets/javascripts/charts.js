@@ -129,6 +129,13 @@ charts.bar = function(data, width, height, margin) {
     .scale(x0)
     .orient("bottom");
 
+  // At maximum, display 15 ticks
+  if (data.xSeries.length > 7) {
+    var step = Math.floor(data.xSeries.length / 7);
+    var tickValues = data.xSeries.filter(function(value, i) { return (i % step) === 0; });
+    xAxis.tickValues(tickValues);
+  }
+
   svg.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
@@ -225,7 +232,7 @@ charts.hbar = function(data, width, height, margin) {
   // Empty data set
   if (data.xSeries.length === 0) {
     svg.append('text')
-      .attr("y", margin.top)
+      .attr("y", 0)
       .text("[Empty data set. Please select a different time range.]");
     return svg;
   }

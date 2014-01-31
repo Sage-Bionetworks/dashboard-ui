@@ -133,6 +133,11 @@ var dashboard = function($, metric) {
   var bindData = function(type, data) {
     switch(type) {
       case 'bar':
+        // TODO: A formatting hack. Time series should use line chart instead.
+        var dateFormat = d3.time.format("%m/%d");
+        data.values.forEach(function(row) {
+            row[0] = dateFormat(new Date(Number(row[0])));
+        });
         data = getSeries(data);
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
         charts.bar(data, configMap.width, configMap.height, margin);
