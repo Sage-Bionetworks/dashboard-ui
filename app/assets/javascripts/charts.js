@@ -4,6 +4,7 @@ var charts = {};
 // Appends a new SVG.
 // ==============================================
 charts.svg = function(width, height, margin) {
+  d3.select("#chart svg").remove();
   var svg = d3.select('#chart')
       .append('svg')
       .attr('width', width)

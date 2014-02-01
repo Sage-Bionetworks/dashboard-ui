@@ -1,161 +1,19 @@
-// dashboard module
-var dashboard = function($, metric) {
+var dashboard = (function($) {
 
-  var configMap = {
-    width: 900,
-    height: 550
-  };
+  ////// Variables
 
-  // jQuery-UI set up
-  $(function() {
+  var createQuery, bindData, makeChart, init,
+      dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
+      prevDayOnClick, nextDayOnClick, thisMetric,
+      configMap = {
+        width: 900,
+        height: 550
+      };
 
-    $('#dtFrom').datepicker({
-      defaultDate: '-1w',
-      minDate: '-6M',
-      maxDate: '+0D'
-    });
-    var dtStart = new Date(Number(metric.start));
-    $('#dtFrom').datepicker('setDate', dtStart);
+  ////// Private Functions
 
-    $('#dtTo').datepicker({
-      defaultDate: '-1D',
-      minDate: '-6M',
-      maxDate: '+0D'
-    });
-    var dtEnd = new Date(Number(metric.end));
-    $('#dtTo').datepicker('setDate', dtEnd);
-
-    $('#stats').buttonset();
-    $('#stats #' + metric.stat).attr('checked', 'checked');
-    $('#stats').buttonset('refresh');
-
-    $('#intvls').buttonset();
-    $('#intvls #' + metric.interval).attr('checked', 'checked');
-    $('#intvls').buttonset('refresh');
-
-    $('.button').button();
-  });
-
-  // Statistic button events
-  $('#stats #avg').click(function() {
-    metric.stat = 'avg';
-    updateChart(metric);
-  });
-  $('#stats #max').click(function() {
-    metric.stat = 'max';
-    updateChart(metric);
-  });
-  $('#stats #n').click(function() {
-    metric.stat = 'n';
-    updateChart(metric);
-  });
-
-  // Interval button events
-  $('#intvls #day').click(function() {
-    metric.interval = 'day';
-    updateChart(metric);
-  });
-  $('#intvls #hour').click(function() {
-    metric.interval = 'hour';
-    updateChart(metric);
-  });
-  $('#intvls #m3').click(function() {
-    metric.interval = 'm3';
-    updateChart(metric);
-  });
-
-  // Calendar events
-  $('#dtFrom').datepicker({
-    onClose: function(selectedDate) {
-      $('#dtTo').datepicker('option', 'minDate', selectedDate);
-      var from = Date.parse(selectedDate);
-      metric.start = String(from);
-      updateChart(metric);
-    }
-  });
-  $('#dtTo').datepicker({
-    onClose: function(selectedDate) {
-      $('#dtFrom').datepicker('option', 'maxDate', selectedDate);
-      var to = Date.parse(selectedDate);
-      metric.end = String(to);
-      updateChart(metric);
-    }
-  });
-
-  // Date range buttons events
-  $('#prev').click(function() {
-    var start = Number(metric.start);
-    var end = Number(metric.end);
-    var diff = end - start;
-    end = start;
-    start = start - diff;
-    metric.start = String(start);
-    metric.end = String(end);
-    var dtStart = new Date(start);
-    var dtEnd = new Date(end);
-    $('#dtFrom').datepicker('setDate', dtStart);
-    $('#dtTo').datepicker('setDate', dtEnd);
-    updateChart(metric);
-  });
-  $('#next').click(function() {
-    var start = Number(metric.start);
-    var end = Number(metric.end);
-    var diff = end - start;
-    start = end;
-    end = end + diff;
-    metric.start = String(start);
-    metric.end = String(end);
-    var dtStart = new Date(start);
-    var dtEnd = new Date(end);
-    $('#dtFrom').datepicker('setDate', dtStart);
-    $('#dtTo').datepicker('setDate', dtEnd);
-    updateChart(metric);
-  });
-  $('#prevDay').click(function() {
-    var start = Number(metric.start);
-    start = start - 86400000;
-    metric.start = String(start);
-    metric.end = String(start);
-    var dtStart = new Date(start);
-    $('#dtFrom').datepicker('setDate', dtStart);
-    updateChart(metric);
-  });
-  $('#nextDay').click(function() {
-    var start = Number(metric.start);
-    start = start + 86400000;
-    metric.start = String(start);
-    metric.end = String(start);
-    var dtStart = new Date(start);
-    $('#dtFrom').datepicker('setDate', dtStart);
-    updateChart(metric);
-  });
-
-  var bindData = function(type, data) {
-    switch(type) {
-      case 'bar':
-        // TODO: A formatting hack. Time series should use line chart instead.
-        var dateFormat = d3.time.format("%m/%d");
-        data.values.forEach(function(row) {
-            row[0] = dateFormat(new Date(Number(row[0])));
-        });
-        data = getSeries(data);
-        var margin = {top: 20, right: 60, bottom: 20, left: 60};
-        charts.bar(data, configMap.width, configMap.height, margin);
-        break;
-      case 'hbar':
-        data = getSeries(data);
-        var margin = {top: 60, right: 100, bottom: 20, left: 320};
-        charts.hbar(data, configMap.width, configMap.height, margin);
-        break;
-      case 'line':
-        data = getTimeSeries(data);
-        var margin = {top: 20, right: 80, bottom: 20, left: 60};
-        charts.line(data, configMap.width, configMap.height, margin);
-        break;
-    }
-  };
-
-  var query = function(metric) {
+  // Creates a data query from the specified metric
+  createQuery = function(metric) {
     var q = 'data?type=' + metric.type + '&metric=' + metric.id;
     if ('stat' in metric) {
       q = q + '&stat=' + metric.stat;
@@ -172,17 +30,182 @@ var dashboard = function($, metric) {
     return q;
   };
 
-  var makeChart = function(metric) {
-    // D3 XHR
-    var q = query(metric);
+  // Binds data to chart
+  bindData = function(chartType, data) {
+    switch(chartType) {
+      case 'bar':
+        // TODO: Pass in margin as a parameter. Define margin as part of a metric.
+        var margin = {top: 20, right: 60, bottom: 20, left: 60},
+            dateFormat = d3.time.format("%m/%d");
+        // TODO: Formatting hack. Time series should not use bar chart.
+        data.values.forEach(function(row) {
+            row[0] = dateFormat(new Date(Number(row[0])));
+        });
+        data = getSeries(data);
+        charts.bar(data, configMap.width, configMap.height, margin);
+        break;
+      case 'hbar':
+        var margin = {top: 60, right: 100, bottom: 20, left: 300};
+        data = getSeries(data);
+        charts.hbar(data, configMap.width, configMap.height, margin);
+        break;
+      case 'line':
+        var margin = {top: 20, right: 60, bottom: 20, left: 60};
+        data = getTimeSeries(data);
+        charts.line(data, configMap.width, configMap.height, margin);
+        break;
+    }
+  };
+
+  // Makes a new chart
+  makeChart = function(metric) {
+    var q = createQuery(metric);
     d3.json(q, function(error, d) {
       bindData(metric.type, d);
     });
   };
-  makeChart(metric);
 
-  var updateChart = function(metric) {
-    var svg = d3.select("#chart svg").remove();
-    makeChart(metric);
+  ////// Event Handlers
+
+  dtFromOnClose = function(date) {
+    var newStart = String(Date.parse(date));
+    if (thisMetric.start !== newStart) {
+      $('#dtTo').datepicker('option', 'minDate', date);
+      thisMetric.start = newStart;
+      makeChart(thisMetric);
+    }
   };
-}
+
+  dtToOnClose = function(date) {
+    var newEnd = String(Date.parse(date));
+    if (thisMetric.end !== newEnd) {
+      $('#dtFrom').datepicker('option', 'maxDate', date);
+      thisMetric.end = newEnd;
+      makeChart(thisMetric);
+    }
+  };
+
+  prevOnClick = function() {
+    var start, end, diff;
+    start = Number(thisMetric.start);
+    end = Number(thisMetric.end);
+    diff = end - start;
+    end = start;
+    start = start - diff;
+    thisMetric.start = String(start);
+    thisMetric.end = String(end);
+    $('#dtFrom').datepicker('setDate', new Date(start));
+    $('#dtTo').datepicker('option', 'minDate', new Date(start));
+    $('#dtTo').datepicker('setDate', new Date(end));
+    makeChart(thisMetric);
+  };
+
+  nextOnClick = function() {
+    var start, end, diff;
+    start = Number(thisMetric.start);
+    end = Number(thisMetric.end);
+    diff = end - start;
+    start = end;
+    end = end + diff;
+    thisMetric.start = String(start);
+    thisMetric.end = String(end);
+    $('#dtFrom').datepicker('option', 'maxDate', new Date(end));
+    $('#dtFrom').datepicker('setDate', new Date(start));
+    $('#dtTo').datepicker('setDate', new Date(end));
+    makeChart(thisMetric);
+  };
+
+  prevDayOnClick = function() {
+    var start = Number(thisMetric.start) - 86400000;
+    thisMetric.start = String(start);
+    thisMetric.end = String(start);
+    $('#dtFrom').datepicker('setDate', new Date(start));
+    makeChart(thisMetric);
+  };
+
+  nextDayOnClick = function() {
+    var start = Number(thisMetric.start) + 86400000;
+    thisMetric.start = String(start);
+    thisMetric.end = String(start);
+    $('#dtFrom').datepicker('setDate', new Date(start));
+    makeChart(thisMetric);
+  };
+
+  ////// Public Functions
+
+  // Initializes the dashboard JavaScript controller
+  init = function(metric) {
+
+    thisMetric = metric;
+
+    // Render the chart first
+    makeChart(metric);
+
+    // Set up jQueryUI
+    var dtStart = new Date(Number(metric.start)),
+        dtEnd = new Date(Number(metric.end));
+
+    $('#dtFrom').datepicker({
+      defaultDate: '-7D',
+      minDate: '-7M',
+      maxDate: '+0D',
+      onClose: dtFromOnClose
+    });
+    $('#dtFrom').datepicker('setDate', dtStart);
+
+    $('#dtTo').datepicker({
+      defaultDate: '+0D',
+      minDate: '-7M',
+      maxDate: '+0D',
+      onClose: dtToOnClose
+    });
+    $('#dtTo').datepicker('setDate', dtEnd);
+
+    $('#stats').buttonset();
+    $('#stats #' + metric.stat).attr('checked', 'checked');
+    $('#stats').buttonset('refresh');
+
+    $('#intvls').buttonset();
+    $('#intvls #' + metric.interval).attr('checked', 'checked');
+    $('#intvls').buttonset('refresh');
+
+    $('.button').button();
+
+    // Statistic button events
+    $('#stats #avg').click(function() {
+      metric.stat = 'avg';
+      makeChart(metric);
+    });
+    $('#stats #max').click(function() {
+      metric.stat = 'max';
+      makeChart(metric);
+    });
+    $('#stats #n').click(function() {
+      metric.stat = 'n';
+      makeChart(metric);
+    });
+
+    // Interval button events
+    $('#intvls #day').click(function() {
+      metric.interval = 'day';
+      makeChart(metric);
+    });
+    $('#intvls #hour').click(function() {
+      metric.interval = 'hour';
+      makeChart(metric);
+    });
+    $('#intvls #m3').click(function() {
+      metric.interval = 'm3';
+      makeChart(metric);
+    });
+
+    // Date range buttons events
+    $('#prev').click(prevOnClick);
+    $('#next').click(nextOnClick);
+    $('#prevDay').click(prevDayOnClick);
+    $('#nextDay').click(nextDayOnClick);
+  };
+
+  return {init: init};
+
+})(jQuery);
