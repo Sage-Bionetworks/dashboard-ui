@@ -38,15 +38,15 @@ Note that this could be used as potential hook-up point to a CI platform (e.g. J
 
 1. Run Play tests for the Scala code: 
 
-    $ play test
+        $ play test
 
 2. Run Mocha tests for JavaScript (must install node.js and mocha first):
 
-    $ mocha
+        $ mocha
 
 ### Deployment
 
-#### Cold Deployment
+#### Deploy from scratch
 
 1. Generate a distribution package. Launch the Play console and run the "dist" command.
 2. Launch a m1.small EC2 instance.
@@ -65,7 +65,7 @@ Note that this could be used as potential hook-up point to a CI platform (e.g. J
 5. After maybe 3 hours, cross-validate with the current dashboard.
 6. Once validated, swap the instance at the dashboard load balancer.
 
-#### Hot Deployment
+#### Hot deploy
 
 If the caching layer hasn't changed, can do a much quicker hot deployment.
 
