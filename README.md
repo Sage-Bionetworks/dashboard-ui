@@ -32,7 +32,21 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
     [dashboard-ui] $ run -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret-key> -Dprod=true
 
+### Test
+
+Note that this could be used as potential hook-up point to a CI platform (e.g. Jenkins).
+
+1. Run Play tests for the Scala code: 
+
+    $ play test
+
+2. Run Mocha tests for JavaScript (must install node.js and mocha first):
+
+    $ mocha
+
 ### Deployment
+
+#### Cold Deployment
 
 1. Generate a distribution package. Launch the Play console and run the "dist" command.
 2. Launch a m1.small EC2 instance.
@@ -50,6 +64,18 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 5. After maybe 3 hours, cross-validate with the current dashboard.
 6. Once validated, swap the instance at the dashboard load balancer.
+
+#### Hot Deployment
+
+If the caching layer hasn't changed, can do a much quicker hot deployment.
+
+1. Find the live dashboard instance.
+2. Create a distribution package and upload the package to the instance. Unzip it.
+3. Watch the logs.  Once there no updates to the cache, kill the dashboard process.
+4. Remove the PID file in the dashboard directory.
+5. Start a new dashboard process from the new package.
+6. Note, if we keep multiple instances behind the load balancer and maintain a separate caching layer,
+   this is essentially how we can achieve zero down-time by hot deploying one instance at a time.
 
 ### AWS Notes
 
