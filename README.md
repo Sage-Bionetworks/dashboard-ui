@@ -34,7 +34,7 @@ To launch a local instance that reads the production S3 bucket for real metric d
 
 ### Test
 
-Note that this could be used as potential hook-up point to a CI platform (e.g. Jenkins).
+Note that this could be hooked to git commit and/or a CI platform (e.g. Jenkins).
 
 1. Run Play tests for the Scala code: 
 
