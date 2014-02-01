@@ -92,24 +92,19 @@ to experience this site.</p><![endif]-->
 <script src='@routes.Assets.at("javascripts/charts.min.js")'></script>
 <script src='@routes.Assets.at("javascripts/dashboard.min.js")'></Script>
 <script>
-  var metricProto = {
-    type: '@chartType',
-    id: '@metricName'
-  };
-  var metric = Object.create(metricProto);
-  @if(!start.isEmpty) {
-    metric.start = '@start';
-  }
-  @if(!end.isEmpty) {
-    metric.end = '@end';
-  }
-  @if(!interval.isEmpty) {
-    metric.interval = '@interval';
-  }
-  @if(!stat.isEmpty) {
-    metric.stat = '@stat';
-  }
-  dashboard(jQuery, metric);
+  jQuery(function() {
+    var metricProto, metric;
+    metricProto = {
+      type: '@chartType',
+      id: '@metricName'
+    };
+    metric = Object.create(metricProto);
+    @if(!start.isEmpty) { metric.start = '@start'; }
+    @if(!end.isEmpty) { metric.end = '@end'; }
+    @if(!interval.isEmpty) { metric.interval = '@interval'; }
+    @if(!stat.isEmpty) { metric.stat = '@stat'; }
+    dashboard.init(metric);
+  });
 </script>
 
 </body>
