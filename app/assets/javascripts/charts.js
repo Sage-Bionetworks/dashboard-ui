@@ -160,8 +160,7 @@ charts.bar = function(data, width, height, margin) {
   var color = d3.scale.category10()
     .domain(data.headers.concat("__hover__"));
 
-  // TODO: Move this to models and the controller
-  var xGroups = groupByX(data);
+  var xGroups = data.xGroups;
 
   var xGroup = svg.selectAll(".plot")
     .data(xGroups)
@@ -268,8 +267,7 @@ charts.hbar = function(data, width, height, margin) {
   var color = d3.scale.category10()
     .domain(data.headers);
 
-  // TODO: Move this to models and controllers
-  var groups = groupByX(data);
+  var groups = data.xGroups;
 
   var yGroup = svg.selectAll(".plot")
     .data(groups)

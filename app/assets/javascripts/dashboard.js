@@ -36,22 +36,22 @@ var dashboard = (function($) {
       case 'bar':
         // TODO: Pass in margin as a parameter. Define margin as part of a metric.
         var margin = {top: 20, right: 60, bottom: 20, left: 60},
-            dateFormat = d3.time.format("%m/%d");
+            dateFormat = d3.time.format('%m/%d');
         // TODO: Formatting hack. Time series should not use bar chart.
         data.values.forEach(function(row) {
             row[0] = dateFormat(new Date(Number(row[0])));
         });
-        data = getSeries(data);
+        data = dashboard.models.unpack(data, { groupByX: true });
         charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'hbar':
         var margin = {top: 60, right: 100, bottom: 20, left: 300};
-        data = getSeries(data);
+        data = dashboard.models.unpack(data, { groupByX: true });
         charts.hbar(data, configMap.width, configMap.height, margin);
         break;
       case 'line':
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
-        data = getTimeSeries(data);
+        data = dashboard.models.unpack(data, { timeSeries: true });
         charts.line(data, configMap.width, configMap.height, margin);
         break;
     }
