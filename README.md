@@ -40,7 +40,7 @@ Note that this could be hooked to git commit and/or a CI platform (e.g. Jenkins)
 
         $ play test
 
-2. Run Mocha tests for JavaScript (must install node.js and mocha first):
+2. Run Mocha tests for JavaScript (must install node.js and mocha first, and then locally jsdom, jquery, d3):
 
         $ mocha
 
