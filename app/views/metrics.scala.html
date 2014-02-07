@@ -1,36 +1,35 @@
 @(metrics: Map[MetricId, Metric])
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html class="no-js" lang="en">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
 <!--[if IE 7 ]>    <html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"> <![endif]-->
 <!--[if IE 8 ]>    <html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"> <![endif]-->
 <!--[if IE 9 ]>    <html class="ie ie9 ie-lt10 no-js" lang="en"> <![endif]-->
 <!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. --> 
 
-<head id="dashboard.synapse.org" data-template-set="html5-reset">
-
+<head id="dashboard.synapse.org">
   <meta charset="utf-8">
-
   <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
   <title>Synapse Dashboard - List of Metrics</title>
-
   <link rel="shortcut icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
   <link rel="icon" type="image/x-icon" href='@routes.Assets.at("images/favicon.ico")' />
-
-  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/reset.css")' />
-  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/style.css")' />
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/layout.css")' />
   <link rel="stylesheet" href='@routes.Assets.at("stylesheets/metrics.css")' />
-
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js"></script>
 </head>
 
 <body>
+<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+         http://chromium.org/developers/how-tos/chrome-frame-getting-started -->
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em>
+<a href="http://browsehappy.com/">Upgrade to a different browser</a> or
+<a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>
+to experience this site.</p><![endif]-->
 
-<div id="wrapper">
+<div class="container">
   <header></header>
   <section class="metric-list">
     <dl>
@@ -44,13 +43,15 @@
   </section>
   <footer></footer>
 </div>
-
-<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
-         http://chromium.org/developers/how-tos/chrome-frame-getting-started -->
-<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em>
-<a href="http://browsehappy.com/">Upgrade to a different browser</a> or
-<a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>
-to experience this site.</p><![endif]-->
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-47810139-1', 'synapse.org');
+  ga('send', 'pageview');
+</script>
 </body>
 </html>

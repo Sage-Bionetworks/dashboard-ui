@@ -1,46 +1,13 @@
-
-#wrapper {
-    width: 1200px;
-    margin: 0 auto;
-}
-
 header,
 footer {
-    margin: 20px;
+  margin: 20px;
 }
 
 header {
-    height: 60px;
+  height: 60px;
 }
 
 footer {
-    height: 20px;
-    clear: both;
-}
-
-/* latency chart */
-
-#chart {
-    width: 900px;
-    margin: 40px 20px 80px;
-    float: right;
-}
-
-#summary {
-    width: 220px;
-    margin: 40px 20px 80px;
-    float: left;
-}
-
-#summary h3,
-#summary p {
-    margin-top: 20px;
-    font-size: 1.1em;
-}
-
-#stats,
-#intvls {
-    float:left;
-    margin-top:20px;
-    margin-right:20px;
+  height: 20px;
+  clear: both;
 }
