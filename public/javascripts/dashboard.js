@@ -153,16 +153,12 @@ var dashboard = (function($) {
 
     $('#dtFrom').datepicker({
       defaultDate: '-7D',
-      minDate: '-7M',
-      maxDate: '+0D',
       onClose: dtFromOnClose
     });
     $('#dtFrom').datepicker('setDate', dtStart);
 
     $('#dtTo').datepicker({
       defaultDate: '+0D',
-      minDate: '-7M',
-      maxDate: '+0D',
       onClose: dtToOnClose
     });
     $('#dtTo').datepicker('setDate', dtEnd);
