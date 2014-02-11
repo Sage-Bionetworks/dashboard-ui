@@ -1,4 +1,3 @@
-var dashboard;
 dashboard.models = (function() {
 
   var getSeries, getTimeSeries, groupByX, unpack;

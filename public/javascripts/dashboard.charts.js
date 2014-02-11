@@ -1,4 +1,3 @@
-var dashboard;
 dashboard.charts = (function() {
 
   var isEmptyData, removeSvg, addSvg, addEmptyChart, addChart,
@@ -15,8 +14,7 @@ dashboard.charts = (function() {
     d3.select("#chart svg").remove();
   }
 
-  addSvg = function(width, height) {
-    
+  addSvg = function(width, height) {    
     return d3.select('#chart')
       .append('svg')
       .attr('width', width)
@@ -33,13 +31,8 @@ dashboard.charts = (function() {
   };
 
   addAxisX = function(chart, x, translate) {
-    var axis = chart.append('g')
-      .attr('class', 'x axis');
-    var pp = x.orient();
-    console.debug(typeof pp);
-    console.debug(pp);
+    var axis = chart.append('g').attr('class', 'x axis');
     if (x.orient() && x.orient() === 'bottom') {
-      console.debug("Yay!!!");
       axis.attr('transform', 'translate(0,' + translate + ')');
     }
     axis.call(x);
@@ -47,19 +40,17 @@ dashboard.charts = (function() {
   };
 
   addAxisY = function(chart, y) {
-    var axis = chart.append('g')
-      .attr('class', 'y axis');
+    var axis = chart.append('g').attr('class', 'y axis');
     axis.call(y);
     return axis;
   };
 
   addChart = function(data, width, height, margin, x, y) {
     var chart, xAxis, yAxis, plot;
-    removeSvg();
     chart = addSvg(width, height)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    xAxis = addAxisX(chart, x, height);
+    xAxis = addAxisX(chart, x, height - margin.top - margin.bottom);
     yAxis = addAxisY(chart, y);
     plot = chart.selectAll(".plot")
       .data(data)
@@ -81,7 +72,10 @@ dashboard.charts = (function() {
   bar = function(data, width, height, margin) {
 
     var w, h, x0, x1, xAxis, y, yAxis,
-        chart, plot, color, legend;
+        svg, chart, plot, color, legend;
+
+    // Remove any existing chart
+    removeSvg();
 
     // Empty data set
     if (isEmptyData(data)) {
@@ -120,8 +114,9 @@ dashboard.charts = (function() {
       .tickFormat(d3.format(".2s"));
 
     // The plot
-    chart = addChart(data.xGroups, width, height, margin, xAxis, yAxis);
-    plot = chart.plot;
+    svg = addChart(data.xGroups, width, height, margin, xAxis, yAxis);
+    chart = svg.chart;
+    plot = svg.plot;
     plot.attr("transform", function(d) { return "translate(" + x0(d.x) + ",0)"; });
 
     x1 = d3.scale.ordinal()
@@ -140,7 +135,7 @@ dashboard.charts = (function() {
       .style("fill", function(d) { return color(d.header); })
       .on("mouseover", function(d) {
         d3.select(this).style("fill", color("__hover__"));
-        svg.append("text")
+        chart.append("text")
           .text(d.y)
           .attr("id", "hovertext")
           .attr("text-anchor", "middle")
@@ -153,21 +148,19 @@ dashboard.charts = (function() {
       })
       .on("mouseout", function(d) {
         d3.select(this).style("fill", color(d.header));
-        svg.select("#hovertext").remove();
+        chart.select("#hovertext").remove();
       });
 
-    legend = chart.chart.selectAll(".legend")
+    legend = chart.selectAll(".legend")
       .data(data.headers.slice())
       .enter().append("g")
       .attr("class", "legend")
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
     legend.append("rect")
       .attr("x", width - 18)
       .attr("width", 18)
       .attr("height", 18)
       .style("fill", color);
-
     legend.append("text")
       .attr("x", width - 24)
       .attr("y", 9)
