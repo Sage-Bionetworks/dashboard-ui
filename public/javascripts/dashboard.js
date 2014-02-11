@@ -42,17 +42,17 @@ var dashboard = (function($) {
             row[0] = dateFormat(new Date(Number(row[0])));
         });
         data = dashboard.models.unpack(data, { groupByX: true });
-        charts.bar(data, configMap.width, configMap.height, margin);
+        dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'hbar':
         var margin = {top: 60, right: 100, bottom: 20, left: 300};
         data = dashboard.models.unpack(data, { groupByX: true });
-        charts.hbar(data, configMap.width, configMap.height, margin);
+        dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
       case 'line':
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { timeSeries: true });
-        charts.line(data, configMap.width, configMap.height, margin);
+        dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
     }
   };
