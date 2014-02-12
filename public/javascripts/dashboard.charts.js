@@ -352,7 +352,6 @@ dashboard.charts = (function() {
     // Reset the max on y ticks
     chart.selectAll('.y.axis g text').on('click', function(tickText) {
       data.yMax = Number(tickText);
-      console.debug(data.yMax);
       line(data, width, height, margin);
     });
   };
