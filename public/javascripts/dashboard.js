@@ -42,17 +42,17 @@ var dashboard = (function($) {
             row[0] = dateFormat(new Date(Number(row[0])));
         });
         data = dashboard.models.unpack(data, { groupByX: true });
-        charts.bar(data, configMap.width, configMap.height, margin);
+        dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'hbar':
         var margin = {top: 60, right: 100, bottom: 20, left: 300};
         data = dashboard.models.unpack(data, { groupByX: true });
-        charts.hbar(data, configMap.width, configMap.height, margin);
+        dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
       case 'line':
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { timeSeries: true });
-        charts.line(data, configMap.width, configMap.height, margin);
+        dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
     }
   };
@@ -86,7 +86,7 @@ var dashboard = (function($) {
   };
 
   prevOnClick = function() {
-    var start, end, diff;
+    var start, end, diff, dtStart, dtEnd;
     start = Number(thisMetric.start);
     end = Number(thisMetric.end);
     diff = end - start;
@@ -94,14 +94,17 @@ var dashboard = (function($) {
     start = start - diff;
     thisMetric.start = String(start);
     thisMetric.end = String(end);
-    $('#dtFrom').datepicker('setDate', new Date(start));
-    $('#dtTo').datepicker('option', 'minDate', new Date(start));
-    $('#dtTo').datepicker('setDate', new Date(end));
+    dtStart = new Date(start);
+    dtEnd = new Date(end);
+    $('#dtFrom').datepicker('option', 'maxDate', dtEnd);
+    $('#dtTo').datepicker('option', 'minDate', dtStart);
+    $('#dtFrom').datepicker('setDate', dtStart);
+    $('#dtTo').datepicker('setDate', dtEnd);
     makeChart(thisMetric);
   };
 
   nextOnClick = function() {
-    var start, end, diff;
+    var start, end, diff, dtStart, dtEnd;
     start = Number(thisMetric.start);
     end = Number(thisMetric.end);
     diff = end - start;
@@ -109,9 +112,12 @@ var dashboard = (function($) {
     end = end + diff;
     thisMetric.start = String(start);
     thisMetric.end = String(end);
-    $('#dtFrom').datepicker('option', 'maxDate', new Date(end));
-    $('#dtFrom').datepicker('setDate', new Date(start));
-    $('#dtTo').datepicker('setDate', new Date(end));
+    dtStart = new Date(start);
+    dtEnd = new Date(end);
+    $('#dtFrom').datepicker('option', 'maxDate', dtEnd);
+    $('#dtTo').datepicker('option', 'minDate', dtStart);
+    $('#dtFrom').datepicker('setDate', dtStart);
+    $('#dtTo').datepicker('setDate', dtEnd);
     makeChart(thisMetric);
   };
 
@@ -147,16 +153,12 @@ var dashboard = (function($) {
 
     $('#dtFrom').datepicker({
       defaultDate: '-7D',
-      minDate: '-7M',
-      maxDate: '+0D',
       onClose: dtFromOnClose
     });
     $('#dtFrom').datepicker('setDate', dtStart);
 
     $('#dtTo').datepicker({
       defaultDate: '+0D',
-      minDate: '-7M',
-      maxDate: '+0D',
       onClose: dtToOnClose
     });
     $('#dtTo').datepicker('setDate', dtEnd);
