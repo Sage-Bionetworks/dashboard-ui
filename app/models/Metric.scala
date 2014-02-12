@@ -20,7 +20,8 @@ case class Metric(
   statistic: Statistic,
   startOffset: Int,
   endOffset: Int,
-  converters: List[CountDataPointConverter]
+  converters: List[CountDataPointConverter],
+  url: Option[String]
 )
 
 object Metric {
@@ -37,70 +38,78 @@ object Metric {
         Statistic.n,
         7,
         0,
-        List.empty),
+        List.empty,
+        None),
 
       MetricId("hbar", "uniqueUser") -> Metric(
         "Top Users",
         "Users registered the most activitities.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List(userIdToName)),
+        1,
+        1,
+        List(userIdToName),
+        Some("https://www.synapse.org/#!Profile:")),
 
       MetricId("hbar", "topEntity") -> Metric(
         "Top Entities",
         "List of entities that are accessed most often.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List(entityIdToName)),
+        1,
+        1,
+        List(entityIdToName),
+        Some("https://www.synapse.org/#!Synapse:")),
 
       MetricId("hbar", "topMethod") -> Metric(
         "Top REST APIs",
         "Most accessed REST APIs.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topClient") -> Metric(
         "Top Clients",
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topWebClient") -> Metric(
         "Top Web Clients",
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topPythonClient") -> Metric(
         "Top Python Clients",
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topRClient") -> Metric(
         "Top R Clients",
         "List of programatic clients sorted in descending order of their activities.",
         Aggregation.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("line", "postEntityHeader") -> Metric(
         "POST Entity Header Latencies",
@@ -109,7 +118,8 @@ object Metric {
         Statistic.avg,
         7,
         0,
-        List.empty),
+        List.empty,
+        None),
 
       MetricId("line", "getEntityBundle") -> Metric(
         "GET Entity Bundle Latencies",
@@ -118,7 +128,8 @@ object Metric {
         Statistic.avg,
         7,
         0,
-        List.empty),
+        List.empty,
+        None),
 
       MetricId("line", "query") -> Metric(
         "Query Latencies",
@@ -127,7 +138,8 @@ object Metric {
         Statistic.avg,
         7,
         0,
-        List.empty)
+        List.empty,
+        None)
   )
 
   def getMetric(metricId: MetricId) = {
