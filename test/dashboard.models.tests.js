@@ -1,10 +1,10 @@
 window = require('jsdom').jsdom().createWindow();
 jQuery = require('jquery');
 d3 = require('d3');
-dashboard = require('../app/assets/javascripts/dashboard.js');
-require('../app/assets/javascripts/multiseries.js');
+dashboard = require('../public/javascripts/dashboard.js');
+require('../public/javascripts/dashboard.models.js');
 var assert = require('assert');
-describe('mutliseries', function() {
+describe('dashboard.models', function() {
   describe('unpack()', function() {
     it('should unpack the data matrix', function() {
       var input, expected, output;
