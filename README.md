@@ -3,11 +3,9 @@ Dashboard UI
 
 (Based on [Play](https://github.com/playframework/playframework) , [D3](https://github.com/mbostock/d3))
 
-### Design
+### [Design](https://github.com/eric-wu/dashboard/wiki)
 
-#### [Design Docs](https://github.com/eric-wu/dashboard/wiki)
-
-#### [Caching Layer](https://github.com/Sage-Bionetworks/dashboard)
+### [Caching Layer](https://github.com/Sage-Bionetworks/dashboard)
 
 ### Development
 
