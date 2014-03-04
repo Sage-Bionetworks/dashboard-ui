@@ -1,7 +1,7 @@
 package models
 
 import org.joda.time.DateTime
-import org.sagebionetworks.dashboard.model.{Aggregation, Statistic}
+import org.sagebionetworks.dashboard.model.{Interval, Statistic}
 import org.sagebionetworks.dashboard.service.{CountDataPointConverter, EntityIdToName, UserIdToName}
 import context.SpringContext
 
@@ -16,11 +16,12 @@ import context.SpringContext
 case class Metric(
   fullName: String,
   description: String,
-  aggregation: Aggregation,
+  aggregation: Interval,
   statistic: Statistic,
   startOffset: Int,
   endOffset: Int,
-  converters: List[CountDataPointConverter]
+  converters: List[CountDataPointConverter],
+  url: Option[String]
 )
 
 object Metric {
@@ -33,101 +34,112 @@ object Metric {
       MetricId("bar", "uniqueUser") -> Metric(
         "Daily Unique Users",
         "The number of unique users that logged activities on a daily basis.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
         7,
         0,
-        List.empty),
+        List.empty,
+        None),
 
       MetricId("hbar", "uniqueUser") -> Metric(
         "Top Users",
         "Users registered the most activitities.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List(userIdToName)),
+        1,
+        1,
+        List(userIdToName),
+        Some("https://www.synapse.org/#!Profile:")),
 
       MetricId("hbar", "topEntity") -> Metric(
         "Top Entities",
         "List of entities that are accessed most often.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List(entityIdToName)),
+        1,
+        1,
+        List(entityIdToName),
+        Some("https://www.synapse.org/#!Synapse:")),
 
       MetricId("hbar", "topMethod") -> Metric(
         "Top REST APIs",
         "Most accessed REST APIs.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topClient") -> Metric(
         "Top Clients",
         "List of programatic clients sorted in descending order of their activities.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topWebClient") -> Metric(
         "Top Web Clients",
         "List of programatic clients sorted in descending order of their activities.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topPythonClient") -> Metric(
         "Top Python Clients",
         "List of programatic clients sorted in descending order of their activities.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("hbar", "topRClient") -> Metric(
         "Top R Clients",
         "List of programatic clients sorted in descending order of their activities.",
-        Aggregation.day,
+        Interval.day,
         Statistic.n,
-        0,
-        0,
-        List.empty),
+        1,
+        1,
+        List.empty,
+        None),
 
       MetricId("line", "postEntityHeader") -> Metric(
         "POST Entity Header Latencies",
         "Latency in milliseconds for the POST entity header REST API.",
-        Aggregation.hour,
+        Interval.hour,
         Statistic.avg,
         7,
         0,
-        List.empty),
+        List.empty,
+        None),
 
       MetricId("line", "getEntityBundle") -> Metric(
         "GET Entity Bundle Latencies",
         "Latency in milliseconds for the GET entity bundle REST API.",
-        Aggregation.hour,
+        Interval.hour,
         Statistic.avg,
         7,
         0,
-        List.empty),
+        List.empty,
+        None),
 
       MetricId("line", "query") -> Metric(
         "Query Latencies",
         "Latency in milliseconds for the query API.",
-        Aggregation.hour,
+        Interval.hour,
         Statistic.avg,
         7,
         0,
-        List.empty)
+        List.empty,
+        None)
   )
 
   def getMetric(metricId: MetricId) = {

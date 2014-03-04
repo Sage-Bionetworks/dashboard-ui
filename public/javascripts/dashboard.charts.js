@@ -247,12 +247,15 @@ dashboard.charts = (function() {
     chart = svg.chart;
     chart.selectAll('.label')
       .data(data.xGroups)
-      .enter().append('text')
+      .enter()
+      .append('svg:a')
+      .attr('xlink:href', function(group){ return 'https://www.synapse.org'; })
+      .append('text')
       .attr('x', -10)
       .attr('y', function(group) { return yScale0(group.x) + yScale0.rangeBand() / 2; })
       .attr('dy', '.36em')
       .attr('text-anchor', 'end')
-      .attr('class', 'barLabel')
+      .attr('class', 'label')
       .text(function(group) {
         var txt = group.x;
         // TODO: Replace the magic numbers. Hook them up instead to width or margin

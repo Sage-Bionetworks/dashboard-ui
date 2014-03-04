@@ -1,4 +1,4 @@
-@(metrics: Map[MetricId, Metric])
+@(metrics: Map[MetricHandle, MetricSet])
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -35,7 +35,7 @@ to experience this site.</p><![endif]-->
     <dl>
       @for(metricTuple <- metrics) {
         @defining(metricTuple) { metric =>
-          <dt><a href='chart?type=@metric._1.chartType&metric=@metric._1.metricName'>@metric._2.fullName</a></dt>
+          <dt><a href='chart?type=@metric._1.chartType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
           <dd>@metric._2.description</dd>
         }
       }
