@@ -45,15 +45,15 @@ object MetricSet {
       interval = Interval.day,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
-        val data = metricReader.getUniqueCount("uniqueUser", start, end);
+        val data = metricReader.getUniqueCount("uniqueUser", interval, start, end);
         DataSet(
           xLabel = Some("date & time"),
           yLabel = Some("count"),
           xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
-          xValues = List(data map(d => d.getX) toList),
+          xValues = List(data map(d => d.x) toList),
           yHeaders = List("count"),
-          yValues = List(data map (d => d.getY) toList)
+          yValues = List(data map (d => d.y) toList)
         )
       }
     ),
@@ -67,19 +67,19 @@ object MetricSet {
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
-        val data = metricReader.getTop("uniqueUser", start, 50)
+        val data = metricReader.getTop("uniqueUser", interval, start, 0, 50)
         DataSet(
           xLabel = None,
           yLabel = None,
           xHeader = DataHeader.Name,
           xHeaders = List(DataHeader.ID, DataHeader.URL, DataHeader.Name),
           xValues = List(
-            data map (d => d.getX) toList,
-            data map (d => baseUrl + d.getX) toList,
-            data map (d => userIdToName.convert(d).getX) toList
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList,
+            data map (d => userIdToName.convert(d).x) toList
           ),
           yHeaders = List("count"),
-          yValues = List(data map (d => d.getY) toList)
+          yValues = List(data map (d => d.y) toList)
         )
       }
     ),
@@ -99,9 +99,9 @@ object MetricSet {
           yLabel = Some("latency (ms)"),
           xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
-          xValues = List(timeseries map (d => d.getX) toList),
+          xValues = List(timeseries map (d => d.x) toList),
           yHeaders = List("count"),
-          yValues = List(timeseries map (d => d.getY) toList)
+          yValues = List(timeseries map (d => d.y) toList)
         )
       }
     )
