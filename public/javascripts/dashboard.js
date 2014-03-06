@@ -33,7 +33,7 @@ var dashboard = (function($) {
   // Binds data to chart
   bindData = function(metricType, data) {
     switch(metricType) {
-      case 'category': // TODO: Find a proper metric to use bar chart
+      case 'category': // TODO: Find a proper metric to use the bar chart
         var margin = {top: 20, right: 60, bottom: 20, left: 60},
         data = dashboard.models.unpack(data, { groupByX: true });
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
