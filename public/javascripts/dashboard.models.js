@@ -109,29 +109,44 @@ dashboard.models = (function() {
     });
   };
 
+  createDataSeries = function (data) {
+    var xValues = data.xValues.filter(function(val, i) {
+      return i === data.xHeaders.indexOf(data.xHeader);
+    });
+    return {
+      xLabel: data.xLabel, // What if this is null?
+      yLabel: data.yLabel, // What if this is null?
+      x: {
+        header: data.xHeader,
+        values: xValues
+      }
+    }
+  }
+
   /**
    * Converts CSV/TSV-like JSON data to annotated series of name-value pairs.
    * Compact CSV-like JSON makes data transfers more efficient and yet does not have
    * the parsing overhead of CSVs.
    *
-   * @param data  CSV/TSV-like JSON data. The 1st row must be the headers
-   *              and the 1st column must be the x-column.
+   * @param data  CSV/TSV-like JSON data. The 1st row must be the headers.
    * @returns Annotated series of name-value pairs.
    */
   unpack = function(data, options) {
-    var series;
+    
     if (options) {
-      if (options.timeSeries) {
-        series = getTimeSeries(data);
-      } else {
-        series = getSeries(data);
+      if (options.xMinMax) {
+        
       }
-      if (options.groupByX) {
-        series.xGroups = groupByX(series);
+      if (options.yMinMax) {
+        
       }
-      return series;
+      if (options.xSlice) {
+        
+      }
+      if (options.ySlice) {
+        
+      }
     }
-    return getSeries(data);
   };
 
   return { unpack: unpack };

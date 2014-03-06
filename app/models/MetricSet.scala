@@ -48,8 +48,8 @@ object MetricSet {
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getUniqueCount("uniqueUser", interval, start, end);
         DataSet(
-          xLabel = Some("date & time"),
-          yLabel = Some("count"),
+          xLabel = Some("date"),
+          yLabel = Some("count of unique users"),
           xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
           xValues = List(data map(d => d.x) toList),
@@ -96,7 +96,7 @@ object MetricSet {
         val timeseries = metricReader.getTimeSeries("postEntityHeader", start, end,
             statistic, interval)
         DataSet(
-          xLabel = Some("date and time"),
+          xLabel = Some("date & time"),
           yLabel = Some("latency (ms)"),
           xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
