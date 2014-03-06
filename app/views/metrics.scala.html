@@ -35,7 +35,7 @@ to experience this site.</p><![endif]-->
     <dl>
       @for(metricTuple <- metrics) {
         @defining(metricTuple) { metric =>
-          <dt><a href='chart?type=@metric._1.chartType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
+          <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
           <dd>@metric._2.description</dd>
         }
       }

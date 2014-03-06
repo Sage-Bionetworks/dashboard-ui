@@ -1,4 +1,4 @@
-@(chartType: String, metricName: String, title: String, description: String,
+@(metricType: MetricType.Value, metricName: String, title: String, description: String,
 	start: Option[String], end: Option[String], interval: Option[String], stat: Option[String])
 <!DOCTYPE html>
 <html class="no-js" lang="en">
@@ -39,14 +39,14 @@ to experience this site.</p><![endif]-->
   <section id="chart">
     <div id="controls">
       <div id="dtControls">
-        @chartType match {
-          case "bar" | "line" => {
+        @metricType match {
+          case MetricType.Latency | MetricType.Unique => {
             <button class="button" id="prev">prev</button>
             From: <input id="dtFrom" type="text" />
             To: <input id="dtTo" type="text" />
             <button class="button" id="next">next</button>
           }
-          case "hbar" => {
+          case MetricType.Top => {
             <button class="button" id="prevDay">prev</button>
             <input id="dtFrom" type="text"/>
             <button class="button" id="nextDay">next</button>
@@ -54,17 +54,26 @@ to experience this site.</p><![endif]-->
         }
       </div>
       <div>
-        @if("line" == chartType) {
-          <div id="stats">
-            <input type="radio" id="avg" name="stats"><label for="avg">avg</label></input>
-            <input type="radio" id="max" name="stats"><label for="max">max</label></input>
-            <input type="radio" id="n" name="stats"><label for="n">n</label></input>
-          </div>
-          <div id="intvls">
-            <input type="radio" id="day" name="intvls"><label for="day">day</label></input>
-            <input type="radio" id="hour" name="intvls"><label for="hour">hour</label></input>
-            <input type="radio" id="m3" name="intvls"><label for="m3">3-minute</label></input>
-          </div>
+        @metricType match {
+          case MetricType.Latency => {
+            <div id="stats">
+              <input type="radio" id="avg" name="stats"><label for="avg">avg</label></input>
+              <input type="radio" id="max" name="stats"><label for="max">max</label></input>
+              <input type="radio" id="n" name="stats"><label for="n">n</label></input>
+            </div>
+            <div id="intvls">
+              <input type="radio" id="day" name="intvls"><label for="day">day</label></input>
+              <input type="radio" id="hour" name="intvls"><label for="hour">hour</label></input>
+              <input type="radio" id="m3" name="intvls"><label for="m3">3-minute</label></input>
+            </div>
+          }
+          case MetricType.Top | MetricType.Unique => {
+            <div id="intvls">
+              <input type="radio" id="day" name="intvls"><label for="day">day</label></input>
+              <input type="radio" id="week" name="intvls"><label for="week">week</label></input>
+              <input type="radio" id="month" name="intvls"><label for="month">month</label></input>
+            </div>
+          }
         }
       </div>
     </div>
@@ -82,7 +91,7 @@ to experience this site.</p><![endif]-->
   jQuery(function() {
     var metricProto, metric;
     metricProto = {
-      type: '@chartType',
+      type: '@metricType',
       id: '@metricName'
     };
     metric = Object.create(metricProto);

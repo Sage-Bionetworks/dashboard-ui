@@ -7,6 +7,7 @@ import org.sagebionetworks.dashboard.model.{Interval, Statistic}
 import org.sagebionetworks.dashboard.service.{CountDataPointConverter, EntityIdToName, UserIdToName}
 import org.sagebionetworks.dashboard.service.MetricReader
 import context.SpringContext
+import MetricType._
 
 /**
  * One set of metrics. This is a template to query a set of metrics and to assemble a data set.
@@ -37,7 +38,7 @@ object MetricSet {
 
   val map = collection.immutable.ListMap(
 
-    MetricHandle("bar", "uniqueUser") -> MetricSet(
+    MetricHandle(Unique, "user") -> MetricSet(
       name = "Count of Unique Users",
       description = "The number of unique users who have used Synapse.",
       start = 7,
@@ -58,7 +59,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle("hbar", "topUser") -> MetricSet(
+    MetricHandle(Top, "user") -> MetricSet(
       name = "Top Users",
       description = "Users who have registered the most activitities.",
       start = 1,
@@ -84,7 +85,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle("line", "postEntityHeader") -> MetricSet(
+    MetricHandle(Latency, "postEntityHeader") -> MetricSet(
       name = "POST-Entity-Header Latencies",
       description = "Latency in milliseconds for the POST-entity-header REST API.",
       start = 7,

@@ -31,25 +31,20 @@ var dashboard = (function($) {
   };
 
   // Binds data to chart
-  bindData = function(chartType, data) {
-    switch(chartType) {
-      case 'bar':
-        // TODO: Pass in margin as a parameter. Define margin as part of a metric.
+  bindData = function(metricType, data) {
+    switch(metricType) {
+      case 'category': // TODO: Find a proper metric to use bar chart
         var margin = {top: 20, right: 60, bottom: 20, left: 60},
-            dateFormat = d3.time.format('%m/%d');
-        // TODO: Formatting hack. Time series should not use bar chart.
-        data.values.forEach(function(row) {
-            row[0] = dateFormat(new Date(Number(row[0])));
-        });
         data = dashboard.models.unpack(data, { groupByX: true });
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
-      case 'hbar':
+      case 'top':
         var margin = {top: 60, right: 100, bottom: 20, left: 300};
         data = dashboard.models.unpack(data, { groupByX: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
-      case 'line':
+      case 'unique':
+      case 'latency':
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { timeSeries: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
