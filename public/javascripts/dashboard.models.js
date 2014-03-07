@@ -33,32 +33,31 @@ dashboard.models = (function() {
    * @returns Annotated series of name-value pairs.
    */
   unpack = function(data, options) {
-    var results, timeSeries, xValues, yValues, xRows, yRows;
-    // Get the headers first
+    var results, xValues, yValues, xRows, yRows;
+    // Set the headers
     results = {
         xHeaders: data.xHeaders,
         yHeaders: data.yHeaders,
     };
-    // Set up labels
+    // Set up the labels
     if (data.xLabel) {
       results.xLabel = data.xLabel;
     }
     if (data.yLabel) {
       results.yLabel = data.yLabel;
     }
-    // Convert time series
-    timeSeries = (options && options.timeSeries);
-    xValues = data.xValues.map(function(row, i) {
-      timeSeries = timeSeries && i === 0;
-      return row.map(function(value) {
-        if (timeSeries) {
-          return new Date(Number(value));
+    // Convert time stamps
+    xValues = data.xValues.map(function(xRow, i) {
+      var isTimestamp = ("timestamp" === data.xHeaders[i]);
+      return xRow.map(function(xValue) {
+        if (isTimestamp) {
+          return new Date(Number(xValue));
         }
-        return value;
+        return xValue;
       });
     });
     // Extract the first row of the x values as the x series
-    // Data of the y series are plotted against this x series
+    // Data of the y series are plotted against this single x series
     results.xSeries = {
       header: data.xHeaders[0],
       values: xValues[0]

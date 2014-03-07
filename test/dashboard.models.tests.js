@@ -22,53 +22,7 @@ describe('dashboard.models', function() {
         [ '9', '52', '0']
       ]
     };
-    it('should do the very basic unpacking', function() {
-      var expected, output;
-      expected = {
-        yLabel: 'count',
-        xHeaders: [ 'timestamp', 'id', 'name', 'url' ],
-        yHeaders: [ 'web', 'python' ],
-        xSeries: {
-          header: 'timestamp',
-          values: [ '1362182400000', '1328918400000', '1352419200000' ]
-        },
-        ySeries: [
-          {
-            x:
-              [ { header: 'timestamp', value: '1362182400000' },
-                { header: 'id', value: '123' },
-                { header: 'name', value: 'lora' },
-                { header: 'url', value: 'synapse.org/user/123' } ],
-             y:
-              [ { header: 'web', value: 389 },
-                { header: 'python', value: 9 } ]
-          },
-          {
-            x:
-              [ { header: 'timestamp', value: '1328918400000' },
-                { header: 'id', value: '456' },
-                { header: 'name', value: 'maya' },
-                { header: 'url', value: 'synapse.org/user/456' } ],
-             y:
-              [ { header: 'web', value: 211 },
-                { header: 'python', value: 52 } ]
-          },
-          {
-            x:
-              [ { header: 'timestamp', value: '1352419200000' },
-                { header: 'id', value: '789' },
-                { header: 'name', value: 'noah' },
-                { header: 'url', value: 'synapse.org/user/789' } ],
-             y:
-              [ { header: 'web', value: 507 },
-                { header: 'python', value: 0 } ]
-          }
-        ]
-      };
-      output = dashboard.models.unpack(input);
-      assert.deepEqual(output, expected);
-    });
-    it('should unpack the time series', function() {
+    it('should unpack', function() {
       var expected, output;
       expected = {
         yLabel: 'count',
@@ -115,7 +69,7 @@ describe('dashboard.models', function() {
                   }
                 ]
       };
-      output = dashboard.models.unpack(input, {timeSeries: true});
+      output = dashboard.models.unpack(input);
       assert.deepEqual(output, expected);
     });
     it('should set min and max', function() {

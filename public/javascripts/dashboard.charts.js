@@ -7,7 +7,7 @@ dashboard.charts = (function() {
   ////// Private Functions //////
 
   isEmptyData = function(data) {
-    return data.xSeries.length === 0;
+    return data.xSeries.values.length === 0;
   };
 
   removeSvg = function() {
@@ -324,7 +324,7 @@ dashboard.charts = (function() {
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
-    color = d3.scale.category10().domain(data.headers);
+    color = d3.scale.category10().domain(data.yHeaders);
 
     plot.append('path')
       .attr('class', 'line')

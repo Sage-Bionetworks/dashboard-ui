@@ -46,7 +46,7 @@ var dashboard = (function($) {
       case 'unique':
       case 'latency':
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
-        data = dashboard.models.unpack(data, { timeSeries: true });
+        data = dashboard.models.unpack(data, { xMinMax: true, yMinMax: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
     }
