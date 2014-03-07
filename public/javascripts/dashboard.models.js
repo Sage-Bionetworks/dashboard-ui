@@ -57,9 +57,9 @@ dashboard.models = (function() {
       });
     });
     // Process the y values. Convert to numbers.
-    yValues = data.yValues.map(function(row) {
-      return row.map(function(value) {
-        return Number(value);
+    yValues = data.yValues.map(function(yRow) {
+      return yRow.map(function(yValue) {
+        return Number(yValue);
       });
     });
     // Extract the first row of the x values as the x series
@@ -92,7 +92,13 @@ dashboard.models = (function() {
       }
       // Include y series. This can be multi-series.
       if (options.ySeries) {
-        
+        results.ySeries = yValues.map(function(yRow, i) {
+          var yHeader = data.yHeaders[i];
+          return {
+            header: yHeader,
+            values: yRow
+          };
+        });
       }
       // Present the data as rows
       if (options.rows) {

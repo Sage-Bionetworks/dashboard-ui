@@ -87,6 +87,28 @@ describe('dashboard.models', function() {
       output = dashboard.models.unpack(input, {rows: true});
       assert.deepEqual(output, expected);
     });
+    it('should unpack the y series', function() {
+      var expected, output;
+      expected = {
+        yLabel: 'count',
+        xHeaders: [ 'timestamp', 'id', 'name', 'url' ],
+        yHeaders: [ 'web', 'python' ],
+        xSeries: {
+          header: 'timestamp',
+          values: [
+            new Date('Mar 2, 2013 GMT'),
+            new Date('Feb 11, 2012 GMT'),
+            new Date('Nov 9, 2012 GMT')
+          ]
+        },
+        ySeries: [
+          { header: 'web', values: [ 389, 211, 507 ] },
+          { header: 'python', values: [ 9, 52, 0 ] },
+        ]
+      };
+      output = dashboard.models.unpack(input, {ySeries: true});
+      assert.deepEqual(output, expected);
+    });
     it('should set min and max', function() {
       var output = dashboard.models.unpack(input, {xMinMax: true, yMinMax: true});
       assert.deepEqual(output.xMin, new Date('Feb 11, 2012 GMT'));
