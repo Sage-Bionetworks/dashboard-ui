@@ -286,7 +286,7 @@ dashboard.charts = (function() {
   line = function(data, width, height, margin) {
 
     var w, h, xScale, xAxis, yScale, yAxis,
-        svg, plot, line, color, chart;
+        svg, plot, d3Line, color, chart;
 
     // Remove any existing chart
     removeSvg();
@@ -319,7 +319,7 @@ dashboard.charts = (function() {
     svg = addChart(data.ySeries, width, height, margin, xAxis, yAxis);
     plot = svg.plot;
 
-    line = d3.svg.line()
+    d3Line = d3.svg.line()
       .interpolate('linear')
       .x(function(yValue, i) { return xScale(data.xSeries.values[i]); })
       .y(function(yValue) { return yScale(yValue); });
@@ -328,7 +328,7 @@ dashboard.charts = (function() {
 
     plot.append('path')
       .attr('class', 'line')
-      .attr('d', function(ySeries) { return line(ySeries.values); })
+      .attr('d', function(ySeries) { return d3Line(ySeries.values); })
       .style('stroke', function(ySeries) { return color(ySeries.header); });
 
     plot.append('text')
