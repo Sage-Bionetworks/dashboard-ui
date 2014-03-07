@@ -46,7 +46,7 @@ dashboard.models = (function() {
     if (data.yLabel) {
       results.yLabel = data.yLabel;
     }
-    // Convert time stamps
+    // Process the x values. Convert time stamps.
     xValues = data.xValues.map(function(xRow, i) {
       var isTimestamp = ("timestamp" === data.xHeaders[i]);
       return xRow.map(function(xValue) {
@@ -56,29 +56,20 @@ dashboard.models = (function() {
         return xValue;
       });
     });
+    // Process the y values. Convert to numbers.
+    yValues = data.yValues.map(function(row) {
+      return row.map(function(value) {
+        return Number(value);
+      });
+    });
     // Extract the first row of the x values as the x series
     // Data of the y series are plotted against this single x series
     results.xSeries = {
       header: data.xHeaders[0],
       values: xValues[0]
     };
-    // Convert all the y values to numbers
-    yValues = data.yValues.map(function(row) {
-      return row.map(function(value) {
-        return Number(value);
-      });
-    });
-    // Get the y series
-    xRows = transpose(attachHeaders(data.xHeaders, xValues));
-    yRows = transpose(attachHeaders(data.yHeaders, yValues));
-    results.ySeries = xRows.map(function(xRow, i) {
-      return {
-        x: xRow,
-        y: yRows[i]
-      };
-    });
-    // Min and max
     if (options) {
+      // Min and max
       if (options.xMinMax) {
         results.xMin = d3.min(results.xSeries.values, function(value) {
           return value;
@@ -97,6 +88,21 @@ dashboard.models = (function() {
           return d3.max(row, function(val) {
             return Number(val);
           });
+        });
+      }
+      // Include y series. This can be multi-series.
+      if (options.ySeries) {
+        
+      }
+      // Present the data as rows
+      if (options.rows) {
+        xRows = transpose(attachHeaders(data.xHeaders, xValues));
+        yRows = transpose(attachHeaders(data.yHeaders, yValues));
+        results.rows = xRows.map(function(xRow, i) {
+          return {
+            x: xRow,
+            y: yRows[i]
+          };
         });
       }
     }

@@ -22,7 +22,25 @@ describe('dashboard.models', function() {
         [ '9', '52', '0']
       ]
     };
-    it('should unpack', function() {
+    it('should unpack the basic way', function() {
+      var expected, output;
+      expected = {
+        yLabel: 'count',
+        xHeaders: [ 'timestamp', 'id', 'name', 'url' ],
+        yHeaders: [ 'web', 'python' ],
+        xSeries: {
+          header: 'timestamp',
+          values: [
+            new Date('Mar 2, 2013 GMT'),
+            new Date('Feb 11, 2012 GMT'),
+            new Date('Nov 9, 2012 GMT')
+          ]
+        }
+      };
+      output = dashboard.models.unpack(input);
+      assert.deepEqual(output, expected);
+    });
+    it('should unpack into rows', function() {
       var expected, output;
       expected = {
         yLabel: 'count',
@@ -36,44 +54,41 @@ describe('dashboard.models', function() {
             new Date('Nov 9, 2012 GMT')
           ]
         },
-        ySeries: [
-                  {
-                    x:
-                      [ { header: 'timestamp', value: new Date('Mar 2, 2013 GMT') },
-                        { header: 'id', value: '123' },
-                        { header: 'name', value: 'lora' },
-                        { header: 'url', value: 'synapse.org/user/123' } ],
-                     y:
-                      [ { header: 'web', value: 389 },
-                        { header: 'python', value: 9 } ]
-                  },
-                  {
-                    x:
-                      [ { header: 'timestamp', value: new Date('Feb 11, 2012 GMT') },
-                        { header: 'id', value: '456' },
-                        { header: 'name', value: 'maya' },
-                        { header: 'url', value: 'synapse.org/user/456' } ],
-                     y:
-                      [ { header: 'web', value: 211 },
-                        { header: 'python', value: 52 } ]
-                  },
-                  {
-                    x:
-                      [ { header: 'timestamp', value: new Date('Nov 9, 2012 GMT') },
-                        { header: 'id', value: '789' },
-                        { header: 'name', value: 'noah' },
-                        { header: 'url', value: 'synapse.org/user/789' } ],
-                     y:
-                      [ { header: 'web', value: 507 },
-                        { header: 'python', value: 0 } ]
-                  }
-                ]
+        rows: [ {
+                  x:
+                    [ { header: 'timestamp', value: new Date('Mar 2, 2013 GMT') },
+                      { header: 'id', value: '123' },
+                      { header: 'name', value: 'lora' },
+                      { header: 'url', value: 'synapse.org/user/123' } ],
+                  y:
+                    [ { header: 'web', value: 389 },
+                      { header: 'python', value: 9 } ]
+                }, {
+                  x:
+                    [ { header: 'timestamp', value: new Date('Feb 11, 2012 GMT') },
+                      { header: 'id', value: '456' },
+                      { header: 'name', value: 'maya' },
+                      { header: 'url', value: 'synapse.org/user/456' } ],
+                  y:
+                    [ { header: 'web', value: 211 },
+                      { header: 'python', value: 52 } ]
+                }, {
+                  x:
+                    [ { header: 'timestamp', value: new Date('Nov 9, 2012 GMT') },
+                      { header: 'id', value: '789' },
+                      { header: 'name', value: 'noah' },
+                      { header: 'url', value: 'synapse.org/user/789' } ],
+                  y:
+                    [ { header: 'web', value: 507 },
+                      { header: 'python', value: 0 } ]
+                }
+              ]
       };
-      output = dashboard.models.unpack(input);
+      output = dashboard.models.unpack(input, {rows: true});
       assert.deepEqual(output, expected);
     });
     it('should set min and max', function() {
-      var output = dashboard.models.unpack(input, {timeSeries: true, xMinMax: true, yMinMax: true});
+      var output = dashboard.models.unpack(input, {xMinMax: true, yMinMax: true});
       assert.deepEqual(output.xMin, new Date('Feb 11, 2012 GMT'));
       assert.deepEqual(output.xMax, new Date('Mar 2, 2013 GMT'));
       assert.deepEqual(output.yMin, 0);
