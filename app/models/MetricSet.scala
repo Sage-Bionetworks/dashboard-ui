@@ -52,7 +52,7 @@ object MetricSet {
           yLabel = Some("count of unique users"),
           xHeaders = List(DataHeader.Timestamp),
           xValues = List(data map(d => d.x) toList),
-          yHeaders = List("count"),
+          yHeaders = List("all users"),
           yValues = List(data map (d => d.y) toList)
         )
       }
@@ -98,7 +98,7 @@ object MetricSet {
           yLabel = Some("latency (ms)"),
           xHeaders = List(DataHeader.Timestamp),
           xValues = List(timeseries map (d => d.x) toList),
-          yHeaders = List("count"),
+          yHeaders = List("PEH"),
           yValues = List(timeseries map (d => d.y) toList)
         )
       }
