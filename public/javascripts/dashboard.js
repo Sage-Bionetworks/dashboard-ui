@@ -183,6 +183,14 @@ var dashboard = (function($) {
     });
 
     // Interval button events
+    $('#intvls #month').click(function() {
+      metric.interval = 'month';
+      makeChart(metric);
+    });
+    $('#intvls #week').click(function() {
+      metric.interval = 'week';
+      makeChart(metric);
+    });
     $('#intvls #day').click(function() {
       metric.interval = 'day';
       makeChart(metric);
