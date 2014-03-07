@@ -6,148 +6,124 @@ require('../public/javascripts/dashboard.models.js');
 var assert = require('assert');
 describe('dashboard.models', function() {
   describe('unpack()', function() {
-    it('should unpack the data matrix', function() {
-      var input, expected, output;
-      input = {
-        name: "Count",
-        headers: ["Client", "All", "Public", "Non-Sage", "Public, Non-Sage"],
-        values: [
-          ["web", 151, 121, "93", 77],
-          ["python", 95, "62", 79, 39],
-          ["r", 55, 32, 29, 6]
-        ]
-      };
+    var input = {
+      xLabel: null,
+      yLabel: 'count',
+      xHeaders: [ 'timestamp', 'id', 'name', 'url' ],
+      xValues: [
+        [ '1362182400000', '1328918400000', '1352419200000' ],
+        [ '123', '456', '789' ],
+        [ 'lora', 'maya', 'noah' ],
+        [ 'synapse.org/user/123', 'synapse.org/user/456', 'synapse.org/user/789' ]
+      ],
+      yHeaders: [ 'web', 'python' ],
+      yValues: [
+        [ '389', '211', '507'],
+        [ '9', '52', '0']
+      ]
+    };
+    it('should do the very basic unpacking', function() {
+      var expected, output;
       expected = {
-        xLabel: "Client",
-        yLabel: "Count",
-        headers: ["All", "Public", "Non-Sage", "Public, Non-Sage"],
-        xSeries: ["web", "python", "r"],
+        yLabel: 'count',
+        xHeaders: [ 'timestamp', 'id', 'name', 'url' ],
+        yHeaders: [ 'web', 'python' ],
+        xSeries: {
+          header: 'timestamp',
+          values: [ '1362182400000', '1328918400000', '1352419200000' ]
+        },
         ySeries: [
           {
-            header: "All",
-            values: [
-              {x: "web", y: 151},
-              {x: "python", y: 95},
-              {x: "r", y: 55}
-            ]
-          },{
-            header: "Public",
-            values: [
-              {x: "web", y: 121},
-              {x: "python", y: 62},
-              {x: "r", y: 32}
-            ]
-          },{
-            header: "Non-Sage",
-            values: [
-              {x: "web", y: 93},
-              {x: "python", y: 79},
-              {x: "r", y: 29}
-            ]
-          },{
-            header: "Public, Non-Sage",
-            values: [
-              {x: "web", y: 77},
-              {x: "python", y: 39},
-              {x: "r", y: 6}
-            ]
+            x:
+              [ { header: 'timestamp', value: '1362182400000' },
+                { header: 'id', value: '123' },
+                { header: 'name', value: 'lora' },
+                { header: 'url', value: 'synapse.org/user/123' } ],
+             y:
+              [ { header: 'web', value: 389 },
+                { header: 'python', value: 9 } ]
+          },
+          {
+            x:
+              [ { header: 'timestamp', value: '1328918400000' },
+                { header: 'id', value: '456' },
+                { header: 'name', value: 'maya' },
+                { header: 'url', value: 'synapse.org/user/456' } ],
+             y:
+              [ { header: 'web', value: 211 },
+                { header: 'python', value: 52 } ]
+          },
+          {
+            x:
+              [ { header: 'timestamp', value: '1352419200000' },
+                { header: 'id', value: '789' },
+                { header: 'name', value: 'noah' },
+                { header: 'url', value: 'synapse.org/user/789' } ],
+             y:
+              [ { header: 'web', value: 507 },
+                { header: 'python', value: 0 } ]
           }
-        ],
-        xMin: "python",
-        xMax: "web",
-        yMin: 6,
-        yMax: 151
+        ]
       };
       output = dashboard.models.unpack(input);
       assert.deepEqual(output, expected);
     });
     it('should unpack the time series', function() {
-      var input, expected, output;
-      input = {
-        dateFormat: "%Y-%m",
-        name: "Temperature",
-        headers: ["Month", "Austin", "New York", "Seattle"],
-        values: [
-          ["2013-01", "50", "33", "47"],
-          ["2013-02", 52, 35, 51],
-          ["2013-03", 55, 42, 56]
-        ]
-      };
+      var expected, output;
       expected = {
-        xLabel: "Month",
-        yLabel: "Temperature",
-        xMin: new Date(2013, 0),
-        xMax: new Date(2013, 2),
-        yMin: 33,
-        yMax: 56,
-        headers: ["Austin", "New York", "Seattle"],
-        xSeries: [new Date(2013, 0), new Date(2013, 1), new Date(2013, 2)],
+        yLabel: 'count',
+        xHeaders: [ 'timestamp', 'id', 'name', 'url' ],
+        yHeaders: [ 'web', 'python' ],
+        xSeries: {
+          header: 'timestamp',
+          values: [
+            new Date('Mar 2, 2013 GMT'),
+            new Date('Feb 11, 2012 GMT'),
+            new Date('Nov 9, 2012 GMT')
+          ]
+        },
         ySeries: [
-          {
-            header: "Austin",
-            values: [
-              {x: new Date(2013, 0), y: 50},
-              {x: new Date(2013, 1), y: 52},
-              {x: new Date(2013, 2), y: 55}
-            ]
-          },{
-            header: "New York",
-            values: [
-              {x: new Date(2013, 0), y: 33},
-              {x: new Date(2013, 1), y: 35},
-              {x: new Date(2013, 2), y: 42}
-            ]
-          },{
-            header: "Seattle",
-            values: [
-              {x: new Date(2013, 0), y: 47},
-              {x: new Date(2013, 1), y: 51},
-              {x: new Date(2013, 2), y: 56}
-            ]
-          }
-        ]
+                  {
+                    x:
+                      [ { header: 'timestamp', value: new Date('Mar 2, 2013 GMT') },
+                        { header: 'id', value: '123' },
+                        { header: 'name', value: 'lora' },
+                        { header: 'url', value: 'synapse.org/user/123' } ],
+                     y:
+                      [ { header: 'web', value: 389 },
+                        { header: 'python', value: 9 } ]
+                  },
+                  {
+                    x:
+                      [ { header: 'timestamp', value: new Date('Feb 11, 2012 GMT') },
+                        { header: 'id', value: '456' },
+                        { header: 'name', value: 'maya' },
+                        { header: 'url', value: 'synapse.org/user/456' } ],
+                     y:
+                      [ { header: 'web', value: 211 },
+                        { header: 'python', value: 52 } ]
+                  },
+                  {
+                    x:
+                      [ { header: 'timestamp', value: new Date('Nov 9, 2012 GMT') },
+                        { header: 'id', value: '789' },
+                        { header: 'name', value: 'noah' },
+                        { header: 'url', value: 'synapse.org/user/789' } ],
+                     y:
+                      [ { header: 'web', value: 507 },
+                        { header: 'python', value: 0 } ]
+                  }
+                ]
       };
-      output = dashboard.models.unpack(input, { timeSeries: true });
+      output = dashboard.models.unpack(input, {timeSeries: true});
       assert.deepEqual(output, expected);
     });
-    it('should group by X', function() {
-      var input, expected, output;
-      input = {
-        dateFormat: "%Y-%m",
-        name: "Temperature",
-        headers: ["Month", "Austin", "New York", "Seattle"],
-        values: [
-          ["2013-01", "50", "33", "47"],
-          ["2013-02", 52, 35, 51],
-          ["2013-03", 55, 42, 56]
-        ]
-      };
-      expected = [
-        {
-          x: new Date(2013, 0),
-          values: [
-            {header: "Austin", x: new Date(2013, 0), y: 50},
-            {header: "New York", x: new Date(2013, 0), y: 33},
-            {header: "Seattle", x: new Date(2013, 0), y: 47}
-          ]
-        }, {
-          x: new Date(2013, 1),
-          values: [
-            {header: "Austin", x: new Date(2013, 1), y: 52},
-            {header: "New York", x: new Date(2013, 1), y: 35},
-            {header: "Seattle", x: new Date(2013, 1), y: 51}
-          ]
-        }, {
-          x: new Date(2013, 2),
-          values: [
-            {header: "Austin", x: new Date(2013, 2), y: 55},
-            {header: "New York", x: new Date(2013, 2), y: 42},
-            {header: "Seattle", x: new Date(2013, 2), y: 56}
-          ]
-        }
-      ];
-      output = dashboard.models.unpack(input, { timeSeries: true, groupByX: true });
-      assert.deepEqual(output.xGroups, expected);
+    it('should set min and max', function() {
+      var output = dashboard.models.unpack(input, {timeSeries: true, xMinMax: true, yMinMax: true});
+      assert.deepEqual(output.xMin, new Date('Feb 11, 2012 GMT'));
+      assert.deepEqual(output.xMax, new Date('Mar 2, 2013 GMT'));
+      assert.deepEqual(output.yMin, 0);
+      assert.deepEqual(output.yMax, 507);
     });
   });
 });

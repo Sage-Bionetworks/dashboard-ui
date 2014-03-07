@@ -50,7 +50,6 @@ object MetricSet {
         DataSet(
           xLabel = Some("date"),
           yLabel = Some("count of unique users"),
-          xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
           xValues = List(data map(d => d.x) toList),
           yHeaders = List("count"),
@@ -72,12 +71,11 @@ object MetricSet {
         DataSet(
           xLabel = None,
           yLabel = None,
-          xHeader = DataHeader.Name,
-          xHeaders = List(DataHeader.ID, DataHeader.URL, DataHeader.Name),
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
           xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
             data map (d => d.x) toList,
-            data map (d => baseUrl + d.x) toList,
-            data map (d => userIdToName.convert(d).x) toList
+            data map (d => baseUrl + d.x) toList
           ),
           yHeaders = List("count"),
           yValues = List(data map (d => d.y) toList)
@@ -98,7 +96,6 @@ object MetricSet {
         DataSet(
           xLabel = Some("date & time"),
           yLabel = Some("latency (ms)"),
-          xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
           xValues = List(timeseries map (d => d.x) toList),
           yHeaders = List("count"),

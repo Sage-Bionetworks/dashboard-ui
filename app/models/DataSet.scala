@@ -25,7 +25,6 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 case class DataSet (
   xLabel: Option[String],
   yLabel: Option[String],
-  xHeader: DataHeader.Value,
   xHeaders: List[DataHeader.Value],
   xValues: List[List[String]],
   yHeaders: List[String],
@@ -34,7 +33,6 @@ case class DataSet (
   def json: JsValue = Json.obj(
     "xLabel" -> Json.toJson(xLabel),
     "yLabel" -> Json.toJson(yLabel),
-    "xHeader" -> Json.toJson(xHeader.toString),
     "xHeaders" -> Json.toJson(xHeaders map (header => header.toString)),
     "xValues" -> Json.toJson(xValues),
     "yHeaders" -> Json.toJson(yHeaders),
