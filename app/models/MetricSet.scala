@@ -83,6 +83,27 @@ object MetricSet {
       }
     ),
 
+    MetricHandle(Latency, "global") -> MetricSet(
+      name = "Global Latencies",
+      description = "Latency in milliseconds for all the REST APIs.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("globalLatency", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("ALL"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
     MetricHandle(Latency, "postEntityHeader") -> MetricSet(
       name = "POST-Entity-Header Latencies",
       description = "Latency in milliseconds for the POST-entity-header REST API.",
@@ -94,11 +115,95 @@ object MetricSet {
         val timeseries = metricReader.getTimeSeries("postEntityHeader", start, end,
             statistic, interval)
         DataSet(
-          xLabel = Some("date & time"),
+          xLabel = Some("time"),
           yLabel = Some("latency (ms)"),
           xHeaders = List(DataHeader.Timestamp),
           xValues = List(timeseries map (d => d.x) toList),
           yHeaders = List("PEH"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "getEntityBundle") -> MetricSet(
+      name = "GET-Entity-Bundle Latencies",
+      description = "Latency in milliseconds for the GET-entity-bundle REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("getEntityBundle", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("GEB"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "query") -> MetricSet(
+      name = "Query Latencies",
+      description = "Latency in milliseconds for the query REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("query", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("QRY"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "search") -> MetricSet(
+      name = "Search Latencies",
+      description = "Latency in milliseconds for the search REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("search", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("SRCH"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "desc") -> MetricSet(
+      name = "GET-Descendants Latencies",
+      description = "Latency in milliseconds for the GET-descendants REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("getDescendants", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("DESC"),
           yValues = List(timeseries map (d => d.y) toList)
         )
       }

@@ -48,7 +48,7 @@ dashboard.models = (function() {
     }
     // Process the x values. Convert time stamps.
     xValues = data.xValues.map(function(xRow, i) {
-      var isTimestamp = ("timestamp" === data.xHeaders[i]);
+      var isTimestamp = ('timestamp' === data.xHeaders[i]);
       return xRow.map(function(xValue) {
         if (isTimestamp) {
           return new Date(Number(xValue));
