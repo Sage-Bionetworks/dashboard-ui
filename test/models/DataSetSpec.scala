@@ -13,7 +13,6 @@ class DataSetSpec extends Specification {
     val json = DataSet(
       xLabel = Some("user activities"),
       yLabel = None,
-      xHeader = DataHeader.Name,
       xHeaders = List(DataHeader.ID, DataHeader.Name),
       xValues = List(List("23", "51", "20"), List("Alice", "Bob", "Carol")),
       yHeaders = List("days", "sessions"),
@@ -28,11 +27,6 @@ class DataSetSpec extends Specification {
     "should be missing the yLabel" in {
       val yLabel = json \ "yLabel"
       yLabel must beEqualTo(JsNull)
-    }
-
-    "should have the correct xHeader" in {
-      val xHeader = json \ "xHeader"
-      xHeader.as[String] must beEqualTo("name")
     }
 
     "should have the correct xHeaders" in {

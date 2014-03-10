@@ -7,7 +7,7 @@ dashboard.charts = (function() {
   ////// Private Functions //////
 
   isEmptyData = function(data) {
-    return data.xSeries.length === 0;
+    return data.xSeries.values.length === 0;
   };
 
   removeSvg = function() {
@@ -286,7 +286,7 @@ dashboard.charts = (function() {
   line = function(data, width, height, margin) {
 
     var w, h, xScale, xAxis, yScale, yAxis,
-        svg, plot, oneLine, color, chart;
+        svg, plot, d3Line, color, chart;
 
     // Remove any existing chart
     removeSvg();
@@ -319,29 +319,33 @@ dashboard.charts = (function() {
     svg = addChart(data.ySeries, width, height, margin, xAxis, yAxis);
     plot = svg.plot;
 
-    oneLine = d3.svg.line()
+    d3Line = d3.svg.line()
       .interpolate('linear')
-      .x(function(d) { return xScale(d.x); })
-      .y(function(d) { return yScale(d.y); });
+      .x(function(yValue, i) { return xScale(data.xSeries.values[i]); })
+      .y(function(yValue) { return yScale(yValue); });
 
-    color = d3.scale.category10().domain(data.headers);
+    color = d3.scale.category10().domain(data.yHeaders);
 
     plot.append('path')
       .attr('class', 'line')
-      .attr('d', function(d) { return oneLine(d.values); })
-      .style('stroke', function(d) { return color(d.header); });
+      .attr('d', function(ySeries) { return d3Line(ySeries.values); })
+      .style('stroke', function(ySeries) { return color(ySeries.header); });
 
     plot.append('text')
-      .datum(function(oneSeries) {
+      .datum(function(ySeries) {
         return {
-          header: oneSeries.header,
-          lastVal: oneSeries.values[oneSeries.values.length - 1]}; })
-      .attr('transform', function(d) {
-          return 'translate(' + xScale(d.lastVal.x) + ','
-            + yScale(d.lastVal.y) + ')'; })
+          header: ySeries.header,
+          lastVal: ySeries.values[ySeries.values.length - 1]};
+        }
+      )
+      .attr('transform', function(datum) {
+        return 'translate(' + (w + 2) + ','
+            + yScale(datum.lastVal) + ')';
+        }
+      )
       .attr('x', 5)
       .attr('dy', 10)
-      .text(function(d) { return d.header; });
+      .text(function(datum) { return datum.header; });
 
     // The y-axis label
     chart = svg.chart;

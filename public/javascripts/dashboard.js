@@ -31,27 +31,22 @@ var dashboard = (function($) {
   };
 
   // Binds data to chart
-  bindData = function(chartType, data) {
-    switch(chartType) {
-      case 'bar':
-        // TODO: Pass in margin as a parameter. Define margin as part of a metric.
+  bindData = function(metricType, data) {
+    switch(metricType) {
+      case 'category': // TODO: Find a proper metric to use the bar chart
         var margin = {top: 20, right: 60, bottom: 20, left: 60},
-            dateFormat = d3.time.format('%m/%d');
-        // TODO: Formatting hack. Time series should not use bar chart.
-        data.values.forEach(function(row) {
-            row[0] = dateFormat(new Date(Number(row[0])));
-        });
-        data = dashboard.models.unpack(data, { groupByX: true });
+        data = dashboard.models.unpack(data, { rows: true });
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
-      case 'hbar':
+      case 'top':
         var margin = {top: 60, right: 100, bottom: 20, left: 300};
-        data = dashboard.models.unpack(data, { groupByX: true });
+        data = dashboard.models.unpack(data, { rows: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
-      case 'line':
+      case 'unique':
+      case 'latency':
         var margin = {top: 20, right: 60, bottom: 20, left: 60};
-        data = dashboard.models.unpack(data, { timeSeries: true });
+        data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
     }
@@ -188,6 +183,14 @@ var dashboard = (function($) {
     });
 
     // Interval button events
+    $('#intvls #month').click(function() {
+      metric.interval = 'month';
+      makeChart(metric);
+    });
+    $('#intvls #week').click(function() {
+      metric.interval = 'week';
+      makeChart(metric);
+    });
     $('#intvls #day').click(function() {
       metric.interval = 'day';
       makeChart(metric);

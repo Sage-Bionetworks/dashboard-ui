@@ -1,137 +1,118 @@
 dashboard.models = (function() {
 
-  var getSeries, getTimeSeries, groupByX, unpack;
+  var attachHeaders, transpose, unpack;
 
-  getSeries = function(data) {
-
-    var xLabel, yLabel, headers, xSeries, xMin, xMax, ySeries, yMin, yMax;
-
-    xLabel = data.headers[0];
-    yLabel = data.name;
-
-    headers = data.headers.filter(function(header) { return header !== xLabel; });
-
-    xSeries = data.values.map(function(row) { return row[0]; });
-    xMin = d3.min(xSeries),
-    xMax = d3.max(xSeries);
-
-    ySeries = headers.map(function(header, index) {
-      return {
-        header: header,
-        values: data.values.map(function(row) {
-          return {
-            x: row[0],
-            y: Number(row[index + 1])
-          };
-        })
-      };
-    });
-
-    yMin = d3.min(ySeries, function(series) {
-      return d3.min(series.values, function(d) {
-        return d.y;
+  // Attaches headers to values to get name-value pairs.
+  attachHeaders = function(headers, values) {
+    return values.map(function(row, i) {
+      var header = headers[i];
+      return row.map(function(value) {
+        return {
+          header: header,
+          value: value
+        };
       });
     });
+  };
 
-    yMax = d3.max(ySeries, function(series) {
-      return d3.max(series.values, function(d) {
-        return d.y;
+  // Transposes a 2-D array.
+  transpose = function(array) {
+    return array[0].map(function(col, j) {
+      return array.map(function(row) {
+        return row[j];
       });
     });
-
-    return {
-      xLabel: xLabel,
-      yLabel: yLabel,
-      xMin: xMin,
-      xMax: xMax,
-      yMin: yMin,
-      yMax: yMax,
-      headers: headers,
-      xSeries: xSeries,
-      ySeries: ySeries
-    };
-  };
-
-  getTimeSeries = function(data) {
-
-    var dataSeries, dateFormat;
-
-    dataSeries = getSeries(data);
-
-    dateFormat = null;
-    if ('dateFormat' in data) {
-      dateFormat = d3.time.format(data.dateFormat);
-    }
-
-    dataSeries.xSeries = dataSeries.xSeries.map(function(dateStr) {
-      if (dateFormat != null) {
-        return dateFormat.parse(dateStr);
-      }
-      return new Date(Number(dateStr));
-    });
-
-    dataSeries.xMin = d3.min(dataSeries.xSeries);
-    dataSeries.xMax = d3.max(dataSeries.xSeries);
-
-    dataSeries.ySeries = dataSeries.ySeries.map(function(series) {
-      return {
-        header: series.header,
-        values: series.values.map(function(d) {
-          var xVal = null;
-          if (dateFormat != null) {
-            xVal = dateFormat.parse(d.x);
-          } else {
-            xVal = new Date(Number(d.x));
-          }
-          return {
-            x: xVal,
-            y: d.y
-          };
-        })
-      };
-    });
-
-    return dataSeries;
-  };
-
-  groupByX = function(dataSeries) {
-    return dataSeries.xSeries.map(function(x, i) {
-      return {
-        x: x,
-        values: dataSeries.ySeries.map(function(series) {
-          return {
-            header: series.header,
-            x: x,
-            y: Number(series.values[i].y)
-          };
-        })
-      };
-    });
-  };
+  }
 
   /**
    * Converts CSV/TSV-like JSON data to annotated series of name-value pairs.
    * Compact CSV-like JSON makes data transfers more efficient and yet does not have
-   * the parsing overhead of CSVs.
+   * the parsing overhead of CSVs. But they are not proper for rendering charts.
    *
-   * @param data  CSV/TSV-like JSON data. The 1st row must be the headers
-   *              and the 1st column must be the x-column.
+   * @param data  CSV/TSV-like JSON data. The 1st row must be the headers.
    * @returns Annotated series of name-value pairs.
    */
   unpack = function(data, options) {
-    var series;
-    if (options) {
-      if (options.timeSeries) {
-        series = getTimeSeries(data);
-      } else {
-        series = getSeries(data);
-      }
-      if (options.groupByX) {
-        series.xGroups = groupByX(series);
-      }
-      return series;
+    var results, xValues, yValues, xRows, yRows;
+    // Set the headers
+    results = {
+        xHeaders: data.xHeaders,
+        yHeaders: data.yHeaders,
+    };
+    // Set up the labels
+    if (data.xLabel) {
+      results.xLabel = data.xLabel;
     }
-    return getSeries(data);
+    if (data.yLabel) {
+      results.yLabel = data.yLabel;
+    }
+    // Process the x values. Convert time stamps.
+    xValues = data.xValues.map(function(xRow, i) {
+      var isTimestamp = ('timestamp' === data.xHeaders[i]);
+      return xRow.map(function(xValue) {
+        if (isTimestamp) {
+          return new Date(Number(xValue));
+        }
+        return xValue;
+      });
+    });
+    // Process the y values. Convert to numbers.
+    yValues = data.yValues.map(function(yRow) {
+      return yRow.map(function(yValue) {
+        return Number(yValue);
+      });
+    });
+    // Extract the first row of the x values as the x series
+    // Data of the y series are plotted against this single x series
+    results.xSeries = {
+      header: data.xHeaders[0],
+      values: xValues[0]
+    };
+    if (options) {
+      // Min and max
+      if (options.xMinMax) {
+        results.xMin = d3.min(results.xSeries.values, function(value) {
+          return value;
+        });
+        results.xMax = d3.max(results.xSeries.values, function(value) {
+          return value;
+        });
+      }
+      if (options.yMinMax) {
+        results.yMin = d3.min(yValues, function(row) {
+          return d3.min(row, function(val) {
+            return Number(val);
+          });
+        });
+        results.yMax = d3.max(yValues, function(row) {
+          return d3.max(row, function(val) {
+            return Number(val);
+          });
+        });
+      }
+      // Include y series. This can be multi-series.
+      if (options.ySeries) {
+        results.ySeries = yValues.map(function(yRow, i) {
+          var yHeader = data.yHeaders[i];
+          return {
+            header: yHeader,
+            values: yRow
+          };
+        });
+      }
+      // Present the data as rows
+      if (options.rows) {
+        xRows = transpose(attachHeaders(data.xHeaders, xValues));
+        yRows = transpose(attachHeaders(data.yHeaders, yValues));
+        results.rows = xRows.map(function(xRow, i) {
+          return {
+            x: xRow,
+            y: yRows[i]
+          };
+        });
+      }
+    }
+    return results;
   };
 
   return { unpack: unpack };

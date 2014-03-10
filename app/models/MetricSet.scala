@@ -7,6 +7,7 @@ import org.sagebionetworks.dashboard.model.{Interval, Statistic}
 import org.sagebionetworks.dashboard.service.{CountDataPointConverter, EntityIdToName, UserIdToName}
 import org.sagebionetworks.dashboard.service.MetricReader
 import context.SpringContext
+import MetricType._
 
 /**
  * One set of metrics. This is a template to query a set of metrics and to assemble a data set.
@@ -37,7 +38,7 @@ object MetricSet {
 
   val map = collection.immutable.ListMap(
 
-    MetricHandle("bar", "uniqueUser") -> MetricSet(
+    MetricHandle(Unique, "user") -> MetricSet(
       name = "Count of Unique Users",
       description = "The number of unique users who have used Synapse.",
       start = 7,
@@ -45,20 +46,19 @@ object MetricSet {
       interval = Interval.day,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
-        val data = metricReader.getUniqueCount("uniqueUser", start, end);
+        val data = metricReader.getUniqueCount("uniqueUser", interval, start, end);
         DataSet(
-          xLabel = Some("date & time"),
-          yLabel = Some("count"),
-          xHeader = DataHeader.Timestamp,
+          xLabel = Some("date"),
+          yLabel = Some("count of unique users"),
           xHeaders = List(DataHeader.Timestamp),
-          xValues = List(data map(d => d.getX) toList),
-          yHeaders = List("count"),
-          yValues = List(data map (d => d.getY) toList)
+          xValues = List(data map(d => d.x) toList),
+          yHeaders = List("all users"),
+          yValues = List(data map (d => d.y) toList)
         )
       }
     ),
 
-    MetricHandle("hbar", "topUser") -> MetricSet(
+    MetricHandle(Top, "user") -> MetricSet(
       name = "Top Users",
       description = "Users who have registered the most activitities.",
       start = 1,
@@ -67,24 +67,44 @@ object MetricSet {
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
-        val data = metricReader.getTop("uniqueUser", start, 50)
+        val data = metricReader.getTop("uniqueUser", interval, start, 0, 50)
         DataSet(
           xLabel = None,
           yLabel = None,
-          xHeader = DataHeader.Name,
-          xHeaders = List(DataHeader.ID, DataHeader.URL, DataHeader.Name),
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
           xValues = List(
-            data map (d => d.getX) toList,
-            data map (d => baseUrl + d.getX) toList,
-            data map (d => userIdToName.convert(d).getX) toList
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
           ),
           yHeaders = List("count"),
-          yValues = List(data map (d => d.getY) toList)
+          yValues = List(data map (d => d.y) toList)
         )
       }
     ),
 
-    MetricHandle("line", "postEntityHeader") -> MetricSet(
+    MetricHandle(Latency, "global") -> MetricSet(
+      name = "Global Latencies",
+      description = "Latency in milliseconds for all the REST APIs.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("globalLatency", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("ALL"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "postEntityHeader") -> MetricSet(
       name = "POST-Entity-Header Latencies",
       description = "Latency in milliseconds for the POST-entity-header REST API.",
       start = 7,
@@ -95,13 +115,96 @@ object MetricSet {
         val timeseries = metricReader.getTimeSeries("postEntityHeader", start, end,
             statistic, interval)
         DataSet(
-          xLabel = Some("date and time"),
+          xLabel = Some("time"),
           yLabel = Some("latency (ms)"),
-          xHeader = DataHeader.Timestamp,
           xHeaders = List(DataHeader.Timestamp),
-          xValues = List(timeseries map (d => d.getX) toList),
-          yHeaders = List("count"),
-          yValues = List(timeseries map (d => d.getY) toList)
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("PEH"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "getEntityBundle") -> MetricSet(
+      name = "GET-Entity-Bundle Latencies",
+      description = "Latency in milliseconds for the GET-entity-bundle REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("getEntityBundle", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("GEB"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "query") -> MetricSet(
+      name = "Query Latencies",
+      description = "Latency in milliseconds for the query REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("query", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("QRY"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "search") -> MetricSet(
+      name = "Search Latencies",
+      description = "Latency in milliseconds for the search REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("search", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("SRCH"),
+          yValues = List(timeseries map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Latency, "desc") -> MetricSet(
+      name = "GET-Descendants Latencies",
+      description = "Latency in milliseconds for the GET-descendants REST API.",
+      start = 7,
+      end = 0,
+      interval = Interval.hour,
+      statistic = Statistic.avg,
+      dataSet = (start, end, interval, statistic) => {
+        val timeseries = metricReader.getTimeSeries("getDescendants", start, end,
+            statistic, interval)
+        DataSet(
+          xLabel = Some("time"),
+          yLabel = Some("latency (ms)"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(timeseries map (d => d.x) toList),
+          yHeaders = List("DESC"),
+          yValues = List(timeseries map (d => d.y) toList)
         )
       }
     )
