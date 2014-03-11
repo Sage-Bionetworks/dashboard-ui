@@ -180,7 +180,8 @@ dashboard.charts = (function() {
   hbar = function(data, width, height, margin) {
 
     var w, h, xScale, xAxis, yScale0, yScale1,
-        svg, chart, plot, color;
+        svg, chart, plot, color, labelSelection, iUrl, label,
+        scoreOffset, labelOffset;
 
     // Remove any existing chart
     removeSvg();
@@ -195,89 +196,83 @@ dashboard.charts = (function() {
     w = width - margin.left - margin.right;
     h = height - margin.top - margin.bottom;
 
-    // The x-axis
-    xScale = d3.scale.log()
+    // The x scale. There is no x-axis.
+    xScale = d3.scale.linear()
       .domain([1, data.yMax])
       .range([0, w]);
 
-    xAxis = d3.svg.axis()
-      .scale(xScale)
-      .orient('top')
-      .ticks(5, 'd'); // Ticks are 5 numbers
-
-    // The y scales. Note there is no y-axis on the hbar chart.
+    // The y scales. Note there is no y-axis on the hbar chart, only the scales.
     yScale0 = d3.scale.ordinal()
-      .domain(data.xSeries)
+      .domain(data.xSeries.values)
       .rangeRoundBands([0, h], 0.2);
 
     yScale1 = d3.scale.ordinal()
-      .domain(data.headers)
+      .domain(data.yHeaders)
       .rangeRoundBands([0, yScale0.rangeBand()]);
 
     // The plot
-    svg = addChart(data.xGroups, width, height, margin, xAxis, null);
+    svg = addChart(data.rows, width, height, margin, null, null);
 
     plot = svg.plot;
-    plot.attr('transform', function(d) { return 'translate(0,' + yScale0(d.x) + ')'; });
+    plot.attr('transform', function(row) { return 'translate(0,' + yScale0(row.x[0].value) + ')'; });
+    plot.attr('with-space-preserve', true);
 
-    color = d3.scale.category10().domain(data.headers);
+    color = d3.scale.category10().domain(data.yHeaders);
 
     plot.selectAll('rect')
-      .data(function(group) { return group.values; })
+      .data(function(row) { return row.y; })
       .enter().append('rect')
       .attr('class', 'rect')
-      .attr('x', function(d) { return xScale(1); })
-      .attr('y', function(d) { return yScale1(d.header); })
-      .attr('width', function(d) { return xScale(d.y); })
+      .attr('x', function(y) { return xScale(1); })
+      .attr('y', function(y) { return yScale1(y.header); })
+      .attr('width', function(y) { return xScale(y.value); })
       .attr('height', yScale1.rangeBand())
-      .style('fill', function(d) { return color(d.header); });
+      .style('fill', function(y) { return color(y.header); });
 
+    // Scores
+    scoreOffset = xScale(data.yMax) + 20;
     plot.selectAll('.score')
-      .data(function(group) { return group.values; })
+      .data(function(row) { return row.y; })
       .enter().append('text')
-      .attr('x', function(d) { return xScale(d.y); })
-      .attr('y', function(d) { return yScale1(d.header) + yScale1.rangeBand() / 2; })
+      .attr('x', scoreOffset)
+      .attr('y', function(y) { return yScale1(y.header) + yScale1.rangeBand() / 2; })
       .attr('dx', 10)
       .attr('dy', '.36em')
       .attr('text-anchor', 'start')
       .attr('class', 'score')
-      .text(function(d) { return d.y; });
+      .text(function(y) { return y.value; });
 
-    // Labels on the left side
+    // Labels on the right side
     chart = svg.chart;
-    chart.selectAll('.label')
-      .data(data.xGroups)
-      .enter()
-      .append('svg:a')
-      .attr('xlink:href', function(group){ return 'https://www.synapse.org'; })
-      .append('text')
-      .attr('x', -10)
-      .attr('y', function(group) { return yScale0(group.x) + yScale0.rangeBand() / 2; })
+    labelSelection = chart.selectAll('.label')
+      .data(data.rows)
+      .enter();
+
+    // If we have a 'url' x-header, we need to render the label as a link
+    iUrl = data.xHeaders.reduce(function(prev, curr, i) {
+      if ('url' === curr) {
+        return i;
+      }
+    }, -1);
+
+    if (iUrl >= 0) {
+      labels = labelSelection.append('svg:a')
+        .attr('xlink:href', function(row){
+          return row.x[iUrl].value;
+        })
+        .append('text');
+    } else {
+      labels = labelSelection.append('text');
+    }
+
+    labelOffset = 200 + data.yMax.toString().length * 2 - margin.left;
+    labels.attr('xml:space', 'preserve')
+      .attr('x', labelOffset)
+      .attr('y', function(row) { return yScale0(row.x[0].value) + yScale0.rangeBand() / 2; })
       .attr('dy', '.36em')
-      .attr('text-anchor', 'end')
+      .attr('text-anchor', 'start')
       .attr('class', 'label')
-      .text(function(group) {
-        var txt = group.x;
-        // TODO: Replace the magic numbers. Hook them up instead to width or margin
-        if (txt.length > 36) {
-          txt = txt.substring(0, 33);
-          txt = txt + '...';
-        }
-        return txt;
-      })
-      .on('mouseover', function(d) {
-        if (d.x.length > 36) {
-          chart.append('text')
-            .text(d.x)
-            .attr('id', 'hovertext')
-            .attr('text-anchor', 'start')
-            .attr('x', 10)
-            .attr('y', yScale0(d.x) + yScale0.rangeBand() / 2)
-            .attr('dy', '.36em')
-            .attr('fill', 'orange');
-        }
-      })
-      .on('mouseout', function(d) { chart.select('#hovertext').remove(); });
+      .text(function(row) { return row.x[0].value; });
   };
 
   //=============================================

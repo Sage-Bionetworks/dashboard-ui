@@ -39,8 +39,8 @@ var dashboard = (function($) {
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'top':
-        var margin = {top: 60, right: 100, bottom: 20, left: 300};
-        data = dashboard.models.unpack(data, { rows: true });
+        var margin = {top: 60, right: 800, bottom: 20, left: 20};
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
       case 'unique':
