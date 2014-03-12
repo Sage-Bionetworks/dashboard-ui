@@ -34,3 +34,8 @@
     fill: none;
     stroke-width: 1px;
 }
+
+text.label {
+	font-family: monospace;
+	white-space: pre;
+}
