@@ -229,7 +229,6 @@ dashboard.charts = (function() {
 
     plot = svg.plot;
     plot.attr('transform', function(row) { return 'translate(0,' + yScale0(row.x[0].value) + ')'; });
-    plot.attr('with-space-preserve', true);
 
     color = d3.scale.category10().domain(data.yHeaders);
 
@@ -280,8 +279,7 @@ dashboard.charts = (function() {
     }
 
     labelOffset = 200 + data.yMax.toString().length * 2 - margin.left;
-    labels.attr('xml:space', 'preserve')
-      .attr('x', labelOffset)
+    labels.attr('x', labelOffset)
       .attr('y', function(row) { return yScale0(row.x[0].value) + yScale0.rangeBand() / 2; })
       .attr('dy', '.36em')
       .attr('text-anchor', 'start')
