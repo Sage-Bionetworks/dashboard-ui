@@ -75,7 +75,7 @@ dashboard.charts = (function() {
   //===============================
   bar = function(data, width, height, margin) {
 
-    var w, h, xScale0, xScale1, xAxis, y, yAxis,
+    var w, h, xScale0, xScale1, xAxis, yScale, yAxis,
         svg, chart, plot, color, legend;
 
     // Remove any existing chart
@@ -93,7 +93,7 @@ dashboard.charts = (function() {
 
     // The x-axis
     xScale0 = d3.scale.ordinal()
-      .domain(data.xSeries)
+      .domain(data.xSeries.values)
       .rangeRoundBands([0, w], 0.2);
 
     xAxis = d3.svg.axis()
@@ -101,53 +101,55 @@ dashboard.charts = (function() {
       .orient('bottom');
 
     // At maximum, display 12 ticks on the x-axis
-    if (data.xSeries.length > 6) {
-      xAxis.tickValues(data.xSeries.filter(function(value, i) {
-        return (i % Math.floor(data.xSeries.length / 6)) === 0;
+    if (data.xSeries.values.length > 6) {
+      xAxis.tickValues(data.xSeries.values.filter(function(value, i) {
+        return (i % Math.floor(data.xSeries.values.length / 6)) === 0;
       }));
     }
 
     // The y-axis
-    y = d3.scale.linear()
+    yScale = d3.scale.linear()
       .domain([0, data.yMax * 1.5])
       .range([h, 0]);
 
     yAxis = d3.svg.axis()
-      .scale(y)
+      .scale(yScale)
       .orient('left')
       .tickFormat(d3.format('.2s'));
 
     // The plot
-    svg = addChart(data.xGroups, width, height, margin, xAxis, yAxis);
+    svg = addChart(data.rows, width, height, margin, xAxis, yAxis);
     chart = svg.chart;
     plot = svg.plot;
-    plot.attr('transform', function(d) { return 'translate(' + xScale0(d.x) + ',0)'; });
+    plot.attr('transform', function(row) { return 'translate(' + xScale0(row.x[0].value) + ',0)'; });
 
     xScale1 = d3.scale.ordinal()
-      .domain(data.headers)
+      .domain(data.yHeaders)
       .rangeRoundBands([0, xScale0.rangeBand()]);
 
-    color = d3.scale.category10().domain(data.headers.concat('__hover__'));
+    color = d3.scale.category10().domain(data.yHeaders.concat('__hover__'));
 
     plot.selectAll('rect')
-      .data(function(group) { return group.values; })
+      .data(function(row) {
+        return row.y.map(function (y) {
+          // Merge in the x value to be used in the mouse-over function
+          return {x: row.x[0].value, header: y.header, value: y.value};
+        });
+      })
       .enter().append('rect')
       .attr('width', xScale1.rangeBand())
-      .attr('x', function(d) { return xScale1(d.header); })
-      .attr('y', function(d) { return y(d.y); })
-      .attr('height', function(d) { return h - y(d.y); })
-      .style('fill', function(d) { return color(d.header); })
-      .on('mouseover', function(d) {
-        d3.select(this).style('fill', color('__hover__'));
+      .attr('x', function(y) { return xScale1(y.header); })
+      .attr('y', function(y) { return yScale(y.value); })
+      .attr('height', function(y) { return h - yScale(y.value); })
+      .style('fill', function(y) { return color(y.header); })
+      .on('mouseover', function(y) {
+        d3.select(this).style('fill', color('__hover__'))
         chart.append('text')
-          .text(d.y)
+          .text(y.value)
           .attr('id', 'hovertext')
           .attr('text-anchor', 'middle')
-          // TODO: The line below should use "xScale1(d.header)".
-          // But currently the header is empty.
-          // So "xScale0(d.x)" is used here as a temporary hack.
-          .attr('x', xScale0(d.x) + xScale1.rangeBand() / 2)
-          .attr('y', y(d.y) - 10)
+          .attr('x', xScale0(y.x) + xScale1(y.header) + xScale1.rangeBand() / 2)
+          .attr('y', yScale(y.value) - 10)
           .attr('fill', 'black');
       })
       .on('mouseout', function(d) {
@@ -157,17 +159,17 @@ dashboard.charts = (function() {
 
     // Legend
     legend = chart.selectAll('.legend')
-      .data(data.headers.slice())
+      .data(data.yHeaders.slice())
       .enter().append('g')
       .attr('class', 'legend')
       .attr('transform', function(d, i) { return 'translate(0,' + i * 20 + ')'; });
     legend.append('rect')
-      .attr('x', width - 18)
+      .attr('x', w - 18)
       .attr('width', 18)
       .attr('height', 18)
       .style('fill', color);
     legend.append('text')
-      .attr('x', width - 24)
+      .attr('x', w - 24)
       .attr('y', 9)
       .attr('dy', '.35em')
       .style('text-anchor', 'end')

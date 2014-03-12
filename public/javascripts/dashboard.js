@@ -32,20 +32,32 @@ var dashboard = (function($) {
 
   // Binds data to chart
   bindData = function(metricType, data) {
+    var margin, dateFormat;
     switch(metricType) {
       case 'category': // TODO: Find a proper metric to use the bar chart
-        var margin = {top: 20, right: 60, bottom: 20, left: 60},
-        data = dashboard.models.unpack(data, { rows: true });
+        margin = {top: 20, right: 60, bottom: 20, left: 60},
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        dashboard.charts.bar(data, configMap.width, configMap.height, margin);
+        break;
+      case 'unique':
+        // Hack alert: Convert timestamps to Strings
+        dateFormat = d3.time.format('%m/%d');
+        data.xValues[0].forEach(function(val, i) {
+          data.xValues[0][i] = dateFormat(new Date(Number(val)));
+        });
+        data.xHeaders[0] = 'datetime';
+        margin = {top: 20, right: 60, bottom: 20, left: 60},
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        // TODO: Bar chart for now. Should use a more proper chart for time series
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'top':
-        var margin = {top: 60, right: 800, bottom: 20, left: 20};
+        margin = {top: 60, right: 800, bottom: 20, left: 20};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
-      case 'unique':
       case 'latency':
-        var margin = {top: 20, right: 60, bottom: 20, left: 60};
+        margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
