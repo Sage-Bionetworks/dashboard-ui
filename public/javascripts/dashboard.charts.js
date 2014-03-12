@@ -2,7 +2,7 @@ dashboard.charts = (function() {
 
   var isEmptyData, removeSvg, addSvg, addEmptyChart, addChart,
       addAxisX, addAxisY, addPlot,
-      bar, hbar, line;
+      spin, bar, hbar, line;
 
   ////// Private Functions //////
 
@@ -70,12 +70,24 @@ dashboard.charts = (function() {
 
   ////// Public Methods //////
 
+  spin = function(on, width, height) {
+    var svg;
+    if (on) {
+      removeSvg();
+      svg = addSvg();
+      svg.append('text')
+        .attr('x', width / 12)
+        .attr('y', height / 12)
+        .text('[Loading... Please wait]');
+    }
+  };
+
   //===============================
   // Renders a grouped bar chart.
   //===============================
   bar = function(data, width, height, margin) {
 
-    var w, h, xScale0, xScale1, xAxis, y, yAxis,
+    var w, h, xScale0, xScale1, xAxis, yScale, yAxis,
         svg, chart, plot, color, legend;
 
     // Remove any existing chart
@@ -93,7 +105,7 @@ dashboard.charts = (function() {
 
     // The x-axis
     xScale0 = d3.scale.ordinal()
-      .domain(data.xSeries)
+      .domain(data.xSeries.values)
       .rangeRoundBands([0, w], 0.2);
 
     xAxis = d3.svg.axis()
@@ -101,53 +113,55 @@ dashboard.charts = (function() {
       .orient('bottom');
 
     // At maximum, display 12 ticks on the x-axis
-    if (data.xSeries.length > 6) {
-      xAxis.tickValues(data.xSeries.filter(function(value, i) {
-        return (i % Math.floor(data.xSeries.length / 6)) === 0;
+    if (data.xSeries.values.length > 6) {
+      xAxis.tickValues(data.xSeries.values.filter(function(value, i) {
+        return (i % Math.floor(data.xSeries.values.length / 6)) === 0;
       }));
     }
 
     // The y-axis
-    y = d3.scale.linear()
+    yScale = d3.scale.linear()
       .domain([0, data.yMax * 1.5])
       .range([h, 0]);
 
     yAxis = d3.svg.axis()
-      .scale(y)
+      .scale(yScale)
       .orient('left')
       .tickFormat(d3.format('.2s'));
 
     // The plot
-    svg = addChart(data.xGroups, width, height, margin, xAxis, yAxis);
+    svg = addChart(data.rows, width, height, margin, xAxis, yAxis);
     chart = svg.chart;
     plot = svg.plot;
-    plot.attr('transform', function(d) { return 'translate(' + xScale0(d.x) + ',0)'; });
+    plot.attr('transform', function(row) { return 'translate(' + xScale0(row.x[0].value) + ',0)'; });
 
     xScale1 = d3.scale.ordinal()
-      .domain(data.headers)
+      .domain(data.yHeaders)
       .rangeRoundBands([0, xScale0.rangeBand()]);
 
-    color = d3.scale.category10().domain(data.headers.concat('__hover__'));
+    color = d3.scale.category10().domain(data.yHeaders.concat('__hover__'));
 
     plot.selectAll('rect')
-      .data(function(group) { return group.values; })
+      .data(function(row) {
+        return row.y.map(function (y) {
+          // Merge in the x value to be used in the mouse-over function
+          return {x: row.x[0].value, header: y.header, value: y.value};
+        });
+      })
       .enter().append('rect')
       .attr('width', xScale1.rangeBand())
-      .attr('x', function(d) { return xScale1(d.header); })
-      .attr('y', function(d) { return y(d.y); })
-      .attr('height', function(d) { return h - y(d.y); })
-      .style('fill', function(d) { return color(d.header); })
-      .on('mouseover', function(d) {
-        d3.select(this).style('fill', color('__hover__'));
+      .attr('x', function(y) { return xScale1(y.header); })
+      .attr('y', function(y) { return yScale(y.value); })
+      .attr('height', function(y) { return h - yScale(y.value); })
+      .style('fill', function(y) { return color(y.header); })
+      .on('mouseover', function(y) {
+        d3.select(this).style('fill', color('__hover__'))
         chart.append('text')
-          .text(d.y)
+          .text(y.value)
           .attr('id', 'hovertext')
           .attr('text-anchor', 'middle')
-          // TODO: The line below should use "xScale1(d.header)".
-          // But currently the header is empty.
-          // So "xScale0(d.x)" is used here as a temporary hack.
-          .attr('x', xScale0(d.x) + xScale1.rangeBand() / 2)
-          .attr('y', y(d.y) - 10)
+          .attr('x', xScale0(y.x) + xScale1(y.header) + xScale1.rangeBand() / 2)
+          .attr('y', yScale(y.value) - 10)
           .attr('fill', 'black');
       })
       .on('mouseout', function(d) {
@@ -157,17 +171,17 @@ dashboard.charts = (function() {
 
     // Legend
     legend = chart.selectAll('.legend')
-      .data(data.headers.slice())
+      .data(data.yHeaders.slice())
       .enter().append('g')
       .attr('class', 'legend')
       .attr('transform', function(d, i) { return 'translate(0,' + i * 20 + ')'; });
     legend.append('rect')
-      .attr('x', width - 18)
+      .attr('x', w - 18)
       .attr('width', 18)
       .attr('height', 18)
       .style('fill', color);
     legend.append('text')
-      .attr('x', width - 24)
+      .attr('x', w - 24)
       .attr('y', 9)
       .attr('dy', '.35em')
       .style('text-anchor', 'end')
@@ -180,7 +194,8 @@ dashboard.charts = (function() {
   hbar = function(data, width, height, margin) {
 
     var w, h, xScale, xAxis, yScale0, yScale1,
-        svg, chart, plot, color;
+        svg, chart, plot, color, labelSelection, iUrl, label,
+        scoreOffset, labelOffset;
 
     // Remove any existing chart
     removeSvg();
@@ -195,89 +210,83 @@ dashboard.charts = (function() {
     w = width - margin.left - margin.right;
     h = height - margin.top - margin.bottom;
 
-    // The x-axis
-    xScale = d3.scale.log()
+    // The x scale. There is no x-axis.
+    xScale = d3.scale.linear()
       .domain([1, data.yMax])
       .range([0, w]);
 
-    xAxis = d3.svg.axis()
-      .scale(xScale)
-      .orient('top')
-      .ticks(5, 'd'); // Ticks are 5 numbers
-
-    // The y scales. Note there is no y-axis on the hbar chart.
+    // The y scales. Note there is no y-axis on the hbar chart, only the scales.
     yScale0 = d3.scale.ordinal()
-      .domain(data.xSeries)
+      .domain(data.xSeries.values)
       .rangeRoundBands([0, h], 0.2);
 
     yScale1 = d3.scale.ordinal()
-      .domain(data.headers)
+      .domain(data.yHeaders)
       .rangeRoundBands([0, yScale0.rangeBand()]);
 
     // The plot
-    svg = addChart(data.xGroups, width, height, margin, xAxis, null);
+    svg = addChart(data.rows, width, height, margin, null, null);
 
     plot = svg.plot;
-    plot.attr('transform', function(d) { return 'translate(0,' + yScale0(d.x) + ')'; });
+    plot.attr('transform', function(row) { return 'translate(0,' + yScale0(row.x[0].value) + ')'; });
+    plot.attr('with-space-preserve', true);
 
-    color = d3.scale.category10().domain(data.headers);
+    color = d3.scale.category10().domain(data.yHeaders);
 
     plot.selectAll('rect')
-      .data(function(group) { return group.values; })
+      .data(function(row) { return row.y; })
       .enter().append('rect')
       .attr('class', 'rect')
-      .attr('x', function(d) { return xScale(1); })
-      .attr('y', function(d) { return yScale1(d.header); })
-      .attr('width', function(d) { return xScale(d.y); })
+      .attr('x', function(y) { return xScale(1); })
+      .attr('y', function(y) { return yScale1(y.header); })
+      .attr('width', function(y) { return xScale(y.value); })
       .attr('height', yScale1.rangeBand())
-      .style('fill', function(d) { return color(d.header); });
+      .style('fill', function(y) { return color(y.header); });
 
+    // Scores
+    scoreOffset = xScale(data.yMax) + 20;
     plot.selectAll('.score')
-      .data(function(group) { return group.values; })
+      .data(function(row) { return row.y; })
       .enter().append('text')
-      .attr('x', function(d) { return xScale(d.y); })
-      .attr('y', function(d) { return yScale1(d.header) + yScale1.rangeBand() / 2; })
+      .attr('x', scoreOffset)
+      .attr('y', function(y) { return yScale1(y.header) + yScale1.rangeBand() / 2; })
       .attr('dx', 10)
       .attr('dy', '.36em')
       .attr('text-anchor', 'start')
       .attr('class', 'score')
-      .text(function(d) { return d.y; });
+      .text(function(y) { return y.value; });
 
-    // Labels on the left side
+    // Labels on the right side
     chart = svg.chart;
-    chart.selectAll('.label')
-      .data(data.xGroups)
-      .enter()
-      .append('svg:a')
-      .attr('xlink:href', function(group){ return 'https://www.synapse.org'; })
-      .append('text')
-      .attr('x', -10)
-      .attr('y', function(group) { return yScale0(group.x) + yScale0.rangeBand() / 2; })
+    labelSelection = chart.selectAll('.label')
+      .data(data.rows)
+      .enter();
+
+    // If we have a 'url' x-header, we need to render the label as a link
+    iUrl = data.xHeaders.reduce(function(prev, curr, i) {
+      if ('url' === curr) {
+        return i;
+      }
+    }, -1);
+
+    if (iUrl >= 0) {
+      labels = labelSelection.append('svg:a')
+        .attr('xlink:href', function(row){
+          return row.x[iUrl].value;
+        })
+        .append('text');
+    } else {
+      labels = labelSelection.append('text');
+    }
+
+    labelOffset = 200 + data.yMax.toString().length * 2 - margin.left;
+    labels.attr('xml:space', 'preserve')
+      .attr('x', labelOffset)
+      .attr('y', function(row) { return yScale0(row.x[0].value) + yScale0.rangeBand() / 2; })
       .attr('dy', '.36em')
-      .attr('text-anchor', 'end')
+      .attr('text-anchor', 'start')
       .attr('class', 'label')
-      .text(function(group) {
-        var txt = group.x;
-        // TODO: Replace the magic numbers. Hook them up instead to width or margin
-        if (txt.length > 36) {
-          txt = txt.substring(0, 33);
-          txt = txt + '...';
-        }
-        return txt;
-      })
-      .on('mouseover', function(d) {
-        if (d.x.length > 36) {
-          chart.append('text')
-            .text(d.x)
-            .attr('id', 'hovertext')
-            .attr('text-anchor', 'start')
-            .attr('x', 10)
-            .attr('y', yScale0(d.x) + yScale0.rangeBand() / 2)
-            .attr('dy', '.36em')
-            .attr('fill', 'orange');
-        }
-      })
-      .on('mouseout', function(d) { chart.select('#hovertext').remove(); });
+      .text(function(row) { return row.x[0].value; });
   };
 
   //=============================================
@@ -374,6 +383,7 @@ dashboard.charts = (function() {
   };
 
   return {
+    spin: spin,
     bar: bar,
     hbar: hbar,
     line: line

@@ -60,14 +60,14 @@ object MetricSet {
 
     MetricHandle(Top, "user") -> MetricSet(
       name = "Top Users",
-      description = "Users who have registered the most activitities.",
+      description = "Top 20 users who have registered the most activitities.",
       start = 1,
       end = 1,
       interval = Interval.day,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
-        val data = metricReader.getTop("uniqueUser", interval, start, 0, 50)
+        val data = metricReader.getTop("uniqueUser", interval, start, 0, 20)
         DataSet(
           xLabel = None,
           yLabel = None,
@@ -76,6 +76,170 @@ object MetricSet {
             data map (d => userIdToName.convert(d).x) toList,
             data map (d => d.x) toList,
             data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "entity") -> MetricSet(
+      name = "Top Entities",
+      description = "List of the top 20 most accessed entities.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Synapse:"
+        val data = metricReader.getTop("topEntity", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => entityIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "fileDownload") -> MetricSet(
+      name = "Top File Downloads",
+      description = "List of the top 20 most downloaded files.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Synapse:"
+        val data = metricReader.getTop("fileDownload", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => entityIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "method") -> MetricSet(
+      name = "Top REST APIs",
+      description = "List of the top 20 most accessed REST APIs.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getTop("topMethod", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name),
+          xValues = List(
+            data map (d => {
+              // Pad the HTTP method name to align the URLs after it
+              val parts = d.x.split(" ")
+              parts(0).toUpperCase.padTo(5, ' ') + parts(1)
+            }) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "client") -> MetricSet(
+      name = "Top Clients",
+      description = "List of the top 20 clients.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getTop("topClient", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name),
+          xValues = List(
+            data map (d => d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "python") -> MetricSet(
+      name = "Top Python Clients",
+      description = "List of the top 20 Python clients.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getTop("topPythonClient", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name),
+          xValues = List(
+            data map (d => d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "r") -> MetricSet(
+      name = "Top R Clients",
+      description = "List of the top 20 R clients.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getTop("topRClient", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name),
+          xValues = List(
+            data map (d => d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Top, "web") -> MetricSet(
+      name = "Top Web Clients",
+      description = "List of the top 20 web clients.",
+      start = 1,
+      end = 1,
+      interval = Interval.day,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getTop("topWebClient", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name),
+          xValues = List(
+            data map (d => d.x) toList
           ),
           yHeaders = List("count"),
           yValues = List(data map (d => d.y) toList)

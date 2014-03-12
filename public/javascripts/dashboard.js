@@ -4,7 +4,7 @@ var dashboard = (function($) {
 
   var createQuery, bindData, makeChart, init,
       dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
-      prevDayOnClick, nextDayOnClick, thisMetric,
+      prevIntvlOnClick, nextIntvlOnClick, getInterval, thisMetric,
       configMap = {
         width: 900,
         height: 550
@@ -32,20 +32,32 @@ var dashboard = (function($) {
 
   // Binds data to chart
   bindData = function(metricType, data) {
+    var margin, dateFormat;
     switch(metricType) {
       case 'category': // TODO: Find a proper metric to use the bar chart
-        var margin = {top: 20, right: 60, bottom: 20, left: 60},
-        data = dashboard.models.unpack(data, { rows: true });
+        margin = {top: 20, right: 60, bottom: 20, left: 60},
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        dashboard.charts.bar(data, configMap.width, configMap.height, margin);
+        break;
+      case 'unique':
+        // Hack alert: Convert timestamps to Strings
+        dateFormat = d3.time.format('%m/%d');
+        data.xValues[0].forEach(function(val, i) {
+          data.xValues[0][i] = dateFormat(new Date(Number(val)));
+        });
+        data.xHeaders[0] = 'datetime';
+        margin = {top: 20, right: 60, bottom: 20, left: 60},
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        // TODO: Bar chart for now. Should use a more proper chart for time series
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'top':
-        var margin = {top: 60, right: 100, bottom: 20, left: 300};
-        data = dashboard.models.unpack(data, { rows: true });
+        margin = {top: 20, right: 800, bottom: 20, left: 20};
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
-      case 'unique':
       case 'latency':
-        var margin = {top: 20, right: 60, bottom: 20, left: 60};
+        margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
@@ -54,10 +66,18 @@ var dashboard = (function($) {
 
   // Makes a new chart
   makeChart = function(metric) {
-    var q = createQuery(metric);
-    d3.json(q, function(error, d) {
-      bindData(metric.type, d);
-    });
+    d3.json(createQuery(metric))
+    .on('beforesend', function() {
+      dashboard.charts.spin(true, configMap.width, configMap.height);
+    })
+    .on('load', function(json) {
+      dashboard.charts.spin(false);
+      bindData(metric.type, json);
+    })
+    .on('error', function() {
+      dashboard.charts.spin(false);
+    })
+    .get();
   };
 
   ////// Event Handlers
@@ -116,21 +136,37 @@ var dashboard = (function($) {
     makeChart(thisMetric);
   };
 
-  prevDayOnClick = function() {
-    var start = Number(thisMetric.start) - 86400000;
+  prevIntvlOnClick = function() {
+    var interval, start;
+    interval = getInterval();
+    start = Number(thisMetric.start) - 86400000 * interval;
     thisMetric.start = String(start);
     thisMetric.end = String(start);
     $('#dtFrom').datepicker('setDate', new Date(start));
     makeChart(thisMetric);
   };
 
-  nextDayOnClick = function() {
-    var start = Number(thisMetric.start) + 86400000;
+  nextIntvlOnClick = function() {
+    var interval, start;
+    interval = getInterval();
+    var start = Number(thisMetric.start) + 86400000 * interval;
     thisMetric.start = String(start);
     thisMetric.end = String(start);
     $('#dtFrom').datepicker('setDate', new Date(start));
     makeChart(thisMetric);
   };
+
+  getInterval = function() {
+    if ($('#intvls #day').is(':checked')) {
+      return 1;
+    }
+    if ($('#intvls #week').is(':checked')) {
+      return 7;
+    }
+    if ($('#intvls #month').is(':checked')) {
+      return 30;
+    }
+  }
 
   ////// Public Functions
 
@@ -207,8 +243,8 @@ var dashboard = (function($) {
     // Date range buttons events
     $('#prev').click(prevOnClick);
     $('#next').click(nextOnClick);
-    $('#prevDay').click(prevDayOnClick);
-    $('#nextDay').click(nextDayOnClick);
+    $('#prevDay').click(prevIntvlOnClick);
+    $('#nextDay').click(nextIntvlOnClick);
   };
 
   return {init: init};
