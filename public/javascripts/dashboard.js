@@ -4,7 +4,7 @@ var dashboard = (function($) {
 
   var createQuery, bindData, makeChart, init,
       dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
-      prevDayOnClick, nextDayOnClick, thisMetric,
+      prevIntvlOnClick, nextIntvlOnClick, getInterval, thisMetric,
       configMap = {
         width: 900,
         height: 550
@@ -128,21 +128,37 @@ var dashboard = (function($) {
     makeChart(thisMetric);
   };
 
-  prevDayOnClick = function() {
-    var start = Number(thisMetric.start) - 86400000;
+  prevIntvlOnClick = function() {
+    var interval, start;
+    interval = getInterval();
+    start = Number(thisMetric.start) - 86400000 * interval;
     thisMetric.start = String(start);
     thisMetric.end = String(start);
     $('#dtFrom').datepicker('setDate', new Date(start));
     makeChart(thisMetric);
   };
 
-  nextDayOnClick = function() {
-    var start = Number(thisMetric.start) + 86400000;
+  nextIntvlOnClick = function() {
+    var interval, start;
+    interval = getInterval();
+    var start = Number(thisMetric.start) + 86400000 * interval;
     thisMetric.start = String(start);
     thisMetric.end = String(start);
     $('#dtFrom').datepicker('setDate', new Date(start));
     makeChart(thisMetric);
   };
+
+  getInterval = function() {
+    if ($('#intvls #day').is(':checked')) {
+      return 1;
+    }
+    if ($('#intvls #week').is(':checked')) {
+      return 7;
+    }
+    if ($('#intvls #month').is(':checked')) {
+      return 30;
+    }
+  }
 
   ////// Public Functions
 
@@ -219,8 +235,8 @@ var dashboard = (function($) {
     // Date range buttons events
     $('#prev').click(prevOnClick);
     $('#next').click(nextOnClick);
-    $('#prevDay').click(prevDayOnClick);
-    $('#nextDay').click(nextDayOnClick);
+    $('#prevDay').click(prevIntvlOnClick);
+    $('#nextDay').click(nextIntvlOnClick);
   };
 
   return {init: init};
