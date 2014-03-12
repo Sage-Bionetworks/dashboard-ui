@@ -2,7 +2,7 @@ dashboard.charts = (function() {
 
   var isEmptyData, removeSvg, addSvg, addEmptyChart, addChart,
       addAxisX, addAxisY, addPlot,
-      bar, hbar, line;
+      spin, bar, hbar, line;
 
   ////// Private Functions //////
 
@@ -69,6 +69,18 @@ dashboard.charts = (function() {
   };
 
   ////// Public Methods //////
+
+  spin = function(on, width, height) {
+    var svg;
+    if (on) {
+      removeSvg();
+      svg = addSvg();
+      svg.append('text')
+        .attr('x', width / 12)
+        .attr('y', height / 12)
+        .text('[Loading... Please wait]');
+    }
+  };
 
   //===============================
   // Renders a grouped bar chart.
@@ -371,6 +383,7 @@ dashboard.charts = (function() {
   };
 
   return {
+    spin: spin,
     bar: bar,
     hbar: hbar,
     line: line

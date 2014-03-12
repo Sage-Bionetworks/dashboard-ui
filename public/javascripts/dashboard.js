@@ -52,7 +52,7 @@ var dashboard = (function($) {
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'top':
-        margin = {top: 60, right: 800, bottom: 20, left: 20};
+        margin = {top: 20, right: 800, bottom: 20, left: 20};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
@@ -66,10 +66,18 @@ var dashboard = (function($) {
 
   // Makes a new chart
   makeChart = function(metric) {
-    var q = createQuery(metric);
-    d3.json(q, function(error, d) {
-      bindData(metric.type, d);
-    });
+    d3.json(createQuery(metric))
+    .on('beforesend', function() {
+      dashboard.charts.spin(true, configMap.width, configMap.height);
+    })
+    .on('load', function(json) {
+      dashboard.charts.spin(false);
+      bindData(metric.type, json);
+    })
+    .on('error', function() {
+      dashboard.charts.spin(false);
+    })
+    .get();
   };
 
   ////// Event Handlers
