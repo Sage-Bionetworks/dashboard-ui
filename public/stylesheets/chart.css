@@ -1,41 +1,41 @@
 #chart {
-    width: 900px;
-    margin: 40px 20px 80px;
-    float: right;
+  width: 900px;
+  margin: 40px 20px 80px;
+  float: right;
 }
 
 #summary {
-    width: 220px;
-    margin: 40px 20px 80px;
-    float: left;
+  width: 220px;
+  margin: 40px 20px 80px;
+  float: left;
 }
 
 #summary h3,
 #summary p {
-    margin-top: 20px;
-    font-size: 1.1em;
+  margin-top: 20px;
+  font-size: 1.1em;
 }
 
 #stats,
 #intvls {
-    float:left;
-    margin-top:20px;
-    margin-right:20px;
+  float:left;
+  margin-top:20px;
+  margin-right:20px;
 }
 
 .axis path,
 .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
 }
 
 .line {
-    fill: none;
-    stroke-width: 1px;
+  fill: none;
+  stroke-width: 1px;
 }
 
 text.label {
-	font-family: monospace;
-	white-space: pre;
+  font-family: monospace;
+  white-space: pre;
 }
