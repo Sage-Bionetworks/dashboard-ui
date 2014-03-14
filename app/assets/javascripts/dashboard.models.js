@@ -37,7 +37,7 @@ dashboard.models = (function() {
     // Set the headers
     results = {
         xHeaders: data.xHeaders,
-        yHeaders: data.yHeaders,
+        yHeaders: data.yHeaders
     };
     // Set up the labels
     if (data.xLabel) {
