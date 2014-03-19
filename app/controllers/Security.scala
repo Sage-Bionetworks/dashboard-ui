@@ -24,6 +24,13 @@ trait Security {
 
   object AuthorizedAction extends ActionBuilder[Request] {
 
+    private object Whitelist {
+      val whitelist = Set[String]() // TODO: Initialize the whitelist
+      def contains(item: String) = {
+        whitelist.contains(item)
+      }
+    }
+
     private object GoogleOpenId {
       val ProviderUrl = "https://www.google.com/accounts/o8/id"
       val Manager = new ConsumerManager
@@ -79,9 +86,11 @@ trait Security {
         val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
         val emails = fetchResp.getAttributeValues("email")
         val email = emails.get(0).toString
-        if (email == null) {
-          Future.successful(Unauthorized("Missing email address from the login."))
-        } else if (isAuthorized(email)) {
+        val ids = fetchResp.getAttributeValues("user_id")
+        val id = ids.get(0).toString
+        if (email == null && id == null) {
+          Future.successful(Unauthorized("Missing both email address and user id from the login."))
+        } else if (isAuthorizedByEmail(email) || isAuthorizedById(id)) {
           // Save the session on the server side
           val session = java.util.UUID.randomUUID.toString
           Cache.set(session, session, Duration(tokenExpire, HOURS))
@@ -91,7 +100,11 @@ trait Security {
             result.withSession(tokenKey -> session)
           }
         } else {
-          Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
+          if (email != null) {
+            Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
+          } else {
+            Future.successful(Unauthorized(id + " is not authorized to access dashboard."))
+          }
         }
       }
     }
@@ -113,15 +126,20 @@ trait Security {
           "email",
           "http://schema.openid.net/contact/email",
           true)
+      fetchReq.addAttribute(
+          "user_id",
+          "http://schemas.openid.net/ax/api/user_id",
+          true)
       authReq.addExtension(fetchReq)
       Future.successful(Redirect(authReq.getDestinationUrl(true)))
     }
 
-    /**
-     * Authorizes based on Synapse user info.
-     */
-    private def isAuthorized(email: String) = {
-      email != null && email.toLowerCase().endsWith("sagebase.org");
+    private def isAuthorizedByEmail(email: String) = {
+      email != null && (email.toLowerCase().endsWith("sagebase.org") || Whitelist.contains(email));
+    }
+
+    private def isAuthorizedById(id: String) = {
+      id != null && Whitelist.contains(id);
     }
 
     private def scheme[A](request: Request[A]) = {
