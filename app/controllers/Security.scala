@@ -86,7 +86,7 @@ trait Security {
         val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
         val emails = fetchResp.getAttributeValues("email")
         val email = emails.get(0).toString
-        val ids = fetchResp.getAttributeValues("email")
+        val ids = fetchResp.getAttributeValues("user_id")
         val id = ids.get(0).toString
         if (email == null && id == null) {
           Future.successful(Unauthorized("Missing both email address and user id from the login."))
@@ -100,7 +100,11 @@ trait Security {
             result.withSession(tokenKey -> session)
           }
         } else {
-          Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
+          if (email != null) {
+            Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
+          } else {
+            Future.successful(Unauthorized(id + " is not authorized to access dashboard."))
+          }
         }
       }
     }
