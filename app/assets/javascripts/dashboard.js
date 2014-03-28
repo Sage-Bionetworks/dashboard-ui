@@ -53,6 +53,7 @@ var dashboard = (function($) {
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'top':
+      case 'top-by-day':
         margin = {top: 20, right: 800, bottom: 20, left: 20};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);

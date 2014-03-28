@@ -37,7 +37,7 @@ object MetricSet {
   private val userIdToName = SpringContext.getBean(classOf[UserIdToName])
 
   val map = collection.immutable.ListMap(
-  
+
     MetricHandle(ActiveUser, "user") -> MetricSet(
       name = "Count of Active Users",
       description = "The number of active users who have used Synapse at least 3 days per month.",
@@ -88,6 +88,31 @@ object MetricSet {
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
         val data = metricReader.getTop("uniqueUser", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "user-by-day") -> MetricSet(
+      name = "Top Users by Day",
+      description = "Top 20 users who have registered the most days.",
+      start = 0,
+      end = 0,
+      interval = Interval.week,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Profile:"
+        val data = metricReader.getTop("activeUser", interval, start, 0, 20)
         DataSet(
           xLabel = None,
           yLabel = None,

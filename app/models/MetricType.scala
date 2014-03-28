@@ -21,6 +21,11 @@ object MetricType extends Enumeration {
   val Top = Value("top")
 
   /**
+   * Top by-day lists.
+   */
+  val TopByDay = Value("top-by-day")
+
+  /**
    * Time series of unique counts.
    */
   val Unique = Value("unique")

@@ -46,7 +46,7 @@ to experience this site.</p><![endif]-->
             To: <input id="dtTo" type="text" />
             <button class="button" id="next">next</button>
           }
-          case MetricType.Top => {
+          case MetricType.Top | MetricType.TopByDay => {
             <button class="button" id="prevDay">prev</button>
             <input id="dtFrom" type="text"/>
             <button class="button" id="nextDay">next</button>
@@ -70,6 +70,12 @@ to experience this site.</p><![endif]-->
           case MetricType.Top | MetricType.Unique => {
             <div id="intvls">
               <input type="radio" id="day" name="intvls"><label for="day">day</label></input>
+              <input type="radio" id="week" name="intvls"><label for="week">week</label></input>
+              <input type="radio" id="month" name="intvls"><label for="month">month</label></input>
+            </div>
+          }
+          case MetricType.TopByDay => {
+            <div id="intvls">
               <input type="radio" id="week" name="intvls"><label for="week">week</label></input>
               <input type="radio" id="month" name="intvls"><label for="month">month</label></input>
             </div>
