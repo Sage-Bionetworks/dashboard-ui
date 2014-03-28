@@ -79,11 +79,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "user") -> MetricSet(
-      name = "Top Users",
+      name = "Top Users (Session Count)",
       description = "Top 20 users who have registered the most activitities.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
@@ -103,12 +103,12 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(TopByDay, "user-by-day") -> MetricSet(
-      name = "Top Users by Day",
+    MetricHandle(TopByDay, "user") -> MetricSet(
+      name = "Top Users (Day Count)",
       description = "Top 20 users who have registered the most days.",
-      start = 0,
-      end = 0,
-      interval = Interval.week,
+      start = 1,
+      end = 1,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
@@ -129,11 +129,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "entity") -> MetricSet(
-      name = "Top Entities",
+      name = "Top Entities (Session Count)",
       description = "List of the top 20 most accessed entities.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Synapse:"
@@ -154,11 +154,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "fileDownload") -> MetricSet(
-      name = "Top File Downloads",
+      name = "Top File Downloads (Session Count)",
       description = "List of the top 20 most downloaded files.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Synapse:"
@@ -179,11 +179,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "method") -> MetricSet(
-      name = "Top REST APIs",
+      name = "Top REST APIs (Session Count)",
       description = "List of the top 20 most accessed REST APIs.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topMethod", interval, start, 0, 20)
@@ -205,11 +205,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "client") -> MetricSet(
-      name = "Top Clients",
+      name = "Top Clients (Session Count)",
       description = "List of the top 20 clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topClient", interval, start, 0, 20)
@@ -231,7 +231,7 @@ object MetricSet {
       description = "List of the top 20 Python clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topPythonClient", interval, start, 0, 20)
@@ -253,7 +253,7 @@ object MetricSet {
       description = "List of the top 20 R clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topRClient", interval, start, 0, 20)
@@ -275,7 +275,7 @@ object MetricSet {
       description = "List of the top 20 web clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topWebClient", interval, start, 0, 20)
