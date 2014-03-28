@@ -24,4 +24,9 @@ object MetricType extends Enumeration {
    * Time series of unique counts.
    */
   val Unique = Value("unique")
+
+  /**
+   * Counts of active users
+   */
+  val ActiveUser = Value("active-user")
 }

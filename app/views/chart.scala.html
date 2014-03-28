@@ -40,7 +40,7 @@ to experience this site.</p><![endif]-->
     <div id="controls">
       <div id="dtControls">
         @metricType match {
-          case MetricType.Latency | MetricType.Unique => {
+          case MetricType.Latency | MetricType.Unique | MetricType.ActiveUser => {
             <button class="button" id="prev">prev</button>
             From: <input id="dtFrom" type="text" />
             To: <input id="dtTo" type="text" />
@@ -73,6 +73,8 @@ to experience this site.</p><![endif]-->
               <input type="radio" id="week" name="intvls"><label for="week">week</label></input>
               <input type="radio" id="month" name="intvls"><label for="month">month</label></input>
             </div>
+          }
+          case _ => {
           }
         }
       </div>

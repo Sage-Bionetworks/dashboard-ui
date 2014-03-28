@@ -37,6 +37,26 @@ object MetricSet {
   private val userIdToName = SpringContext.getBean(classOf[UserIdToName])
 
   val map = collection.immutable.ListMap(
+  
+    MetricHandle(ActiveUser, "user") -> MetricSet(
+      name = "Count of Active Users",
+      description = "The number of active users who have used Synapse at least 3 days per month.",
+      start = 210,
+      end = 0,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getUniqueCount("activeUser", interval, start, end, 3L, Long.MaxValue);
+        DataSet(
+          xLabel = Some("date"),
+          yLabel = Some("count of active users"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(data map(d => d.x) toList),
+          yHeaders = List("all users"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
 
     MetricHandle(Unique, "user") -> MetricSet(
       name = "Count of Unique Users",

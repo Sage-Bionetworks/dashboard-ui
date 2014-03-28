@@ -40,6 +40,7 @@ var dashboard = (function($) {
         dashboard.charts.bar(data, configMap.width, configMap.height, margin);
         break;
       case 'unique':
+      case 'active-user':
         // Hack alert: Convert timestamps to Strings
         dateFormat = d3.time.format('%m/%d');
         data.xValues[0].forEach(function(val, i) {
