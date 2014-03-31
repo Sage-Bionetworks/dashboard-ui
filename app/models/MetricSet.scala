@@ -128,6 +128,106 @@ object MetricSet {
       }
     ),
 
+    MetricHandle(TopByDay, "wiki-write-by-user") -> MetricSet(
+      name = "Top Wiki Users (Creation, Day Count)",
+      description = "List of the top 20 users who write Wiki pages the most.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Profile:"
+        val data = metricReader.getTop("wikiWriteByUser", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-read-by-user") -> MetricSet(
+      name = "Top Wiki Users (Consumption, Day Count)",
+      description = "List of the top 20 users who read Wiki pages the most.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Profile:"
+        val data = metricReader.getTop("wikiReadByUser", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-write-by-object") -> MetricSet(
+      name = "Top Wiki Objects (Creation, Day Count)",
+      description = "List of the top 20 wiki objects.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Synapse:"
+        val data = metricReader.getTop("wikiWriteByObject", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => entityIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-read-by-object") -> MetricSet(
+      name = "Top Wiki Objects (Consumption, Day Count)",
+      description = "List of the top 20 wiki objects.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Synapse:"
+        val data = metricReader.getTop("wikiReadByObject", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => entityIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
     MetricHandle(Top, "entity") -> MetricSet(
       name = "Top Entities (Session Count)",
       description = "List of the top 20 most accessed entities.",
