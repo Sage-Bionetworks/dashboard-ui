@@ -38,6 +38,26 @@ object MetricSet {
 
   val map = collection.immutable.ListMap(
 
+    MetricHandle(ActiveUser, "user") -> MetricSet(
+      name = "Count of Active Users",
+      description = "The number of active users who have used Synapse at least 3 days per month.",
+      start = 210,
+      end = 0,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val data = metricReader.getUniqueCount("activeUser", interval, start, end, 3L, Long.MaxValue);
+        DataSet(
+          xLabel = Some("date"),
+          yLabel = Some("count of active users"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(data map(d => d.x) toList),
+          yHeaders = List("all users"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
     MetricHandle(Unique, "user") -> MetricSet(
       name = "Count of Unique Users",
       description = "The number of unique users who have used Synapse.",
@@ -59,11 +79,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "user") -> MetricSet(
-      name = "Top Users",
+      name = "Top Users (Session Count)",
       description = "Top 20 users who have registered the most activitities.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Profile:"
@@ -83,12 +103,137 @@ object MetricSet {
       }
     ),
 
+    MetricHandle(TopByDay, "user") -> MetricSet(
+      name = "Top Users (Day Count)",
+      description = "Top 20 users who have registered the most days.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Profile:"
+        val data = metricReader.getTop("activeUser", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-write-by-user") -> MetricSet(
+      name = "Top Wiki Users (Creation, Day Count)",
+      description = "List of the top 20 users who write Wiki pages the most.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Profile:"
+        val data = metricReader.getTop("wikiWriteByUser", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-read-by-user") -> MetricSet(
+      name = "Top Wiki Users (Consumption, Day Count)",
+      description = "List of the top 20 users who read Wiki pages the most.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Profile:"
+        val data = metricReader.getTop("wikiReadByUser", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => userIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-write-by-object") -> MetricSet(
+      name = "Top Wiki Objects (Creation, Day Count)",
+      description = "List of the top 20 wiki objects.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Synapse:"
+        val data = metricReader.getTop("wikiWriteByObject", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => entityIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(TopByDay, "wiki-read-by-object") -> MetricSet(
+      name = "Top Wiki Objects (Consumption, Day Count)",
+      description = "List of the top 20 wiki objects.",
+      start = 1,
+      end = 1,
+      interval = Interval.month,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val baseUrl = "https://www.synapse.org/#!Synapse:"
+        val data = metricReader.getTop("wikiReadByObject", interval, start, 0, 20)
+        DataSet(
+          xLabel = None,
+          yLabel = None,
+          xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+          xValues = List(
+            data map (d => entityIdToName.convert(d).x) toList,
+            data map (d => d.x) toList,
+            data map (d => baseUrl + d.x) toList
+          ),
+          yHeaders = List("count"),
+          yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
     MetricHandle(Top, "entity") -> MetricSet(
-      name = "Top Entities",
+      name = "Top Entities (Session Count)",
       description = "List of the top 20 most accessed entities.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Synapse:"
@@ -109,11 +254,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "fileDownload") -> MetricSet(
-      name = "Top File Downloads",
+      name = "Top File Downloads (Session Count)",
       description = "List of the top 20 most downloaded files.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Synapse:"
@@ -134,11 +279,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "method") -> MetricSet(
-      name = "Top REST APIs",
+      name = "Top REST APIs (Session Count)",
       description = "List of the top 20 most accessed REST APIs.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topMethod", interval, start, 0, 20)
@@ -160,11 +305,11 @@ object MetricSet {
     ),
 
     MetricHandle(Top, "client") -> MetricSet(
-      name = "Top Clients",
+      name = "Top Clients (Session Count)",
       description = "List of the top 20 clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topClient", interval, start, 0, 20)
@@ -186,7 +331,7 @@ object MetricSet {
       description = "List of the top 20 Python clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topPythonClient", interval, start, 0, 20)
@@ -208,7 +353,7 @@ object MetricSet {
       description = "List of the top 20 R clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topRClient", interval, start, 0, 20)
@@ -230,7 +375,7 @@ object MetricSet {
       description = "List of the top 20 web clients.",
       start = 1,
       end = 1,
-      interval = Interval.day,
+      interval = Interval.month,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val data = metricReader.getTop("topWebClient", interval, start, 0, 20)
