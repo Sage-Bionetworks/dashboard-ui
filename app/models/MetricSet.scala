@@ -78,6 +78,31 @@ object MetricSet {
       }
     ),
 
+    MetricHandle(Trending, "user") -> MetricSet(
+      name = "Trending Users (Session Count)",
+      description = "List of the top 20 most active users.",
+      start = 60,
+      end = 1,
+      interval = Interval.week,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val topData = metricReader.getTop("uniqueUser", interval, end, 0, 10)
+        val trendingData = topData map (d => {
+          metricReader.getCount("uniqueUser", d.id, interval, start, end)
+        })
+        DataSet(
+          xLabel = Some("Date & Time"),
+          yLabel = Some("Session Count"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(trendingData(0) map (d => d.x) toList),
+          yHeaders = topData map (d => userIdToName.convert(d).x) toList,
+          yValues = trendingData map (series => {
+            series map (d => d.y) toList
+          }) toList
+        )
+      }
+    ),
+
     MetricHandle(Top, "user") -> MetricSet(
       name = "Top Users (Session Count)",
       description = "Top 20 users who have registered the most activitities.",
@@ -224,6 +249,31 @@ object MetricSet {
           ),
           yHeaders = List("count"),
           yValues = List(data map (d => d.y) toList)
+        )
+      }
+    ),
+
+    MetricHandle(Trending, "entity") -> MetricSet(
+      name = "Trending Entities (Session Count)",
+      description = "List of the top 10 most accessed entities.",
+      start = 60,
+      end = 1,
+      interval = Interval.week,
+      statistic = Statistic.n,
+      dataSet = (start, end, interval, statistic) => {
+        val topData = metricReader.getTop("topEntity", interval, end, 0, 10)
+        val trendingData = topData map (d => {
+          metricReader.getCount("topEntity", d.id, interval, start, end)
+        })
+        DataSet(
+          xLabel = Some("Date & Time"),
+          yLabel = Some("Session Count"),
+          xHeaders = List(DataHeader.Timestamp),
+          xValues = List(trendingData(0) map (d => d.x) toList),
+          yHeaders = topData map (d => d.id) toList,
+          yValues = trendingData map (series => {
+            series map (d => d.y) toList
+          }) toList
         )
       }
     ),
