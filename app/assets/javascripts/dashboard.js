@@ -42,7 +42,7 @@ var dashboard = (function($) {
       case 'unique':
       case 'active-user':
         // Hack alert: Convert timestamps to Strings
-        dateFormat = d3.time.format('%m/%d');
+        dateFormat = d3.time.format.utc('%m/%d');
         data.xValues[0].forEach(function(val, i) {
           data.xValues[0][i] = dateFormat(new Date(Number(val)));
         });
