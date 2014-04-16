@@ -42,7 +42,7 @@ var dashboard = (function($) {
       case 'unique':
       case 'active-user':
         // Hack alert: Convert timestamps to Strings
-        dateFormat = d3.time.format('%m/%d');
+        dateFormat = d3.time.format.utc('%m/%d');
         data.xValues[0].forEach(function(val, i) {
           data.xValues[0][i] = dateFormat(new Date(Number(val)));
         });
@@ -58,6 +58,7 @@ var dashboard = (function($) {
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
         break;
+      case 'trending':
       case 'latency':
         margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });

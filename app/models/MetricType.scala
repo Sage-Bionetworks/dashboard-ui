@@ -26,6 +26,11 @@ object MetricType extends Enumeration {
   val TopByDay = Value("top-by-day")
 
   /**
+   * Trending counts.
+   */
+  val Trending = Value("trending")
+
+  /**
    * Time series of unique counts.
    */
   val Unique = Value("unique")
