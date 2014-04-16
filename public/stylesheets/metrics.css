@@ -1,5 +1,10 @@
-.metric-list {
+.nav.nav-tabs {
+  margin-top: 20px;
   font-size: 2em;
+}
+
+.metric-list {
+  font-size: 1.8em;
 }
 
 .metric-list dt {

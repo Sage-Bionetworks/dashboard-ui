@@ -1,5 +1,6 @@
 package controllers
 
+import scala.language.postfixOps
 import scala.collection.JavaConversions.asScalaBuffer
 import org.joda.time.DateTime
 import play.api.mvc.{Action, Controller}
@@ -12,7 +13,7 @@ object Charts extends Controller with Security {
 
   def chart(metricType: String, metricName: String) = AuthorizedAction {
     val mType = MetricType.withName(metricType)
-    val metricSet = MetricSet.metricSet(MetricHandle(mType, metricName))
+    val metricSet = MetricSet.findMetric(MetricHandle(mType, metricName)) get
     val title = metricSet.name
     val desc = metricSet.description
     val start = Some(DateTime.now.minusDays(metricSet.start).getMillis.toString)
@@ -25,7 +26,7 @@ object Charts extends Controller with Security {
   def data(metricType: String, metricName: String, start: Option[String], end: Option[String],
       interval: Option[String], statistic: Option[String]) = AuthorizedAction {
     val mType = MetricType.withName(metricType)
-    val metricSet = MetricSet.metricSet(MetricHandle(mType, metricName))
+    val metricSet = MetricSet.findMetric(MetricHandle(mType, metricName)) get
     val from = start match {
       case Some(sth) => new DateTime(sth.toLong)
       case None => DateTime.now.minusDays(metricSet.start)
