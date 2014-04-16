@@ -20,7 +20,7 @@ import MetricType._
  * @param end          Offset in days of the ending time
  * @param dataSet      Function to generate the data set for this metric set
  */
-case class MetricSet(
+case class Metric(
   name: String,
   description: String,
   start: Int,
@@ -38,7 +38,7 @@ object MetricSet {
 
   val map = collection.immutable.ListMap(
 
-    MetricHandle(ActiveUser, "user") -> MetricSet(
+    MetricHandle(ActiveUser, "user") -> Metric(
       name = "Count of Active Users",
       description = "The number of active users who have used Synapse at least 3 days per month.",
       start = 210,
@@ -58,7 +58,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Unique, "user") -> MetricSet(
+    MetricHandle(Unique, "user") -> Metric(
       name = "Count of Unique Users",
       description = "The number of unique users who have used Synapse.",
       start = 7,
@@ -78,7 +78,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Trending, "user") -> MetricSet(
+    MetricHandle(Trending, "user") -> Metric(
       name = "Trending Users (Session Count)",
       description = "List of the top 20 most active users.",
       start = 60,
@@ -103,7 +103,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "user") -> MetricSet(
+    MetricHandle(Top, "user") -> Metric(
       name = "Top Users (Session Count)",
       description = "Top 20 users who have registered the most activitities.",
       start = 1,
@@ -128,7 +128,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(TopByDay, "user") -> MetricSet(
+    MetricHandle(TopByDay, "user") -> Metric(
       name = "Top Users (Day Count)",
       description = "Top 20 users who have registered the most days.",
       start = 1,
@@ -153,7 +153,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(TopByDay, "wiki-write-by-user") -> MetricSet(
+    MetricHandle(TopByDay, "wiki-write-by-user") -> Metric(
       name = "Top Wiki Users (Creation, Day Count)",
       description = "List of the top 20 users who write Wiki pages the most.",
       start = 1,
@@ -178,7 +178,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(TopByDay, "wiki-read-by-user") -> MetricSet(
+    MetricHandle(TopByDay, "wiki-read-by-user") -> Metric(
       name = "Top Wiki Users (Consumption, Day Count)",
       description = "List of the top 20 users who read Wiki pages the most.",
       start = 1,
@@ -203,7 +203,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(TopByDay, "wiki-write-by-object") -> MetricSet(
+    MetricHandle(TopByDay, "wiki-write-by-object") -> Metric(
       name = "Top Wiki Objects (Creation, Day Count)",
       description = "List of the top 20 wiki objects.",
       start = 1,
@@ -228,7 +228,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(TopByDay, "wiki-read-by-object") -> MetricSet(
+    MetricHandle(TopByDay, "wiki-read-by-object") -> Metric(
       name = "Top Wiki Objects (Consumption, Day Count)",
       description = "List of the top 20 wiki objects.",
       start = 1,
@@ -253,7 +253,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Trending, "entity") -> MetricSet(
+    MetricHandle(Trending, "entity") -> Metric(
       name = "Trending Entities (Session Count)",
       description = "List of the top 10 most accessed entities.",
       start = 60,
@@ -261,9 +261,9 @@ object MetricSet {
       interval = Interval.week,
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
-        val topData = metricReader.getTop("topEntity", interval, end, 0, 10)
+        val topData = metricReader.getTop("entityRead", interval, end, 0, 10)
         val trendingData = topData map (d => {
-          metricReader.getCount("topEntity", d.id, interval, start, end)
+          metricReader.getCount("entityRead", d.id, interval, start, end)
         })
         DataSet(
           xLabel = Some("Date & Time"),
@@ -278,7 +278,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "entity") -> MetricSet(
+    MetricHandle(Top, "entity") -> Metric(
       name = "Top Entities (Session Count)",
       description = "List of the top 20 most accessed entities.",
       start = 1,
@@ -287,7 +287,7 @@ object MetricSet {
       statistic = Statistic.n,
       dataSet = (start, end, interval, statistic) => {
         val baseUrl = "https://www.synapse.org/#!Synapse:"
-        val data = metricReader.getTop("topEntity", interval, start, 0, 20)
+        val data = metricReader.getTop("entityRead", interval, start, 0, 20)
         DataSet(
           xLabel = None,
           yLabel = None,
@@ -303,7 +303,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "fileDownload") -> MetricSet(
+    MetricHandle(Top, "fileDownload") -> Metric(
       name = "Top File Downloads (Session Count)",
       description = "List of the top 20 most downloaded files.",
       start = 1,
@@ -328,7 +328,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "method") -> MetricSet(
+    MetricHandle(Top, "method") -> Metric(
       name = "Top REST APIs (Session Count)",
       description = "List of the top 20 most accessed REST APIs.",
       start = 1,
@@ -354,7 +354,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "client") -> MetricSet(
+    MetricHandle(Top, "client") -> Metric(
       name = "Top Clients (Session Count)",
       description = "List of the top 20 clients.",
       start = 1,
@@ -376,7 +376,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "python") -> MetricSet(
+    MetricHandle(Top, "python") -> Metric(
       name = "Top Python Clients",
       description = "List of the top 20 Python clients.",
       start = 1,
@@ -398,7 +398,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "r") -> MetricSet(
+    MetricHandle(Top, "r") -> Metric(
       name = "Top R Clients",
       description = "List of the top 20 R clients.",
       start = 1,
@@ -420,7 +420,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Top, "web") -> MetricSet(
+    MetricHandle(Top, "web") -> Metric(
       name = "Top Web Clients",
       description = "List of the top 20 web clients.",
       start = 1,
@@ -442,7 +442,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Latency, "global") -> MetricSet(
+    MetricHandle(Latency, "global") -> Metric(
       name = "Global Latencies",
       description = "Latency in milliseconds for all the REST APIs.",
       start = 7,
@@ -463,7 +463,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Latency, "postEntityHeader") -> MetricSet(
+    MetricHandle(Latency, "postEntityHeader") -> Metric(
       name = "POST-Entity-Header Latencies",
       description = "Latency in milliseconds for the POST-entity-header REST API.",
       start = 7,
@@ -484,7 +484,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Latency, "getEntityBundle") -> MetricSet(
+    MetricHandle(Latency, "getEntityBundle") -> Metric(
       name = "GET-Entity-Bundle Latencies",
       description = "Latency in milliseconds for the GET-entity-bundle REST API.",
       start = 7,
@@ -505,7 +505,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Latency, "query") -> MetricSet(
+    MetricHandle(Latency, "query") -> Metric(
       name = "Query Latencies",
       description = "Latency in milliseconds for the query REST API.",
       start = 7,
@@ -526,7 +526,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Latency, "search") -> MetricSet(
+    MetricHandle(Latency, "search") -> Metric(
       name = "Search Latencies",
       description = "Latency in milliseconds for the search REST API.",
       start = 7,
@@ -547,7 +547,7 @@ object MetricSet {
       }
     ),
 
-    MetricHandle(Latency, "desc") -> MetricSet(
+    MetricHandle(Latency, "desc") -> Metric(
       name = "GET-Descendants Latencies",
       description = "Latency in milliseconds for the GET-descendants REST API.",
       start = 7,

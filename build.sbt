@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.3",
   "net.sf.opencsv" % "opencsv" % "2.3",
   "com.amazonaws" % "aws-java-sdk" % "1.7.3",
-  "org.openid4java" % "openid4java" % "0.9.8"
+  "org.openid4java" % "openid4java" % "0.9.8",
+  "org.jasypt" % "jasypt" % "1.9.2"
 )
 
 play.Project.playScalaSettings
