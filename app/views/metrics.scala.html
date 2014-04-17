@@ -44,7 +44,7 @@ to experience this site.</p><![endif]-->
         <dl>
           @for(metricTuple <- metrics("Users")) {
             @defining(metricTuple) { metric =>
-              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
               <dd>@metric._2.description</dd>
             }
           }
@@ -56,7 +56,7 @@ to experience this site.</p><![endif]-->
         <dl>
           @for(metricTuple <- metrics("Entities")) {
             @defining(metricTuple) { metric =>
-              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
               <dd>@metric._2.description</dd>
             }
           }
@@ -68,7 +68,7 @@ to experience this site.</p><![endif]-->
         <dl>
           @for(metricTuple <- metrics("APIs & Clients")) {
             @defining(metricTuple) { metric =>
-              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
               <dd>@metric._2.description</dd>
             }
           }
@@ -80,7 +80,7 @@ to experience this site.</p><![endif]-->
         <dl>
           @for(metricTuple <- metrics("Latencies & Errors")) {
             @defining(metricTuple) { metric =>
-              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
               <dd>@metric._2.description</dd>
             }
           }
