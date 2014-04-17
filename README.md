@@ -5,7 +5,7 @@ Dashboard UI
 
 ### [Design](https://github.com/eric-wu/dashboard/wiki)
 
-### [Caching Layer](https://github.com/Sage-Bionetworks/dashboard)
+### [Cache Layer](https://github.com/Sage-Bionetworks/dashboard)
 
 ### Development
 
@@ -34,7 +34,7 @@ Commonly used Play commands:
 
 To launch a local instance that reads the production S3 bucket for real metric data, run this command in the play console:
 
-    [dashboard-ui] $ run -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret-key> -Dprod=true
+    [dashboard-ui] $ run -Daws.access.key=<prod-access-key> -Daws.secret.key=<prod-secret-key> -Daccess.record.bucket=<prod-bucket> -Dprod=true
 
 ### Test
 
@@ -63,8 +63,9 @@ Note that this could be hooked to git commit and/or a CI platform (e.g. Jenkins)
 
 4. Go to the EC2 instance, unpack the package, and launch the dashboard app.
 
-        $ dashboard-ui-1.0-20140127/bin/dashboard-ui -Daws.accessKeyId=<prod-access-key> -Daws.secretKey=<prod-secret>
-        -DsynapseUsr=dashboard@sagebase.org -DsynapsePwd=<synapse-password> -Dprod=true -Dhttp.port=9001 2> /dev/null &
+        $ dashboard-ui-1.0-20140127/bin/dashboard-ui -Daws.access.key=<prod-access-key> -Daws.secret.key=<prod-secret>
+        -Daccess.record.bucket=<prod-bucket> -Dsynapse.user=dashboard@sagebase.org -Dsynapse.password=<synapse-password>
+        -Dprod=true -Dhttp.port=9001 2> /dev/null &
 
 5. After maybe 3 hours, cross-validate with the current dashboard.
 6. Once validated, swap the instance at the dashboard load balancer.
