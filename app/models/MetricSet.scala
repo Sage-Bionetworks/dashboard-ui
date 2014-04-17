@@ -59,7 +59,7 @@ object MetricSet {
 
       MetricHandle(Unique, "user") -> Metric(
         name = "Count of Unique Users",
-        description = "The number of unique users who have used Synapse.",
+        description = "The number of unique users during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
@@ -73,29 +73,6 @@ object MetricSet {
             xValues = List(data map (d => d.x) toList),
             yHeaders = List("all users"),
             yValues = List(data map (d => d.y) toList))
-        }),
-
-      MetricHandle(Trending, "user") -> Metric(
-        name = "Trending Users (Session Count)",
-        description = "List of the top 20 most active users.",
-        start = 60,
-        end = 1,
-        interval = Interval.week,
-        statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic) => {
-          val topData = metricReader.getTop("uniqueUser", interval, end, 0, 10)
-          val trendingData = topData map (d => {
-            metricReader.getCount("uniqueUser", d.id, interval, start, end)
-          })
-          DataSet(
-            xLabel = Some("Date & Time"),
-            yLabel = Some("Session Count"),
-            xHeaders = List(DataHeader.Timestamp),
-            xValues = List(trendingData(0) map (d => d.x) toList),
-            yHeaders = topData map (d => userIdToName.convert(d).x) toList,
-            yValues = trendingData map (series => {
-              series map (d => d.y) toList
-            }) toList)
         }),
 
       MetricHandle(Top, "user") -> Metric(
@@ -140,21 +117,88 @@ object MetricSet {
               data map (d => baseUrl + d.x) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Trending, "user") -> Metric(
+        name = "Trending Users (Session Count)",
+        description = "List of the top 20 most active users.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val topData = metricReader.getTop("uniqueUser", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("uniqueUser", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => userIdToName.convert(d).x) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
         })),
 
     "Entities" -> collection.immutable.ListMap(
 
-      MetricHandle(Trending, "entity") -> Metric(
-        name = "Trending Entities (Session Count)",
-        description = "List of the top 10 most accessed entities.",
-        start = 60,
+      MetricHandle(Top, "project") -> Metric(
+        name = "Top Projects (Session Count)",
+        description = "List of the top 20 most accessed projects.",
+        start = 1,
         end = 1,
-        interval = Interval.week,
+        interval = Interval.month,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic) => {
-          val topData = metricReader.getTop("entityRead", interval, end, 0, 10)
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("topProject", interval, start, 0, 20)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Top, "project-day-count") -> Metric(
+        name = "Top Projects (Day Count)",
+        description = "List of the top 20 most accessed projects.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("topProjectByDay", interval, start, 0, 20)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Trending, "project") -> Metric(
+        name = "Trending Projects (Session Count)",
+        description = "List of the top 10 most accessed projects.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val topData = metricReader.getTop("topProject", interval, end, 0, 10)
           val trendingData = topData map (d => {
-            metricReader.getCount("entityRead", d.id, interval, start, end)
+            metricReader.getCount("topProject", d.id, interval, start, end)
           })
           DataSet(
             xLabel = Some("Date & Time"),
@@ -167,7 +211,7 @@ object MetricSet {
             }) toList)
         }),
 
-      MetricHandle(Top, "entity") -> Metric(
+      MetricHandle(Top, "entity-read") -> Metric(
         name = "Top Entities (Session Count)",
         description = "List of the top 20 most accessed entities.",
         start = 1,
@@ -187,6 +231,51 @@ object MetricSet {
               data map (d => baseUrl + d.x) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Top, "entity-write") -> Metric(
+        name = "Entities Created/Updated (Session Count)",
+        description = "List of the top 20 most updated entities.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("entityWrite", interval, start, 0, 20)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Trending, "entity-read") -> Metric(
+        name = "Trending Entities (Session Count)",
+        description = "List of the top 10 most accessed entities.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val topData = metricReader.getTop("entityRead", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("entityRead", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
         }),
 
       MetricHandle(Top, "fileDownload") -> Metric(
@@ -337,8 +426,7 @@ object MetricSet {
             xLabel = None,
             yLabel = None,
             xHeaders = List(DataHeader.Name),
-            xValues = List(
-              data map (d => d.x) toList),
+            xValues = List(data map (d => d.x) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => d.y) toList))
         }),
@@ -356,8 +444,7 @@ object MetricSet {
             xLabel = None,
             yLabel = None,
             xHeaders = List(DataHeader.Name),
-            xValues = List(
-              data map (d => d.x) toList),
+            xValues = List(data map (d => d.x) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => d.y) toList))
         }),
@@ -375,8 +462,7 @@ object MetricSet {
             xLabel = None,
             yLabel = None,
             xHeaders = List(DataHeader.Name),
-            xValues = List(
-              data map (d => d.x) toList),
+            xValues = List(data map (d => d.x) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => d.y) toList))
         }),
@@ -394,13 +480,71 @@ object MetricSet {
             xLabel = None,
             yLabel = None,
             xHeaders = List(DataHeader.Name),
-            xValues = List(
-              data map (d => d.x) toList),
+            xValues = List(data map (d => d.x) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => d.y) toList))
         })),
 
     "Latencies & Errors" -> collection.immutable.ListMap(
+
+      MetricHandle(Top, "status-code") -> Metric(
+        name = "Top Status Codes (Session Count)",
+        description = "List HTTP status codes ordered by session count.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val data = metricReader.getTop("statusCode", interval, start, 0, 20)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name),
+            xValues = List(data map (d => d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Top, "error-status-code") -> Metric(
+        name = "Top Error Status Codes (Session Count)",
+        description = "List HTTP error status codes ordered by session count.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val data = metricReader.getTop("errorStatusCode", interval, start, 0, 20)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name),
+            xValues = List(data map (d => d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+
+      MetricHandle(Trending, "error-status-code") -> Metric(
+        name = "Trending HTTP error status codes (Session Count)",
+        description = "List of trending HTTP error status codes.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic) => {
+          val topData = metricReader.getTop("errorStatusCode", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("errorStatusCode", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
+        }),
 
       MetricHandle(Latency, "global") -> Metric(
         name = "Global Latencies",
