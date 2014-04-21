@@ -3,7 +3,7 @@ var dashboard = (function($) {
   ////// Variables
 
   var createQuery, bindData, makeChart, init,
-      scrollToLoad, dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
+      scroll, dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
       prevIntvlOnClick, nextIntvlOnClick, getInterval,
       payload = { page: 0 },
       configMap = {
@@ -97,12 +97,20 @@ var dashboard = (function($) {
 
   ////// Event Handlers
 
-  scrollToLoad = function() {
+  scroll = function() {
+    var oldPage = payload.page;
+    if (payload.scrolling) {
+      return;
+    }
+    payload.scrolling = true;
     if ($(window).scrollTop() === $(document).height() - $(window).height()) {
+      // Try loading the next page
       payload.page = payload.page + 1;
       d3.json(createQuery(), function(error, newData) {
         var emptyData = (newData.xValues.length === 1 && newData.xValues[0].length === 0);
-        if (!emptyData) {
+        if (emptyData) {
+          payload.page = oldPage;
+        } else {
           payload.data.xValues = payload.data.xValues.map(function(xSeries, i) {
             return xSeries.concat(newData.xValues[i]);
           });
@@ -113,6 +121,7 @@ var dashboard = (function($) {
         }
       });
     }
+    payload.scrolling = false;
   };
 
   dtFromOnClose = function(date) {
@@ -120,7 +129,7 @@ var dashboard = (function($) {
     if (payload.metric.start !== newStart) {
       $('#dtTo').datepicker('option', 'minDate', date);
       payload.metric.start = newStart;
-      makeChart(payload.metric);
+      makeChart();
     }
   };
 
@@ -129,12 +138,13 @@ var dashboard = (function($) {
     if (payload.metric.end !== newEnd) {
       $('#dtFrom').datepicker('option', 'maxDate', date);
       payload.metric.end = newEnd;
-      makeChart(payload.metric);
+      makeChart();
     }
   };
 
   prevOnClick = function() {
-    var start, end, diff, dtStart, dtEnd, metric = payload.metric;
+    var start, end, diff, dtStart, dtEnd,
+        metric = payload.metric;
     start = Number(metric.start);
     end = Number(metric.end);
     diff = end - start;
@@ -152,7 +162,8 @@ var dashboard = (function($) {
   };
 
   nextOnClick = function() {
-    var start, end, diff, dtStart, dtEnd, metric = payload.metric;
+    var start, end, diff, dtStart, dtEnd,
+        metric = payload.metric;
     start = Number(metric.start);
     end = Number(metric.end);
     diff = end - start;
@@ -170,7 +181,8 @@ var dashboard = (function($) {
   };
 
   prevIntvlOnClick = function() {
-    var interval, start, metric = payload.metric;
+    var interval, start,
+        metric = payload.metric;
     interval = getInterval();
     start = Number(metric.start) - 86400000 * interval;
     metric.start = String(start);
@@ -180,7 +192,8 @@ var dashboard = (function($) {
   };
 
   nextIntvlOnClick = function() {
-    var interval, start, metric = payload.metric;
+    var interval, start,
+        metric = payload.metric;
     interval = getInterval();
     var start = Number(metric.start) + 86400000 * interval;
     metric.start = String(start);
@@ -281,7 +294,7 @@ var dashboard = (function($) {
 
     // Infinite scroll on the top charts
     if (metric.type === 'top' || metric.type === 'top-by-day') {
-      $(window).scroll(scrollToLoad);
+      $(window).scroll(scroll);
     }
   };
 
