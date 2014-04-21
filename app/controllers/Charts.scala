@@ -24,7 +24,7 @@ object Charts extends Controller with Security {
   }
 
   def data(metricType: String, metricName: String, start: Option[String], end: Option[String],
-      interval: Option[String], statistic: Option[String]) = AuthorizedAction {
+      interval: Option[String], statistic: Option[String], page: Option[Int]) = AuthorizedAction {
     val mType = MetricType.withName(metricType)
     val metricSet = MetricSet.findMetric(MetricHandle(mType, metricName)) get
     val from = start match {
@@ -43,6 +43,10 @@ object Charts extends Controller with Security {
       case Some(sth) => Statistic.valueOf(sth)
       case None => metricSet.statistic
     }
-    Ok(metricSet.dataSet(from, to, intvl, stat).json)
+    val p = page match {
+      case Some(sth) => sth
+      case None => 0
+    }
+    Ok(metricSet.dataSet(from, to, intvl, stat, p).json)
   }
 }
