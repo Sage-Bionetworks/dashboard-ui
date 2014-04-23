@@ -1,4 +1,4 @@
-@(metrics: Map[MetricHandle, Metric])
+@(metrics: Map[String, collection.immutable.ListMap[MetricHandle, Metric]])
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
@@ -30,18 +30,64 @@
 to experience this site.</p><![endif]-->
 
 <div class="container">
-  <header></header>
-  <section class="metric-list">
-    <dl>
-      @for(metricTuple <- metrics) {
-        @defining(metricTuple) { metric =>
-          <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName'>@metric._2.name</a></dt>
-          <dd>@metric._2.description</dd>
-        }
-      }
-    </dl>
-  </section>
-  <footer></footer>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#users" data-toggle="tab">Users</a></li>
+    <li><a href="#entities" data-toggle="tab">Entities</a></li>
+    <li><a href="#apis_clients" data-toggle="tab">APIs & Clients</a></li>
+    <li><a href="#latencies_errors" data-toggle="tab">Latencies & Errors</a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="users">
+      <section class="metric-list">
+        <dl>
+          @for(metricTuple <- metrics("Users")) {
+            @defining(metricTuple) { metric =>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
+              <dd>@metric._2.description</dd>
+            }
+          }
+        </dl>
+      </section>
+    </div>
+    <div class="tab-pane" id="entities">
+      <section class="metric-list">
+        <dl>
+          @for(metricTuple <- metrics("Entities")) {
+            @defining(metricTuple) { metric =>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
+              <dd>@metric._2.description</dd>
+            }
+          }
+        </dl>
+      </section>
+    </div>
+    <div class="tab-pane" id="apis_clients">
+      <section class="metric-list">
+        <dl>
+          @for(metricTuple <- metrics("APIs & Clients")) {
+            @defining(metricTuple) { metric =>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
+              <dd>@metric._2.description</dd>
+            }
+          }
+        </dl>
+      </section>
+    </div>
+    <div class="tab-pane" id="latencies_errors">
+      <section class="metric-list">
+        <dl>
+          @for(metricTuple <- metrics("Latencies & Errors")) {
+            @defining(metricTuple) { metric =>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
+              <dd>@metric._2.description</dd>
+            }
+          }
+        </dl>
+      </section>
+    </div>
+  </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>

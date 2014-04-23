@@ -3,8 +3,9 @@ var dashboard = (function($) {
   ////// Variables
 
   var createQuery, bindData, makeChart, init,
-      dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
-      prevIntvlOnClick, nextIntvlOnClick, getInterval, thisMetric,
+      scroll, dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
+      prevIntvlOnClick, nextIntvlOnClick, getInterval,
+      payload = { page: 0 },
       configMap = {
         width: 900,
         height: 550
@@ -13,7 +14,9 @@ var dashboard = (function($) {
   ////// Private Functions
 
   // Creates a data query from the specified metric
-  createQuery = function(metric) {
+  createQuery = function() {
+    var metric = payload.metric,
+        page = payload.page;
     var q = 'data?type=' + metric.type + '&metric=' + metric.id;
     if ('stat' in metric) {
       q = q + '&stat=' + metric.stat;
@@ -27,13 +30,17 @@ var dashboard = (function($) {
     if ('end' in metric) {
       q = q + '&end=' + metric.end;
     }
+    if (page > 0) {
+      q = q + '&page=' + page;
+    }
     return q;
   };
 
   // Binds data to chart
-  bindData = function(metricType, data) {
-    var margin, dateFormat;
-    switch(metricType) {
+  bindData = function() {
+    var margin, dateFormat,
+        data = payload.data;
+    switch(payload.metric.type) {
       case 'category': // TODO: Find a proper metric to use the bar chart
         margin = {top: 20, right: 60, bottom: 20, left: 60},
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
@@ -56,7 +63,7 @@ var dashboard = (function($) {
       case 'top-by-day':
         margin = {top: 20, right: 800, bottom: 20, left: 20};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
-        dashboard.charts.hbar(data, configMap.width, configMap.height, margin);
+        dashboard.charts.hbar(data, configMap.width, configMap.height * (1 + payload.page), margin);
         break;
       case 'trending':
       case 'latency':
@@ -68,14 +75,19 @@ var dashboard = (function($) {
   };
 
   // Makes a new chart
-  makeChart = function(metric) {
-    d3.json(createQuery(metric))
+  makeChart = function() {
+    d3.json(createQuery())
     .on('beforesend', function() {
       dashboard.charts.spin(true, configMap.width, configMap.height);
     })
     .on('load', function(json) {
+      // Initialize payload
+      payload.data = json;
+      payload.page = 0;
+      // Clear the loading message
       dashboard.charts.spin(false);
-      bindData(metric.type, json);
+      // Bind data to chart
+      bindData();
     })
     .on('error', function() {
       dashboard.charts.spin(false);
@@ -85,78 +97,109 @@ var dashboard = (function($) {
 
   ////// Event Handlers
 
+  scroll = function() {
+    var oldPage = payload.page;
+    if (payload.scrolling) {
+      return;
+    }
+    payload.scrolling = true;
+    if ($(window).scrollTop() === $(document).height() - $(window).height()) {
+      // Try loading the next page
+      payload.page = payload.page + 1;
+      d3.json(createQuery(), function(error, newData) {
+        var emptyData = (newData.xValues.length === 1 && newData.xValues[0].length === 0);
+        if (emptyData) {
+          payload.page = oldPage;
+        } else {
+          payload.data.xValues = payload.data.xValues.map(function(xSeries, i) {
+            return xSeries.concat(newData.xValues[i]);
+          });
+          payload.data.yValues = payload.data.yValues.map(function(ySeries, i) {
+            return ySeries.concat(newData.yValues[i]);
+          });
+          bindData();
+        }
+      });
+    }
+    payload.scrolling = false;
+  };
+
   dtFromOnClose = function(date) {
     var newStart = String(Date.parse(date));
-    if (thisMetric.start !== newStart) {
+    if (payload.metric.start !== newStart) {
       $('#dtTo').datepicker('option', 'minDate', date);
-      thisMetric.start = newStart;
-      makeChart(thisMetric);
+      payload.metric.start = newStart;
+      makeChart();
     }
   };
 
   dtToOnClose = function(date) {
     var newEnd = String(Date.parse(date));
-    if (thisMetric.end !== newEnd) {
+    if (payload.metric.end !== newEnd) {
       $('#dtFrom').datepicker('option', 'maxDate', date);
-      thisMetric.end = newEnd;
-      makeChart(thisMetric);
+      payload.metric.end = newEnd;
+      makeChart();
     }
   };
 
   prevOnClick = function() {
-    var start, end, diff, dtStart, dtEnd;
-    start = Number(thisMetric.start);
-    end = Number(thisMetric.end);
+    var start, end, diff, dtStart, dtEnd,
+        metric = payload.metric;
+    start = Number(metric.start);
+    end = Number(metric.end);
     diff = end - start;
     end = start;
     start = start - diff;
-    thisMetric.start = String(start);
-    thisMetric.end = String(end);
+    metric.start = String(start);
+    metric.end = String(end);
     dtStart = new Date(start);
     dtEnd = new Date(end);
     $('#dtFrom').datepicker('option', 'maxDate', dtEnd);
     $('#dtTo').datepicker('option', 'minDate', dtStart);
     $('#dtFrom').datepicker('setDate', dtStart);
     $('#dtTo').datepicker('setDate', dtEnd);
-    makeChart(thisMetric);
+    makeChart();
   };
 
   nextOnClick = function() {
-    var start, end, diff, dtStart, dtEnd;
-    start = Number(thisMetric.start);
-    end = Number(thisMetric.end);
+    var start, end, diff, dtStart, dtEnd,
+        metric = payload.metric;
+    start = Number(metric.start);
+    end = Number(metric.end);
     diff = end - start;
     start = end;
     end = end + diff;
-    thisMetric.start = String(start);
-    thisMetric.end = String(end);
+    metric.start = String(start);
+    metric.end = String(end);
     dtStart = new Date(start);
     dtEnd = new Date(end);
     $('#dtFrom').datepicker('option', 'maxDate', dtEnd);
     $('#dtTo').datepicker('option', 'minDate', dtStart);
     $('#dtFrom').datepicker('setDate', dtStart);
     $('#dtTo').datepicker('setDate', dtEnd);
-    makeChart(thisMetric);
+    makeChart();
   };
 
   prevIntvlOnClick = function() {
-    var interval, start;
+    var interval, start,
+        metric = payload.metric;
     interval = getInterval();
-    start = Number(thisMetric.start) - 86400000 * interval;
-    thisMetric.start = String(start);
-    thisMetric.end = String(start);
+    start = Number(metric.start) - 86400000 * interval;
+    metric.start = String(start);
+    metric.end = String(start);
     $('#dtFrom').datepicker('setDate', new Date(start));
-    makeChart(thisMetric);
+    makeChart();
   };
 
   nextIntvlOnClick = function() {
-    var interval, start;
+    var interval, start,
+        metric = payload.metric;
     interval = getInterval();
-    var start = Number(thisMetric.start) + 86400000 * interval;
-    thisMetric.start = String(start);
-    thisMetric.end = String(start);
+    var start = Number(metric.start) + 86400000 * interval;
+    metric.start = String(start);
+    metric.end = String(start);
     $('#dtFrom').datepicker('setDate', new Date(start));
-    makeChart(thisMetric);
+    makeChart();
   };
 
   getInterval = function() {
@@ -176,10 +219,10 @@ var dashboard = (function($) {
   // Initializes the dashboard JavaScript controller
   init = function(metric) {
 
-    thisMetric = metric;
+    payload.metric = metric;
 
     // Render the chart first
-    makeChart(metric);
+    makeChart();
 
     // Set up jQueryUI
     var dtStart = new Date(Number(metric.start)),
@@ -210,37 +253,37 @@ var dashboard = (function($) {
     // Statistic button events
     $('#stats #avg').click(function() {
       metric.stat = 'avg';
-      makeChart(metric);
+      makeChart();
     });
     $('#stats #max').click(function() {
       metric.stat = 'max';
-      makeChart(metric);
+      makeChart();
     });
     $('#stats #n').click(function() {
       metric.stat = 'n';
-      makeChart(metric);
+      makeChart();
     });
 
     // Interval button events
     $('#intvls #month').click(function() {
       metric.interval = 'month';
-      makeChart(metric);
+      makeChart();
     });
     $('#intvls #week').click(function() {
       metric.interval = 'week';
-      makeChart(metric);
+      makeChart();
     });
     $('#intvls #day').click(function() {
       metric.interval = 'day';
-      makeChart(metric);
+      makeChart();
     });
     $('#intvls #hour').click(function() {
       metric.interval = 'hour';
-      makeChart(metric);
+      makeChart();
     });
     $('#intvls #m3').click(function() {
       metric.interval = 'm3';
-      makeChart(metric);
+      makeChart();
     });
 
     // Date range buttons events
@@ -248,6 +291,11 @@ var dashboard = (function($) {
     $('#next').click(nextOnClick);
     $('#prevDay').click(prevIntvlOnClick);
     $('#nextDay').click(nextIntvlOnClick);
+
+    // Infinite scroll on the top charts
+    if (metric.type === 'top' || metric.type === 'top-by-day') {
+      $(window).scroll(scroll);
+    }
   };
 
   return {init: init};
