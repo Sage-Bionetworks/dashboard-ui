@@ -2,7 +2,7 @@ name := "dashboard-ui"
 
 version := "1.0-SNAPSHOT"
 
-resolvers += "Sage Repository" at "http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local"
+resolvers += "Sage Ext Repository" at "http://sagebionetworks.artifactoryonline.com/sagebionetworks/ext-releases-local"
 
 libraryDependencies ++= Seq(
   jdbc,
