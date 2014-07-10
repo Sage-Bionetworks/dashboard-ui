@@ -663,39 +663,23 @@ object MetricSet {
     "Certified Users" -> collection.immutable.ListMap(
 
       MetricHandle(Unique, "certifiedUserQuizRequest") -> Metric(
-        name = "Certified User Quiz Requests (Unique Count)",
-        description = "The number of unique requests during a period of time.",
+        name = "Quiz Requests vs Quiz Submissions (Unique Count)",
+        description = "The number of unique requests vs the number of unique submissions during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page) => {
-          val data = metricReader.getUniqueCount("certifiedUserQuizRequest", interval, start, end);
+          val rqData = metricReader.getUniqueCount("certifiedUserQuizRequest", interval, start, end);
+          val smData = metricReader.getUniqueCount("certifiedUserQuizSubmit", interval, start, end);
           DataSet(
             xLabel = Some("date"),
-            yLabel = Some("count of unique requests"),
+            yLabel = Some("count of unique requests / unique submissions"),
             xHeaders = List(DataHeader.Timestamp),
-            xValues = List(data map (d => d.x) toList),
-            yHeaders = List("all requests"),
-            yValues = List(data map (d => d.y) toList))
-        }),
-
-      MetricHandle(Unique, "certifiedUserQuizSubmit") -> Metric(
-        name = "Certified User Quiz Submissions (Unique Count)",
-        description = "The number of unique submissions during a period of time.",
-        start = 7,
-        end = 0,
-        interval = Interval.day,
-        statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
-          val data = metricReader.getUniqueCount("certifiedUserQuizSubmit", interval, start, end);
-          DataSet(
-            xLabel = Some("date"),
-            yLabel = Some("count of unique submissions"),
-            xHeaders = List(DataHeader.Timestamp),
-            xValues = List(data map (d => d.x) toList),
-            yHeaders = List("all submissions"),
-            yValues = List(data map (d => d.y) toList))
+            xValues = List(rqData map (d => d.x) toList),
+            yHeaders = List("all requests", "all submissions"),
+            yValues = List(rqData map (d => d.y) toList,
+                           smData map (d => d.y) toList))
         })))
 
   def findMetric(handle: MetricHandle) = {
