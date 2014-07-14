@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import org.sagebionetworks.dashboard.model.{ Interval, Statistic }
 import org.sagebionetworks.dashboard.service.{ CountDataPointConverter, EntityIdToName, UserIdToName }
 import org.sagebionetworks.dashboard.service.MetricReader
+import org.sagebionetworks.dashboard.util.TimeDataPointUtil
 import context.SpringContext
 import MetricType._
 
@@ -672,14 +673,18 @@ object MetricSet {
         dataSet = (start, end, interval, statistic, page) => {
           val rqData = metricReader.getUniqueCount("certifiedUserQuizRequest", interval, start, end);
           val smData = metricReader.getUniqueCount("certifiedUserQuizSubmit", interval, start, end);
+          val map = TimeDataPointUtil.createMergeMap(
+                java.util.Arrays.asList(rqData, smData), 2);
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
+
           DataSet(
             xLabel = Some("date"),
-            yLabel = Some("count of unique requests / unique submissions"),
+            yLabel = Some("unique requests / unique submissions"),
             xHeaders = List(DataHeader.Timestamp),
-            xValues = List(rqData map (d => d.x) toList),
+            xValues = List(tslist toList),
             yHeaders = List("all requests", "all submissions"),
-            yValues = List(rqData map (d => d.y) toList,
-                           smData map (d => d.y) toList))
+            yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
+                           TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
         })))
 
   def findMetric(handle: MetricHandle) = {
