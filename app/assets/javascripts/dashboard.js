@@ -61,8 +61,12 @@ var dashboard = (function($) {
         break;
       case 'top':
       case 'top-by-day':
-      case 'report':
         margin = {top: 20, right: 800, bottom: 20, left: 20};
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        dashboard.charts.hbar(data, configMap.width, configMap.height * (1 + payload.page), margin);
+        break;
+      case 'report':
+        margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height * (1 + payload.page), margin);
         break;
@@ -292,6 +296,16 @@ var dashboard = (function($) {
     $('#next').click(nextOnClick);
     $('#prevDay').click(prevIntvlOnClick);
     $('#nextDay').click(nextIntvlOnClick);
+
+    // Text input
+    $('#entityId').bind("enterKey", function(e) {
+      // TODO: pass the entityId
+    });
+    $('#entityId').keyup(function(e){
+      if(e.keyCode == 13) {
+        $(this).trigger("enterKey");
+      }
+    })
 
     // Infinite scroll on the top charts
     if (metric.type === 'top' || metric.type === 'top-by-day') {
