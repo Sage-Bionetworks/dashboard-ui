@@ -687,7 +687,7 @@ object MetricSet {
                            TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
         })),
 
-    "File Download Report" -> collection.immutable.ListMap(
+    "Report" -> collection.immutable.ListMap(
 
       MetricHandle(Report, "fileDownloadReport") -> Metric(
         name = "File Download Report",
