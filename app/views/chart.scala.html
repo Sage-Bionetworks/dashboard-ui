@@ -38,10 +38,12 @@ to experience this site.</p><![endif]-->
   </aside>
   <section id="chart">
     <div id="controls">
-      <div id="textInputControls">
+      <div>
         @metricType match {
             case MetricType.Report => {
-                EntityId: <input id="entityId" type="text"/>
+                <div id="textInput">
+                    EntityId: <input id="entityId" type="text"/>
+                </div>
             }
             case _ => {
             }

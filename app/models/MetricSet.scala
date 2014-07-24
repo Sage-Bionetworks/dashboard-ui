@@ -711,7 +711,7 @@ object MetricSet {
                 data map (d => d.timestamp) toList,
                 data map (d => d.client) toList),
             yHeaders = List("count"),
-            yValues = List(null))
+            yValues = List(data map (d => "1") toList))
         })))
 
   def findMetric(handle: MetricHandle) = {
