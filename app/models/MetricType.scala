@@ -39,4 +39,9 @@ object MetricType extends Enumeration {
    * Counts of active users
    */
   val ActiveUser = Value("active-user")
+
+  /**
+   * File Download Report
+   */
+  val Report = Value("report")
 }

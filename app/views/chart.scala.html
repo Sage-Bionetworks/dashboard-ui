@@ -38,6 +38,13 @@ to experience this site.</p><![endif]-->
   </aside>
   <section id="chart">
     <div id="controls">
+      <div id="textInputControls">
+        @metricType match {
+            case MetricType.Report => {
+                EntityId: <input id="entityId" type="text"/>
+            }
+        }
+      </div>
       <div id="dtControls">
         @metricType match {
           case MetricType.Latency | MetricType.Unique | MetricType.ActiveUser | MetricType.Trending => {
@@ -46,7 +53,7 @@ to experience this site.</p><![endif]-->
             To: <input id="dtTo" type="text" />
             <button class="button" id="next">next</button>
           }
-          case MetricType.Top | MetricType.TopByDay => {
+          case MetricType.Top | MetricType.TopByDay | MetricType.Report => {
             <button class="button" id="prevDay">prev</button>
             <input id="dtFrom" type="text"/>
             <button class="button" id="nextDay">next</button>
@@ -67,7 +74,7 @@ to experience this site.</p><![endif]-->
               <input type="radio" id="m3" name="intvls"><label for="m3">3-minute</label></input>
             </div>
           }
-          case MetricType.Top | MetricType.Unique | MetricType.Trending => {
+          case MetricType.Top | MetricType.Unique | MetricType.Trending | MetricType.Report => {
             <div id="intvls">
               <input type="radio" id="day" name="intvls"><label for="day">day</label></input>
               <input type="radio" id="week" name="intvls"><label for="week">week</label></input>
