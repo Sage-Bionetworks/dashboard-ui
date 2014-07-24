@@ -145,7 +145,7 @@ object MetricSet {
 
     "Entities" -> collection.immutable.ListMap(
 
-        MetricHandle(Top, "project") -> Metric(
+      MetricHandle(Top, "project") -> Metric(
         name = "Top Projects (Session Count)",
         description = "List of the top 20 most accessed projects.",
         start = 1,
