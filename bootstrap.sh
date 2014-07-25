@@ -10,7 +10,8 @@ apt-get --quiet --yes update
 apt-get --quiet --yes --target-release wheezy-backports upgrade
 
 # Tools
-apt-get --quiet --yet install curl
+apt-get --quiet --yes install curl
+apt-get --quiet --yes install g++
 apt-get --quiet --yes install zip
 
 # Java
@@ -25,8 +26,14 @@ echo "export PATH=$PATH:/home/vagrant/play-2.2.4" >> /etc/profile
 # JavaScript
 apt-get --quiet --yes --target-release wheezy-backports install nodejs
 ln -s /usr/bin/nodejs /usr/bin/node
-curl https://www.npmjs.org/install.sh | sudo sh
+curl https://www.npmjs.org/install.sh | sudo clean=yes sh
 npm install -g mocha
+pushd .
+su - vagrant -c "cd /vagrant"
+su - vagrant -c "npm install jsdom"
+su - vagrant -c "npm install jquery"
+su - vagrant -c "npm install d3"
+popd
 
 # PostgreSQL
 apt-get --quiet --yes --target-release wheezy-backports install postgresql
