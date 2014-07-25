@@ -3,7 +3,7 @@ package models
 import scala.language.postfixOps
 import scala.collection.JavaConversions.asScalaBuffer
 import org.joda.time.DateTime
-import org.sagebionetworks.dashboard.model.{ Interval, Statistic }
+import org.sagebionetworks.dashboard.model.{ Interval, Statistic, CountDataPoint }
 import org.sagebionetworks.dashboard.service.{ CountDataPointConverter, EntityIdToName, UserIdToName }
 import org.sagebionetworks.dashboard.service.MetricReader
 import org.sagebionetworks.dashboard.util.TimeDataPointUtil
@@ -685,6 +685,33 @@ object MetricSet {
             yHeaders = List("all requests", "all submissions"),
             yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
                            TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
+        })),
+
+    "Report" -> collection.immutable.ListMap(
+
+      MetricHandle(Report, "fileDownloadReport") -> Metric(
+        name = "File Download Report",
+        description = "The list of users who downloaded a specific file.",
+        start = 1,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page) => {
+          val baseUrl = "https://www.synapse.org/#!Profile:"
+          val data = metricReader.getFileDownloadReport("fileDownloadReport", "2468446", start, interval);
+
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL, DataHeader.Timestamp, DataHeader.Client),
+            xValues = List(
+                data map (d => userIdToName.convert(new CountDataPoint(d.userId, 0)).x) toList,
+                data map (d => d.userId) toList,
+                data map (d => baseUrl + d.userId) toList,
+                data map (d => d.timestamp) toList,
+                data map (d => d.client) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => "1") toList))
         })))
 
   def findMetric(handle: MetricHandle) = {

@@ -8,4 +8,5 @@ object DataHeader extends Enumeration {
   val Name = Value("name")
   val Timestamp = Value("timestamp")
   val URL = Value("url")
+  val Client = Value("client")
 }
