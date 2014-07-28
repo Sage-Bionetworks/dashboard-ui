@@ -2,7 +2,7 @@ dashboard.charts = (function() {
 
   var isEmptyData, removeSvg, addSvg, addEmptyChart, addChart,
       addAxisX, addAxisY, addPlot,
-      spin, bar, hbar, line;
+      spin, bar, hbar, line, table;
 
   ////// Private Functions //////
 
@@ -12,9 +12,9 @@ dashboard.charts = (function() {
 
   removeSvg = function() {
     d3.select('#chart svg').remove();
-  }
+  };
 
-  addSvg = function(width, height) {    
+  addSvg = function(width, height) {
     return d3.select('#chart')
       .append('svg')
       .attr('width', width)
@@ -380,11 +380,56 @@ dashboard.charts = (function() {
     });
   };
 
+  //=============================================
+  // Renders a table.
+  //=============================================
+  table = function(data, width, height, margin) {
+
+    var tableData, headers, rows;
+
+    // Remove any existing chart
+    removeSvg();
+
+    // Empty data set
+    if (isEmptyData(data)) {
+      addEmptyChart(width, height);
+      return;
+    }
+
+    // Get the table data 
+    tableData = "<table class='table table-hover'>";
+
+    headers = "<tr>";
+    for (var i = 0; i < data.xHeaders.length; i++) {
+      headers += "<th class='lead'>" + data.xHeaders[i] + "</th>";
+    }
+    headers += "</tr>";
+    tableData += headers;
+
+    rows = "";
+    for (var i = 0; i < data.rows.length; i++) {
+      var rowData = "<tr>";
+      for (var j = 0; j < data.rows[i].x.length; j++) {
+        rowData += "<td>" + data.rows[i].x[j].value + "</td>";
+      }
+      rowData += "</tr>";
+      rows += rowData;
+    }
+    tableData += rows;
+    tableData += "</table>";
+
+    // Create a table
+    $('#chart').append(tableData);
+    return;
+
+  };
+
   return {
     spin: spin,
     bar: bar,
     hbar: hbar,
-    line: line
+    line: line,
+    table: table
   };
 })();
 
