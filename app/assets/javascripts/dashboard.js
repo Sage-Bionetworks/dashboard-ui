@@ -33,6 +33,9 @@ var dashboard = (function($) {
     if (page > 0) {
       q = q + '&page=' + page;
     }
+    if ('text' in metric) {
+    	q = q + '&text=' + metric.text;
+    }
     return q;
   };
 
@@ -300,6 +303,7 @@ var dashboard = (function($) {
     // Text input
     $('#entityId').bind("enterKey", function(e) {
         var entityId = $('#entityId').val();
+        payload.metric.text = entityId;
         makeChart();
     });
     $('#entityId').keyup(function(e){

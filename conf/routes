@@ -35,4 +35,4 @@ GET     /metrics                controllers.Metrics.all
 GET     /chart                  controllers.Charts.chart(type, metric)
 
 # For loading data the ajax way
-GET     /data                   controllers.Charts.data(type, metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String], page: Option[Int])
+GET     /data                   controllers.Charts.data(type, metric, start: Option[String], end: Option[String], interval: Option[String], stat: Option[String], page: Option[Int], text: Option[String])

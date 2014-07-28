@@ -14,6 +14,10 @@ dashboard.charts = (function() {
     d3.select('#chart svg').remove();
   };
 
+  removeTable = function() {
+    $('#chart table').remove();
+  }
+
   addSvg = function(width, height) {
     return d3.select('#chart')
       .append('svg')
@@ -387,8 +391,9 @@ dashboard.charts = (function() {
 
     var tableData, headers, rows;
 
-    // Remove any existing chart
+    // Remove any existing chart or table
     removeSvg();
+    removeTable();
 
     // Empty data set
     if (isEmptyData(data)) {
