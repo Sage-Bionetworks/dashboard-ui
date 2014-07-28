@@ -21,6 +21,7 @@ import MetricType._
  * @param end          Offset in days of the ending time
  * @param dataSet      Function to generate the data set for this metric set
  */
+
 case class Metric(
   name: String,
   description: String,

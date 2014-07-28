@@ -400,21 +400,21 @@ dashboard.charts = (function() {
     tableData = "<table class='table table-hover'>";
 
     headers = "<tr>";
-    for (var i = 0; i < data.xHeaders.length; i++) {
-      headers += "<th class='lead'>" + data.xHeaders[i] + "</th>";
-    }
+    data.xHeaders.map(function(header) {
+      headers += "<th class='lead'>" + header + "</th>";
+    });
     headers += "</tr>";
     tableData += headers;
 
     rows = "";
-    for (var i = 0; i < data.rows.length; i++) {
+    data.rows.map(function(row) {
       var rowData = "<tr>";
-      for (var j = 0; j < data.rows[i].x.length; j++) {
-        rowData += "<td>" + data.rows[i].x[j].value + "</td>";
-      }
+      row.x.map(function(obj) {
+        rowData += "<td>" + obj.value + "</td>";
+      });
       rowData += "</tr>";
       rows += rowData;
-    }
+    });
     tableData += rows;
     tableData += "</table>";
 
