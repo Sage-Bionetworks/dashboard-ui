@@ -33,6 +33,9 @@ var dashboard = (function($) {
     if (page > 0) {
       q = q + '&page=' + page;
     }
+    if ('text' in metric) {
+    	q = q + '&text=' + metric.text;
+    }
     return q;
   };
 
@@ -68,7 +71,7 @@ var dashboard = (function($) {
       case 'report':
         margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
-        dashboard.charts.hbar(data, configMap.width, configMap.height * (1 + payload.page), margin);
+        dashboard.charts.table(data, configMap.width, configMap.height * (1 + payload.page), margin);
         break;
       case 'trending':
       case 'latency':
@@ -299,7 +302,9 @@ var dashboard = (function($) {
 
     // Text input
     $('#entityId').bind("enterKey", function(e) {
-      // TODO: pass the entityId
+        var entityId = $('#entityId').val();
+        payload.metric.text = entityId;
+        makeChart();
     });
     $('#entityId').keyup(function(e){
       if(e.keyCode == 13) {

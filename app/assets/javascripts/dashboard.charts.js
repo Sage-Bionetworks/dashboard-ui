@@ -2,7 +2,7 @@ dashboard.charts = (function() {
 
   var isEmptyData, removeSvg, addSvg, addEmptyChart, addChart,
       addAxisX, addAxisY, addPlot,
-      spin, bar, hbar, line;
+      spin, bar, hbar, line, table;
 
   ////// Private Functions //////
 
@@ -12,9 +12,13 @@ dashboard.charts = (function() {
 
   removeSvg = function() {
     d3.select('#chart svg').remove();
+  };
+
+  removeTable = function() {
+    $('#chart table').remove();
   }
 
-  addSvg = function(width, height) {    
+  addSvg = function(width, height) {
     return d3.select('#chart')
       .append('svg')
       .attr('width', width)
@@ -380,11 +384,57 @@ dashboard.charts = (function() {
     });
   };
 
+  //=============================================
+  // Renders a table.
+  //=============================================
+  table = function(data, width, height, margin) {
+
+    var tableData, headers, rows;
+
+    // Remove any existing chart or table
+    removeSvg();
+    removeTable();
+
+    // Empty data set
+    if (isEmptyData(data)) {
+      addEmptyChart(width, height);
+      return;
+    }
+
+    // Get the table data 
+    tableData = "<table class='table table-hover'>";
+
+    headers = "<tr>";
+    data.xHeaders.map(function(header) {
+      headers += "<th class='lead'>" + header + "</th>";
+    });
+    headers += "</tr>";
+    tableData += headers;
+
+    rows = "";
+    data.rows.map(function(row) {
+      var rowData = "<tr>";
+      row.x.map(function(obj) {
+        rowData += "<td>" + obj.value + "</td>";
+      });
+      rowData += "</tr>";
+      rows += rowData;
+    });
+    tableData += rows;
+    tableData += "</table>";
+
+    // Create a table
+    $('#chart').append(tableData);
+    return;
+
+  };
+
   return {
     spin: spin,
     bar: bar,
     hbar: hbar,
-    line: line
+    line: line,
+    table: table
   };
 })();
 

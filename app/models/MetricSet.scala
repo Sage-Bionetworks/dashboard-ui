@@ -21,6 +21,7 @@ import MetricType._
  * @param end          Offset in days of the ending time
  * @param dataSet      Function to generate the data set for this metric set
  */
+
 case class Metric(
   name: String,
   description: String,
@@ -28,7 +29,7 @@ case class Metric(
   end: Int,
   interval: Interval,
   statistic: Statistic,
-  dataSet: (DateTime, DateTime, Interval, Statistic, Int) => DataSet)
+  dataSet: (DateTime, DateTime, Interval, Statistic, Int, String) => DataSet)
 
 object MetricSet {
 
@@ -47,7 +48,7 @@ object MetricSet {
         end = 0,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getUniqueCount("activeUser", interval, start, end, 3L, Long.MaxValue);
           DataSet(
             xLabel = Some("date"),
@@ -65,7 +66,7 @@ object MetricSet {
         end = 0,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getUniqueCount("uniqueUser", interval, start, end);
           DataSet(
             xLabel = Some("date"),
@@ -83,7 +84,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Profile:"
           val data = metricReader.getTop("uniqueUser", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -105,7 +106,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Profile:"
           val data = metricReader.getTop("activeUser", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -127,7 +128,7 @@ object MetricSet {
         end = 1,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val topData = metricReader.getTop("uniqueUser", interval, end, 0, 10)
           val trendingData = topData map (d => {
             metricReader.getCount("uniqueUser", d.id, interval, start, end)
@@ -152,7 +153,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("topProject", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -174,7 +175,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("topProjectByDay", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -196,7 +197,7 @@ object MetricSet {
         end = 1,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val topData = metricReader.getTop("topProject", interval, end, 0, 10)
           val trendingData = topData map (d => {
             metricReader.getCount("topProject", d.id, interval, start, end)
@@ -219,7 +220,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("entityRead", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -241,7 +242,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("entityWrite", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -263,7 +264,7 @@ object MetricSet {
         end = 1,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val topData = metricReader.getTop("entityRead", interval, end, 0, 10)
           val trendingData = topData map (d => {
             metricReader.getCount("entityRead", d.id, interval, start, end)
@@ -286,7 +287,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("fileDownload", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -308,7 +309,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Profile:"
           val data = metricReader.getTop("wikiWriteByUser", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -330,7 +331,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Profile:"
           val data = metricReader.getTop("wikiReadByUser", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -352,7 +353,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("wikiWriteByObject", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -374,7 +375,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val baseUrl = "https://www.synapse.org/#!Synapse:"
           val data = metricReader.getTop("wikiReadByObject", interval, start, page * 20, (page + 1) * 20)
           DataSet(
@@ -398,7 +399,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("topMethod", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -421,7 +422,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("topClient", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -439,7 +440,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("topPythonClient", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -457,7 +458,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("topRClient", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -475,7 +476,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("topWebClient", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -495,7 +496,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("statusCode", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -513,7 +514,7 @@ object MetricSet {
         end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val data = metricReader.getTop("errorStatusCode", interval, start, page * 20, (page + 1) * 20)
           DataSet(
             xLabel = None,
@@ -531,7 +532,7 @@ object MetricSet {
         end = 1,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val topData = metricReader.getTop("errorStatusCode", interval, end, 0, 10)
           val trendingData = topData map (d => {
             metricReader.getCount("errorStatusCode", d.id, interval, start, end)
@@ -554,7 +555,7 @@ object MetricSet {
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val timeseries = metricReader.getTimeSeries("globalLatency", start, end,
             statistic, interval)
           DataSet(
@@ -573,7 +574,7 @@ object MetricSet {
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val timeseries = metricReader.getTimeSeries("postEntityHeader", start, end,
             statistic, interval)
           DataSet(
@@ -592,7 +593,7 @@ object MetricSet {
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val timeseries = metricReader.getTimeSeries("getEntityBundle", start, end,
             statistic, interval)
           DataSet(
@@ -611,7 +612,7 @@ object MetricSet {
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val timeseries = metricReader.getTimeSeries("query", start, end,
             statistic, interval)
           DataSet(
@@ -630,7 +631,7 @@ object MetricSet {
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val timeseries = metricReader.getTimeSeries("search", start, end,
             statistic, interval)
           DataSet(
@@ -649,7 +650,7 @@ object MetricSet {
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val timeseries = metricReader.getTimeSeries("getDescendants", start, end,
             statistic, interval)
           DataSet(
@@ -670,7 +671,7 @@ object MetricSet {
         end = 0,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, text) => {
           val rqData = metricReader.getUniqueCount("certifiedUserQuizRequest", interval, start, end);
           val smData = metricReader.getUniqueCount("certifiedUserQuizSubmit", interval, start, end);
           val map = TimeDataPointUtil.createMergeMap(
@@ -696,9 +697,9 @@ object MetricSet {
         end = 1,
         interval = Interval.day,
         statistic = Statistic.n,
-        dataSet = (start, end, interval, statistic, page) => {
+        dataSet = (start, end, interval, statistic, page, entityId) => {
           val baseUrl = "https://www.synapse.org/#!Profile:"
-          val data = metricReader.getFileDownloadReport("fileDownloadReport", "2468446", start, interval);
+          val data = metricReader.getFileDownloadReport("fileDownloadReport", entityId, start, interval);
 
           DataSet(
             xLabel = None,
