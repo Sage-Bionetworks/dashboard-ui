@@ -418,7 +418,6 @@ dashboard.charts = (function() {
     total = data.rows.length;
     noUsers = countUniqueUsers(data, idIndex);
 
-
     // generate the summary report
     summary = "<div id='tableSummary' class='lead'><p>There are " + total + " results, " 
             + noUsers + " unique users.</p></div>"
@@ -428,7 +427,7 @@ dashboard.charts = (function() {
 
     headers = "<tr>";
     data.xHeaders.map(function(header) {
-      if (header != "url") {
+      if (header != "url" && header != "id") {
         headers += "<th class='lead'>" + header + "</th>";
       }
     });
@@ -439,9 +438,9 @@ dashboard.charts = (function() {
     data.rows.map(function(row) {
       var rowData = "<tr>";
       row.x.map(function(obj) {
-        if (obj.header != "url") {
-          // merge the url to username and userid
-          if (obj.header == "name" || obj.header == "id") {
+        if (obj.header != "url" && obj.header != "id") {
+          // merge the url to username
+          if (obj.header == "name") {
             rowData += "<td><a href='" + row.x[urlIndex].value + "' target='_blank'>" + obj.value + "</a></td>";
           } else {
             rowData += "<td>" + obj.value + "</td>";
