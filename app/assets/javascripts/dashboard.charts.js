@@ -428,7 +428,7 @@ dashboard.charts = (function() {
     headers = "<tr>";
     data.xHeaders.map(function(header) {
       if (header != "url" && header != "id") {
-        headers += "<th class='lead'>" + header + "</th>";
+        headers += "<th class='lead' >" + header + "</th>";
       }
     });
     headers += "</tr>";

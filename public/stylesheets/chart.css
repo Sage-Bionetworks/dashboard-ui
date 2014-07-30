@@ -66,3 +66,7 @@ text.label {
   color: #0070A3;
   background-color: #EFF7FD;
 }
+
+th:hover {
+  cursor: pointer;
+}
