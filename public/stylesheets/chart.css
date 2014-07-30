@@ -61,3 +61,8 @@ text.label {
 .table {
   margin-top: 20px;
 }
+
+.table th {
+  color: #0070A3;
+  background-color: #EFF7FD;
+}

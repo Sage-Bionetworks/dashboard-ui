@@ -412,8 +412,6 @@ dashboard.charts = (function() {
       return;
     }
 
-    console.log(data);
-
     // get the indexes and the total # of results
     idIndex = jQuery.inArray("id", data.xHeaders);
     urlIndex = jQuery.inArray("url", data.xHeaders);
