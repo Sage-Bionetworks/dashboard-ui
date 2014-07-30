@@ -442,7 +442,7 @@ dashboard.charts = (function() {
         if (obj.header != "url") {
           // merge the url to username and userid
           if (obj.header == "name" || obj.header == "id") {
-            rowData += "<td><a href=" + row.x[urlIndex].value + ">" + obj.value + "</a></td>";
+            rowData += "<td><a href='" + row.x[urlIndex].value + "' target='_blank'>" + obj.value + "</a></td>";
           } else {
             rowData += "<td>" + obj.value + "</td>";
           }
