@@ -311,6 +311,9 @@ var dashboard = (function($) {
         $(this).trigger("enterKey");
       }
     })
+    $('#entityId').focusout(function(){
+      $(this).trigger("enterKey");
+    })
 
     // Infinite scroll on the top charts
     if (metric.type === 'top' || metric.type === 'top-by-day') {

@@ -23,10 +23,17 @@
 }
 
 #stats,
-#intvls {
+#intvls,
+#textInput,
+#dtControls {
   float:left;
-  margin-top:20px;
-  margin-right:20px;
+  padding: 0px;
+  display: inline;
+  margin:20px 20px 0px 0px;
+}
+
+#stats {
+  clear: left;
 }
 
 .axis path,
@@ -44,4 +51,18 @@
 text.label {
   font-family: monospace;
   white-space: pre;
+}
+
+#tableSummary {
+  clear: both;
+  margin-top: 120px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.table th {
+  color: #0070A3;
+  background-color: #EFF7FD;
 }
