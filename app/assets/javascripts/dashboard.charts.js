@@ -1,7 +1,7 @@
 dashboard.charts = (function() {
 
-  var isEmptyData, removeSvg, addSvg, addEmptyChart, addChart,
-      addAxisX, addAxisY, addPlot,
+  var isEmptyData, removeSvg, removeTable, countUniqueUsers,
+      addSvg, addEmptyChart, addChart, addAxisX, addAxisY, addPlot,
       spin, bar, hbar, line, table;
 
   ////// Private Functions //////
@@ -15,8 +15,19 @@ dashboard.charts = (function() {
   };
 
   removeTable = function() {
+    $('#chart #tableSummary').remove();
     $('#chart table').remove();
-  }
+  };
+
+  countUniqueUsers = function(data, idIndex) {
+    var users = [];
+    data.rows.map(function(user) {
+      if ($.inArray(user.x[idIndex].value, users) == -1) {
+        users.push(user.x[idIndex].value);
+      }
+    });
+    return users.length;
+  };
 
   addSvg = function(width, height) {
     return d3.select('#chart')
@@ -389,7 +400,7 @@ dashboard.charts = (function() {
   //=============================================
   table = function(data, width, height, margin) {
 
-    var tableData, headers, rows;
+    var tableData, headers, rows, summary, idIndex, urlIndex, noUsers, total;
 
     // Remove any existing chart or table
     removeSvg();
@@ -401,12 +412,27 @@ dashboard.charts = (function() {
       return;
     }
 
+    console.log(data);
+
+    // get the indexes and the total # of results
+    idIndex = jQuery.inArray("id", data.xHeaders);
+    urlIndex = jQuery.inArray("url", data.xHeaders);
+    total = data.rows.length;
+    noUsers = countUniqueUsers(data, idIndex);
+
+
+    // generate the summary report
+    summary = "<div id='tableSummary' class='lead'><p>There are " + total + " results, " 
+            + noUsers + " unique users.</p></div>"
+
     // Get the table data 
     tableData = "<table class='table table-hover'>";
 
     headers = "<tr>";
     data.xHeaders.map(function(header) {
-      headers += "<th class='lead'>" + header + "</th>";
+      if (header != "url") {
+        headers += "<th class='lead'>" + header + "</th>";
+      }
     });
     headers += "</tr>";
     tableData += headers;
@@ -415,7 +441,14 @@ dashboard.charts = (function() {
     data.rows.map(function(row) {
       var rowData = "<tr>";
       row.x.map(function(obj) {
-        rowData += "<td>" + obj.value + "</td>";
+        if (obj.header != "url") {
+          // merge the url to username and userid
+          if (obj.header == "name" || obj.header == "id") {
+            rowData += "<td><a href=" + row.x[urlIndex].value + ">" + obj.value + "</a></td>";
+          } else {
+            rowData += "<td>" + obj.value + "</td>";
+          }
+        }
       });
       rowData += "</tr>";
       rows += rowData;
@@ -423,7 +456,8 @@ dashboard.charts = (function() {
     tableData += rows;
     tableData += "</table>";
 
-    // Create a table
+    // Add the summary and table
+    $('#chart').append(summary);
     $('#chart').append(tableData);
     return;
 

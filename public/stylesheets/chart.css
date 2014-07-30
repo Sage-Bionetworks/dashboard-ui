@@ -53,6 +53,11 @@ text.label {
   white-space: pre;
 }
 
-.table {
+#tableSummary {
+  clear: both;
   margin-top: 120px;
+}
+
+.table {
+  margin-top: 20px;
 }
