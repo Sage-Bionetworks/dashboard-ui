@@ -666,7 +666,7 @@ object MetricSet {
 
       MetricHandle(Unique, "certifiedUserQuizRequest") -> Metric(
         name = "Quiz Requests vs Quiz Submissions (Unique Count)",
-        description = "The number of unique requests vs the number of unique submissions during a period of time.",
+        description = "The number of unique users making a request vs the number of unique users submitting a quiz during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
