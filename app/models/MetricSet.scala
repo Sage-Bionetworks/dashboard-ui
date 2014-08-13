@@ -686,6 +686,56 @@ object MetricSet {
             yHeaders = List("all requests", "all submissions"),
             yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
                            TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
+        }),
+
+      MetricHandle(Unique, "certifiedUser") -> Metric(
+        name = "Unique Users vs Certified Users",
+        description = "The number of unique users vs the number of certified users during a period of time.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val uData = metricReader.getUniqueCount("uniqueUser", interval, start, end);
+          val cData = metricReader.getUniqueCount("certifiedUser", interval, start, end);
+          val map = TimeDataPointUtil.createMergeMap(
+                java.util.Arrays.asList(uData, cData), 2);
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
+          val uusers = TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList;
+          val newcusers = TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList;
+          val cusers = newcusers.map{ var s = "0"; d => {s = addString(s, d); s}};
+
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("unique users / certified users / new certified users"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = List("unique users", "certified users", "new certified users"),
+            yValues = List(uusers, cusers, newcusers))
+        }),
+
+      MetricHandle(Unique, "questionPass") -> Metric(
+        name = "Question: Correct Responses vs Incorrect Responses",
+        description = "The number of correct and incorrect responses on a question during a period of time.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val pData = metricReader.getUniqueCount("questionPass", interval, start, end);
+          val fData = metricReader.getUniqueCount("questionFail", interval, start, end);
+          val map = TimeDataPointUtil.createMergeMap(
+                java.util.Arrays.asList(pData, fData), 2);
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
+
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("correct responses / incorrect responses"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = List("correct responses", "incorrect responses"),
+            yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
+                           TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
         })),
 
     "Report" -> collection.immutable.ListMap(
@@ -717,5 +767,10 @@ object MetricSet {
 
   def findMetric(handle: MetricHandle) = {
     metricMap map (subMap => { subMap._2 get handle }) find (metric => metric != None) get
+  }
+
+  def addString(a : String, b : String) = {
+    var sum = (a toInt) + (b toInt)
+    sum toString
   }
 }
