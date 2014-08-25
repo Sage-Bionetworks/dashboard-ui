@@ -691,8 +691,8 @@ object MetricSet {
         }),
 
       MetricHandle(Unique, "certifiedUser") -> Metric(
-        name = "Unique Users vs Certified Users",
-        description = "The number of unique users vs the number of certified users during a period of time.",
+        name = "Unique Users vs New Certified Users",
+        description = "The number of unique users vs the number of new certified users during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
@@ -705,15 +705,35 @@ object MetricSet {
           val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
           val uusers = TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList;
           val newcusers = TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList;
+
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("unique users / new certified users"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = List("unique users", "new certified users"),
+            yValues = List(uusers, newcusers))
+        }),
+
+        MetricHandle(Unique, "cumulativeCertifiedUser") -> Metric(
+        name = "Cumulative Certified Users vs New Certified Users",
+        description = "The total number of certified users vs the number of new certified users during a period of time.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val cData = metricReader.getUniqueCount("certifiedUser", interval, start, end);
+          val newcusers = cData map (d => d.y) toList;
           val cusers = newcusers.map{ var s = "0"; d => {s = addString(s, d); s}};
 
           DataSet(
             xLabel = Some("date"),
-            yLabel = Some("unique users / certified users / new certified users"),
+            yLabel = Some("cumulative certified users / new certified users"),
             xHeaders = List(DataHeader.Timestamp),
-            xValues = List(tslist toList),
-            yHeaders = List("unique users", "certified users", "new certified users"),
-            yValues = List(uusers, cusers, newcusers))
+            xValues = List(cData map (d => d.x) toList),
+            yHeaders = List("cumulative certified users", "new certified users"),
+            yValues = List(cusers, newcusers))
         })),
 
     "Report" -> collection.immutable.ListMap(
