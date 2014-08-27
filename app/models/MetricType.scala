@@ -44,4 +44,9 @@ object MetricType extends Enumeration {
    * File Download Report
    */
   val Report = Value("report")
+
+  /*
+   * Combine two or more charts together. No controllers.
+   */
+  val Summary = Value("summary")
 }
