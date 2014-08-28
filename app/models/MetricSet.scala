@@ -752,7 +752,7 @@ object MetricSet {
           DataSet(
             xLabel = Some("questionIndex"),
             yLabel = Some("correct / incorrect"),
-            xHeaders = List(DataHeader.Timestamp),
+            xHeaders = List(DataHeader.ID),
             xValues = List(x),
             yHeaders = List("correct", "incorrect"),
             yValues = List(x map (k => pData(k)) toList,

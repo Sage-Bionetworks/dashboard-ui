@@ -51,6 +51,7 @@ var dashboard = (function($) {
         break;
       case 'unique':
       case 'active-user':
+      //case 'summary':
         // Hack alert: Convert timestamps to Strings
         dateFormat = d3.time.format.utc('%m/%d');
         data.xValues[0].forEach(function(val, i) {
@@ -79,6 +80,10 @@ var dashboard = (function($) {
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
+      case 'summary':
+        margin = {top: 20, right: 60, bottom: 20, left: 60},
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        dashboard.charts.bar(data, configMap.width, configMap.height, margin);
     }
   };
 
