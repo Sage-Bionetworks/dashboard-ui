@@ -1,6 +1,6 @@
 name := "dashboard-ui"
 
-version := "1.0-SNAPSHOT"
+version := "1.0-20140815"
 
 resolvers += "Sage Repository" at "http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local"
 

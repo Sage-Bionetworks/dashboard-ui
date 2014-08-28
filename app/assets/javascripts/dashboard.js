@@ -51,7 +51,6 @@ var dashboard = (function($) {
         break;
       case 'unique':
       case 'active-user':
-      //case 'summary':
         // Hack alert: Convert timestamps to Strings
         dateFormat = d3.time.format.utc('%m/%d');
         data.xValues[0].forEach(function(val, i) {

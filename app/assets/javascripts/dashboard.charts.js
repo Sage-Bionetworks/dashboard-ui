@@ -101,7 +101,6 @@ dashboard.charts = (function() {
   // Renders a grouped bar chart.
   //===============================
   bar = function(data, width, height, margin) {
-    console.log(data);
 
     var w, h, xScale0, xScale1, xAxis, yScale, yAxis,
         svg, chart, plot, color, legend;
