@@ -14,6 +14,9 @@ apt-get --quiet --yes install curl
 apt-get --quiet --yes install g++
 apt-get --quiet --yes install zip
 
+# NFS Client
+apt-get --quiet --yes --target-release wheezy-backports install nfs-common
+
 # Java
 apt-get --quiet --yes --target-release wheezy-backports install openjdk-7-jdk
 
