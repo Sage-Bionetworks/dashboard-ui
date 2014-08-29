@@ -2,6 +2,7 @@ package models
 
 import scala.language.postfixOps
 import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConverters._
 import org.joda.time.DateTime
 import org.sagebionetworks.dashboard.model.{ Interval, Statistic, CountDataPoint }
 import org.sagebionetworks.dashboard.service.{ CountDataPointConverter, EntityIdToName, UserIdToName }
@@ -734,6 +735,28 @@ object MetricSet {
             xValues = List(cData map (d => d.x) toList),
             yHeaders = List("cumulative certified users", "new certified users"),
             yValues = List(cusers, newcusers))
+        }),
+
+      MetricHandle(Summary, "questions") -> Metric(
+        name = "Question: Correct vs Incorrect",
+        description = "The number correct responses vs incorrect responses for each question index.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val x = (0 until 29) map (d => d toString) toList;
+          val pData = metricReader.getTotalCount("questionPass", x asJava) asScala;
+          val fData = metricReader.getTotalCount("questionFail", x asJava) asScala;
+
+          DataSet(
+            xLabel = Some("questionIndex"),
+            yLabel = Some("correct / incorrect"),
+            xHeaders = List(DataHeader.ID),
+            xValues = List(x),
+            yHeaders = List("correct", "incorrect"),
+            yValues = List(x map (k => pData(k)) toList,
+                           x map (k => fData(k)) toList))
         })),
 
     "Report" -> collection.immutable.ListMap(

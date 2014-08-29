@@ -79,6 +79,10 @@ var dashboard = (function($) {
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
+      case 'summary':
+        margin = {top: 20, right: 60, bottom: 20, left: 60},
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        dashboard.charts.bar(data, configMap.width, configMap.height, margin);
     }
   };
 
