@@ -770,7 +770,7 @@ object MetricSet {
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, entityId) => {
           val baseUrl = "https://www.synapse.org/#!Profile:"
-          val data = metricReader.getFileDownloadReport("fileDownloadReport", entityId, start, interval);
+          val data = metricReader.getAllReport("fileDownloadReport", entityId);
 
           DataSet(
             xLabel = None,
