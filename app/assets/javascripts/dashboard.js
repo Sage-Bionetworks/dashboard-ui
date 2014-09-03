@@ -337,6 +337,11 @@ var dashboard = (function($) {
     $('#entityId').focusout(function(){
       $(this).trigger("enterKey");
     });
+    $('#submit').click(function() {
+        var entityId = $('#entityId').val();
+        payload.metric.text = entityId;
+        makeChart();
+    });
 
     // Infinite scroll on the top charts
     if (metric.type === 'top' || metric.type === 'top-by-day') {
