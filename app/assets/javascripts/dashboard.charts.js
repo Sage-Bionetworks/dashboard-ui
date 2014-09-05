@@ -41,7 +41,7 @@ dashboard.charts = (function() {
     svg.append('text')
       .attr('x', width / 12)
       .attr('y', height / 12)
-      .text('[Empty data set. Please select a different time range.]');
+      .text('[Empty data set. Please select a different time range or enter a different value.]');
     return svg;
   };
 
