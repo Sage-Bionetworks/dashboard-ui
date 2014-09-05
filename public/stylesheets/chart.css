@@ -25,11 +25,22 @@
 #stats,
 #intvls,
 #textInput,
-#dtControls {
+#dtControls,
+#submit {
   float:left;
   padding: 0px;
   display: inline;
+}
+
+#stats,
+#intvls,
+#textInput,
+#dtControls {
   margin:20px 20px 0px 0px;
+}
+
+#submit {
+  margin:8px 0px 0px 0px;
 }
 
 #stats {

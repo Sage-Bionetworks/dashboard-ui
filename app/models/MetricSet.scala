@@ -769,8 +769,11 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, entityId) => {
-          val baseUrl = "https://www.synapse.org/#!Profile:"
-          val data = metricReader.getFileDownloadReport("fileDownloadReport", entityId, start, interval);
+          val baseUrl = "https://www.synapse.org/#!Profile:";
+          val data = entityId match {
+            case null | "" | "syn" => metricReader.getAllReport("fileDownloadReport", "somerandomstring");
+            case _ => metricReader.getAllReport("fileDownloadReport", entityId);
+          }
 
           DataSet(
             xLabel = None,
