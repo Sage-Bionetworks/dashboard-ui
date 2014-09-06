@@ -50,7 +50,7 @@ object MetricSet {
         interval = Interval.month,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val data = metricReader.getUniqueCount("activeUser", interval, start, end, 3L, Long.MaxValue);
+          val data = metricReader.getUniqueCount("activeUser", interval, start, end, 3L, Long.MaxValue)
           DataSet(
             xLabel = Some("date"),
             yLabel = Some("count of active users"),
@@ -68,7 +68,7 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val data = metricReader.getUniqueCount("uniqueUser", interval, start, end);
+          val data = metricReader.getUniqueCount("uniqueUser", interval, start, end)
           DataSet(
             xLabel = Some("date"),
             yLabel = Some("count of unique users"),
@@ -673,12 +673,12 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val rqData = metricReader.getUniqueCount("certifiedUserQuizRequest", interval, start, end);
-          val smData = metricReader.getUniqueCount("certifiedUserQuizSubmit", interval, start, end);
-          val cuData = metricReader.getUniqueCount("certifiedUser", interval, start, end);
+          val rqData = metricReader.getUniqueCount("certifiedUserQuizRequest", interval, start, end)
+          val smData = metricReader.getUniqueCount("certifiedUserQuizSubmit", interval, start, end)
+          val cuData = metricReader.getUniqueCount("certifiedUser", interval, start, end)
           val map = TimeDataPointUtil.createMergeMap(
-                java.util.Arrays.asList(rqData, smData, cuData), 3);
-          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
+                java.util.Arrays.asList(rqData, smData, cuData), 3)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
 
           DataSet(
             xLabel = Some("date"),
@@ -699,13 +699,13 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val uData = metricReader.getUniqueCount("uniqueUser", interval, start, end);
-          val cData = metricReader.getUniqueCount("certifiedUser", interval, start, end);
+          val uData = metricReader.getUniqueCount("uniqueUser", interval, start, end)
+          val cData = metricReader.getUniqueCount("certifiedUser", interval, start, end)
           val map = TimeDataPointUtil.createMergeMap(
-                java.util.Arrays.asList(uData, cData), 2);
-          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
-          val uusers = TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList;
-          val newcusers = TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList;
+                java.util.Arrays.asList(uData, cData), 2)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
+          val uusers = TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList
+          val newcusers = TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList
 
           DataSet(
             xLabel = Some("date"),
@@ -716,7 +716,7 @@ object MetricSet {
             yValues = List(uusers, newcusers))
         }),
 
-        MetricHandle(Unique, "cumulativeCertifiedUser") -> Metric(
+      MetricHandle(Unique, "cumulativeCertifiedUser") -> Metric(
         name = "Cumulative Certified Users vs New Certified Users",
         description = "The total number of certified users vs the number of new certified users during a period of time.",
         start = 7,
@@ -724,10 +724,9 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val cData = metricReader.getUniqueCount("certifiedUser", interval, start, end);
-          val newcusers = cData map (d => d.y) toList;
-          val cusers = newcusers.map{ var s = "0"; d => {s = addString(s, d); s}};
-
+          val cData = metricReader.getUniqueCount("certifiedUser", interval, start, end)
+          val newcusers = cData map (d => d.y) toList
+          val cusers = newcusers.map{ var s = "0"; d => { s = addString(s, d); s } }
           DataSet(
             xLabel = Some("date"),
             yLabel = Some("cumulative certified users / new certified users"),
@@ -745,9 +744,9 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val x = (0 until 29) map (d => d toString) toList;
-          val pData = metricReader.getTotalCount("questionPass", x asJava) asScala;
-          val fData = metricReader.getTotalCount("questionFail", x asJava) asScala;
+          val x = (0 until 29) map (d => d toString) toList
+          val pData = metricReader.getTotalCount("questionPass", x asJava) asScala
+          val fData = metricReader.getTotalCount("questionFail", x asJava) asScala
 
           DataSet(
             xLabel = Some("questionIndex"),
@@ -769,10 +768,10 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, entityId) => {
-          val baseUrl = "https://www.synapse.org/#!Profile:";
+          val baseUrl = "https://www.synapse.org/#!Profile:"
           val data = entityId match {
-            case null | "" | "syn" => metricReader.getAllReport("fileDownloadReport", "somerandomstring");
-            case _ => metricReader.getAllReport("fileDownloadReport", entityId);
+            case null | "" | "syn" => metricReader.getAllReport("fileDownloadReport", "somerandomstring")
+            case _ => metricReader.getAllReport("fileDownloadReport", entityId)
           }
 
           DataSet(
