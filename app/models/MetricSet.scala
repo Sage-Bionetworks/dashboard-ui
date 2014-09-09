@@ -527,8 +527,8 @@ object MetricSet {
         }),
 
       MetricHandle(Trending, "status-code") -> Metric(
-        name = "Trending HTTP status codes",
-        description = "List of trending HTTP status codes (Percentage).",
+        name = "Trending HTTP status codes (Percentage)",
+        description = "List of trending HTTP status codes.",
         start = 60,
         end = 1,
         interval = Interval.day,
