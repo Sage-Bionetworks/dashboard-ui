@@ -526,6 +526,30 @@ object MetricSet {
             yValues = List(data map (d => d.y) toList))
         }),
 
+      MetricHandle(Trending, "status-code") -> Metric(
+        name = "Trending HTTP status codes",
+        description = "List of trending HTTP status codes (Percentage).",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("statusCode", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("statusCode", d.id, interval, start, end)
+          })
+          val map = TimeDataPointUtil.createMergeMap(trendingData asJava, trendingData size)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Percentage"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = (0 until (trendingData size)) map (d => 
+              TimeDataPointUtil.getPercentageList(tslist, map, d) toList) toList)
+        }),
+
       MetricHandle(Trending, "error-status-code") -> Metric(
         name = "Trending HTTP error status codes (Session Count)",
         description = "List of trending HTTP error status codes.",
@@ -744,7 +768,7 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val x = (0 until 29) map (d => d toString) toList
+          val x = (0 until 30) map (d => d toString) toList
           val pData = metricReader.getTotalCount("questionPass", x asJava) asScala
           val fData = metricReader.getTotalCount("questionFail", x asJava) asScala
 
