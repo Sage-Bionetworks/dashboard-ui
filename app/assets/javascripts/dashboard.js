@@ -2,7 +2,7 @@ var dashboard = (function($) {
 
   ////// Variables
 
-  var createQuery, bindData, makeChart, init, initTable,
+  var createQuery, bindData, makeChart, init,
       scroll, dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
       prevIntvlOnClick, nextIntvlOnClick, getInterval,
       payload = { page: 0 },
@@ -103,30 +103,11 @@ var dashboard = (function($) {
       dashboard.charts.spin(false);
       // Bind data to chart
       bindData();
-      initTable();
     })
     .on('error', function() {
       dashboard.charts.spin(false);
     })
     .get();
-  };
-
-  initTable = function() {
-    // Add sort function to table headers
-    $('th').click(function(){
-      var data = dashboard.models.unpack(payload.data, { rows: true, yMinMax: true }),
-          index = $.inArray($(this).html(), data.xHeaders),
-          margin = {top: 20, right: 60, bottom: 20, left: 60};
-      data.rows.sort(function(a, b) {
-          if (typeof a.x[index].value == "string" || a.x[index].value instanceof String) {
-        	  return a.x[index].value.localeCompare(b.x[index].value);
-          } else {
-        	  return a.x[index].value - b.x[index].value;
-          }
-        });
-      dashboard.charts.table(data, configMap.width, configMap.height * (1 + payload.page), margin);
-      initTable();
-    });
   };
 
   ////// Event Handlers

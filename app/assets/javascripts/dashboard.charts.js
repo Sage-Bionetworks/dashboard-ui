@@ -469,6 +469,19 @@ dashboard.charts = (function() {
     // Add the summary and table
     $('#chart').append(summary);
     $('#chart').append(tableData);
+
+    $('th').click(function(){
+        var index = $.inArray($(this).html(), data.xHeaders);
+        data.rows.sort(function(a, b) {
+            if (typeof a.x[index].value == "string" || a.x[index].value instanceof String) {
+                return a.x[index].value.localeCompare(b.x[index].value);
+            } else {
+                return a.x[index].value - b.x[index].value;
+            }
+          });
+        table(data, width, height, margin);
+      });
+
     return;
 
   };
