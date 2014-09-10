@@ -322,7 +322,7 @@ dashboard.charts = (function() {
     // Compute chart width and height
     w = width - margin.left - margin.right;
     h = height - margin.top - margin.bottom;
-    verticalSpace = h/data.yHeaders.length;
+    verticalSpace = 30;
 
     // The x-axis
     xScale = d3.time.scale()
