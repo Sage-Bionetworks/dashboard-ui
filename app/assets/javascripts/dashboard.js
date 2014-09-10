@@ -77,6 +77,9 @@ var dashboard = (function($) {
       case 'latency':
         margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
+        for (var i = 0; i < data.ySeries.length; i++) {
+            data.ySeries[i].active = true;
+        };
         dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
       case 'summary':

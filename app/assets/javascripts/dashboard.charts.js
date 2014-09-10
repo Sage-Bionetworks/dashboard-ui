@@ -308,7 +308,7 @@ dashboard.charts = (function() {
   line = function(data, width, height, margin) {
 
     var w, h, xScale, xAxis, yScale, yAxis,
-        svg, plot, d3Line, color, chart;
+        svg, plot, d3Line, color, chart, verticalSpace;
 
     // Remove any existing chart
     removeSvg();
@@ -322,6 +322,7 @@ dashboard.charts = (function() {
     // Compute chart width and height
     w = width - margin.left - margin.right;
     h = height - margin.top - margin.bottom;
+    verticalSpace = 30;
 
     // The x-axis
     xScale = d3.time.scale()
@@ -348,26 +349,38 @@ dashboard.charts = (function() {
 
     color = d3.scale.category10().domain(data.yHeaders);
 
-    plot.append('path')
-      .attr('class', 'line')
-      .attr('d', function(ySeries) { return d3Line(ySeries.values); })
-      .style('stroke', function(ySeries) { return color(ySeries.header); });
+  // Loop through each yHeader
+  for(var i = 0; i < data.ySeries.length; i++) {
 
-    plot.append('text')
-      .datum(function(ySeries) {
-        return {
-          header: ySeries.header,
-          lastVal: ySeries.values[ySeries.values.length - 1]};
-        }
-      )
-      .attr('transform', function(datum) {
-        return 'translate(' + (w + 2) + ','
-            + yScale(datum.lastVal) + ')';
-        }
-      )
-      .attr('x', 5)
-      .attr('dy', 10)
-      .text(function(datum) { return datum.header; });
+      if (data.ySeries[i].active) {
+        plot.append("path")
+        .attr("class", "line")
+        .style("stroke", color(data.ySeries[i].header))
+        .attr('id', 'line'+data.ySeries[i].header)
+        .attr("d", d3Line(data.ySeries[i].values));
+
+    }
+
+    // Add the Legend
+    plot.append("text")
+      .attr('x', width + margin.left - 250)
+      .attr('y', margin.top + i*verticalSpace)
+      .attr("class", "legend")
+      .attr('id', data.ySeries[i].header)
+      .style("fill", color(data.ySeries[i].header))
+      .text(data.ySeries[i].header)
+      .on('click', function(){
+        var i= data.yHeaders.indexOf($(this).attr('id')),
+            status = data.ySeries[i].active;
+        if (status === true) {
+            data.ySeries[i].active = false;
+        } else {
+            data.ySeries[i].active = true;
+        };
+        line(data, width, height, margin);
+      });
+
+  };
 
     // The y-axis label
     chart = svg.chart;

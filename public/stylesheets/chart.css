@@ -78,6 +78,9 @@ text.label {
   background-color: #EFF7FD;
 }
 
-th:hover {
-  cursor: pointer;
+th:hover,
+.legend:hover,
+.y.axis g text:hover,
+.y.axis path:hover {
+  cursor:pointer;
 }
