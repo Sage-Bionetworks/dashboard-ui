@@ -389,13 +389,13 @@ dashboard.charts = (function() {
         data.yMaxOriginal = data.yMax;
       }
       data.yMax = Number(tickText);
-      line(data, width, height, margin);
+      line(data, width, height, margin, active);
     });
     chart.selectAll('.y.axis path').on('click', function(axis) {
       if (data.yMaxOriginal) {
         data.yMax = data.yMaxOriginal;
         delete data['yMaxOriginal'];
-        line(data, width, height, margin);
+        line(data, width, height, margin, active);
       }
     });
   };
