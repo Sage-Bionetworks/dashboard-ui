@@ -2,15 +2,14 @@ var dashboard = (function($) {
 
   ////// Variables
 
-  var createQuery, bindData, makeChart, init, initTable, initLegend,
+  var createQuery, bindData, makeChart, init, initTable,
       scroll, dtFromOnClose, dtToOnClose, prevOnClick, nextOnClick,
       prevIntvlOnClick, nextIntvlOnClick, getInterval,
       payload = { page: 0 },
       configMap = {
         width: 900,
         height: 550
-      }
-      active = [];
+      };
 
   ////// Private Functions
 
@@ -78,8 +77,9 @@ var dashboard = (function($) {
       case 'latency':
         margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { ySeries: true, xMinMax: true, yMinMax: true });
-        for (var i = 0; i < data.ySeries.length; i++) {active[data.ySeries[i].header] = true};
-        dashboard.charts.line(data, configMap.width, configMap.height, margin, active);
+        for (var i = 0; i < data.ySeries.length; i++) {
+            data.ySeries[i].active = true;};
+        dashboard.charts.line(data, configMap.width, configMap.height, margin);
         break;
       case 'summary':
         margin = {top: 20, right: 60, bottom: 20, left: 60},
@@ -103,7 +103,6 @@ var dashboard = (function($) {
       // Bind data to chart
       bindData();
       initTable();
-      initLegend();
     })
     .on('error', function() {
       dashboard.charts.spin(false);
@@ -128,21 +127,6 @@ var dashboard = (function($) {
       initTable();
     });
   };
-
-  initLegend = function() {
-      $('.legend').click(function(){
-        var status = active[$(this).attr('id')];
-        if (status === true) {
-            active[$(this).attr('id')] = false;
-        } else {
-            active[$(this).attr('id')] = true;
-        }
-        var data = dashboard.models.unpack(payload.data, { ySeries: true, xMinMax: true, yMinMax: true }),
-        margin = {top: 20, right: 60, bottom: 20, left: 60};
-        dashboard.charts.line(data, configMap.width, configMap.height, margin, active);
-        initLegend();
-      });
-  }
 
   ////// Event Handlers
 

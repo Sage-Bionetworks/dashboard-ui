@@ -305,7 +305,7 @@ dashboard.charts = (function() {
   //=============================================
   // Renders a multi-series line chart.
   //=============================================
-  line = function(data, width, height, margin, active) {
+  line = function(data, width, height, margin) {
 
     var w, h, xScale, xAxis, yScale, yAxis,
         svg, plot, d3Line, color, chart, verticalSpace;
@@ -352,7 +352,8 @@ dashboard.charts = (function() {
   // Loop through each yHeader
   for(var i = 0; i < data.ySeries.length; i++) {
 
-    if (active[data.ySeries[i].header]) {
+    //if (active[data.ySeries[i].header]) {
+      if (data.ySeries[i].active) {
         plot.append("path")
         .attr("class", "line")
         .style("stroke", color(data.ySeries[i].header))
@@ -369,7 +370,17 @@ dashboard.charts = (function() {
       .attr("class", "legend")
       .attr('id', data.ySeries[i].header)
       .style("fill", color(data.ySeries[i].header))
-      .text(data.ySeries[i].header);
+      .text(data.ySeries[i].header)
+      .on('click', function(){
+        var i= data.yHeaders.indexOf($(this).attr('id')),
+            status = data.ySeries[i].active;
+        if (status === true) {
+            data.ySeries[i].active = false;
+        } else {
+            data.ySeries[i].active = true;
+        };
+        line(data, width, height, margin);
+      });
 
   };
 
@@ -388,13 +399,13 @@ dashboard.charts = (function() {
         data.yMaxOriginal = data.yMax;
       }
       data.yMax = Number(tickText);
-      line(data, width, height, margin, active);
+      line(data, width, height, margin);
     });
     chart.selectAll('.y.axis path').on('click', function(axis) {
       if (data.yMaxOriginal) {
         data.yMax = data.yMaxOriginal;
         delete data['yMaxOriginal'];
-        line(data, width, height, margin, active);
+        line(data, width, height, margin);
       }
     });
   };
