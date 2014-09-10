@@ -307,7 +307,6 @@ dashboard.charts = (function() {
   //=============================================
   line = function(data, width, height, margin, active) {
 
-      console.log(active);
     var w, h, xScale, xAxis, yScale, yAxis,
         svg, plot, d3Line, color, chart, verticalSpace;
 
