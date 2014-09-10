@@ -352,13 +352,11 @@ dashboard.charts = (function() {
   // Loop through each yHeader
   for(var i = 0; i < data.ySeries.length; i++) {
 
-    //if (active[data.ySeries[i].header]) {
       if (data.ySeries[i].active) {
         plot.append("path")
         .attr("class", "line")
         .style("stroke", color(data.ySeries[i].header))
         .attr('id', 'line'+data.ySeries[i].header)
-        .attr('active', true)
         .attr("d", d3Line(data.ySeries[i].values));
 
     }
