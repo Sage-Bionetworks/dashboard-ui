@@ -478,9 +478,9 @@ dashboard.charts = (function() {
             } else {
                 return a.x[index].value - b.x[index].value;
             }
-          });
+        });
         table(data, width, height, margin);
-      });
+    });
 
     return;
 
