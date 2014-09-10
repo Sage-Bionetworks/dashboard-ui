@@ -305,8 +305,9 @@ dashboard.charts = (function() {
   //=============================================
   // Renders a multi-series line chart.
   //=============================================
-  line = function(data, width, height, margin) {
+  line = function(data, width, height, margin, active) {
 
+      console.log(active);
     var w, h, xScale, xAxis, yScale, yAxis,
         svg, plot, d3Line, color, chart, verticalSpace;
 
@@ -352,12 +353,15 @@ dashboard.charts = (function() {
   // Loop through each yHeader
   for(var i = 0; i < data.ySeries.length; i++) {
 
-    plot.append("path")
-      .attr("class", "line")
-      .style("stroke", color(data.ySeries[i].header))
-      .attr('id', 'line'+data.ySeries[i].header)
-      .attr('active', true)
-      .attr("d", d3Line(data.ySeries[i].values));
+    if (active[data.ySeries[i].header]) {
+        plot.append("path")
+        .attr("class", "line")
+        .style("stroke", color(data.ySeries[i].header))
+        .attr('id', 'line'+data.ySeries[i].header)
+        .attr('active', true)
+        .attr("d", d3Line(data.ySeries[i].values));
+
+    }
 
     // Add the Legend
     plot.append("text")
@@ -366,25 +370,8 @@ dashboard.charts = (function() {
       .attr("class", "legend")
       .attr('id', data.ySeries[i].header)
       .style("fill", color(data.ySeries[i].header))
+      .text(data.ySeries[i].header);
 
-      .on("click", function(){
-        // Determine if current line is visible 
-        var id = $(this).attr('id'),
-        status = $('#line'+id).attr('active');
-        if (status==='true') { 
-            d3.select('#line'+id)
-              .style('display', 'none')
-              .attr('active', false)
-              .style("opacity", '0');
-        } else {
-            d3.select('#line'+id)
-              .style('display', 'inherit')
-              .attr('active', true)
-              .style("opacity", '1');
-        };
-        })
-
-        .text(data.ySeries[i].header);
   };
 
     // The y-axis label
