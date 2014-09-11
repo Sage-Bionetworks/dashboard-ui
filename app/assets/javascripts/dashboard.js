@@ -322,9 +322,7 @@ var dashboard = (function($) {
       $(this).trigger("enterKey");
     });
     $('#submit').click(function() {
-        var entityId = $('#entityId').val();
-        payload.metric.text = entityId;
-        makeChart();
+        $('#entityId').focusout();
     });
 
     // Infinite scroll on the top charts
