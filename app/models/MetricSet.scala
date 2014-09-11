@@ -574,22 +574,27 @@ object MetricSet {
         }),
 
       MetricHandle(Latency, "global") -> Metric(
-        name = "Global Latencies",
-        description = "Latency in milliseconds for all the REST APIs.",
+        name = "Global Latencies vs Query Latencies",
+        description = "The latency in milliseconds for all the REST APIs vs the latency in milliseconds for the query REST API.",
         start = 7,
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val timeseries = metricReader.getTimeSeries("globalLatency", start, end,
-            statistic, interval)
+          val gtimeseries = metricReader.getTimeSeries("globalLatency", start, end,
+            statistic, interval);
+          val qtimeseries = metricReader.getTimeSeries("query", start, end,
+            statistic, interval);
+          val map = TimeDataPointUtil.createMergeMap(java.util.Arrays.asList(gtimeseries, qtimeseries), 2);
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
           DataSet(
             xLabel = Some("time"),
             yLabel = Some("latency (ms)"),
             xHeaders = List(DataHeader.Timestamp),
-            xValues = List(timeseries map (d => d.x) toList),
-            yHeaders = List("ALL"),
-            yValues = List(timeseries map (d => d.y) toList))
+            xValues = List(tslist toList),
+            yHeaders = List("Global Latencies", "Query Latencies"),
+            yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
+                           TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
         }),
 
       MetricHandle(Latency, "postEntityHeader") -> Metric(
@@ -630,7 +635,7 @@ object MetricSet {
             yValues = List(timeseries map (d => d.y) toList))
         }),
 
-      MetricHandle(Latency, "query") -> Metric(
+      /*MetricHandle(Latency, "query") -> Metric(
         name = "Query Latencies",
         description = "Latency in milliseconds for the query REST API.",
         start = 7,
@@ -647,7 +652,7 @@ object MetricSet {
             xValues = List(timeseries map (d => d.x) toList),
             yHeaders = List("QRY"),
             yValues = List(timeseries map (d => d.y) toList))
-        }),
+        }),*/
 
       MetricHandle(Latency, "search") -> Metric(
         name = "Search Latencies",
