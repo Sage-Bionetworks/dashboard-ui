@@ -635,25 +635,6 @@ object MetricSet {
             yValues = List(timeseries map (d => d.y) toList))
         }),
 
-      /*MetricHandle(Latency, "query") -> Metric(
-        name = "Query Latencies",
-        description = "Latency in milliseconds for the query REST API.",
-        start = 7,
-        end = 0,
-        interval = Interval.hour,
-        statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page, text) => {
-          val timeseries = metricReader.getTimeSeries("query", start, end,
-            statistic, interval)
-          DataSet(
-            xLabel = Some("time"),
-            yLabel = Some("latency (ms)"),
-            xHeaders = List(DataHeader.Timestamp),
-            xValues = List(timeseries map (d => d.x) toList),
-            yHeaders = List("QRY"),
-            yValues = List(timeseries map (d => d.y) toList))
-        }),*/
-
       MetricHandle(Latency, "search") -> Metric(
         name = "Search Latencies",
         description = "Latency in milliseconds for the search REST API.",
