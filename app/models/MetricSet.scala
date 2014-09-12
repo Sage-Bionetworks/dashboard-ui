@@ -574,8 +574,8 @@ object MetricSet {
         }),
 
       MetricHandle(Latency, "global") -> Metric(
-        name = "Global Latencies vs Query Latencies",
-        description = "The latency in milliseconds for all the REST APIs vs the latency in milliseconds for the query REST API.",
+        name = "Global Latencies and Query Latencies",
+        description = "The latency in milliseconds for all the REST APIs and the latency in milliseconds for the query REST API.",
         start = 7,
         end = 0,
         interval = Interval.hour,
