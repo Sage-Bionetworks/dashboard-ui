@@ -592,7 +592,7 @@ object MetricSet {
             yLabel = Some("latency (ms)"),
             xHeaders = List(DataHeader.Timestamp),
             xValues = List(tslist toList),
-            yHeaders = List("Global Latencies", "Query Latencies"),
+            yHeaders = List("Global", "Query"),
             yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
                            TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
         }),
