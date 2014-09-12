@@ -702,8 +702,8 @@ object MetricSet {
         }),
 
       MetricHandle(Unique, "certifiedUser") -> Metric(
-        name = "Unique Users vs New Certified Users",
-        description = "The number of unique users vs the number of new certified users during a period of time.",
+        name = "Unique Users and New Certified Users",
+        description = "The number of unique users and the number of new certified users during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
@@ -727,8 +727,8 @@ object MetricSet {
         }),
 
       MetricHandle(Unique, "cumulativeCertifiedUser") -> Metric(
-        name = "Cumulative Certified Users vs New Certified Users",
-        description = "The total number of certified users vs the number of new certified users during a period of time.",
+        name = "Cumulative Certified Users and New Certified Users",
+        description = "The total number of certified users and the number of new certified users during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
@@ -747,8 +747,8 @@ object MetricSet {
         }),
 
       MetricHandle(Summary, "questions") -> Metric(
-        name = "Question: Correct vs Incorrect",
-        description = "The number correct responses vs incorrect responses for each question index.",
+        name = "Question: Correct and Incorrect",
+        description = "The number correct responses and incorrect responses for each question index.",
         start = 7,
         end = 0,
         interval = Interval.day,
