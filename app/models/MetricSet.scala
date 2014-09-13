@@ -574,22 +574,27 @@ object MetricSet {
         }),
 
       MetricHandle(Latency, "global") -> Metric(
-        name = "Global Latencies",
-        description = "Latency in milliseconds for all the REST APIs.",
+        name = "Global Latencies and Query Latencies",
+        description = "The latency in milliseconds for all the REST APIs and the latency in milliseconds for the query REST API.",
         start = 7,
         end = 0,
         interval = Interval.hour,
         statistic = Statistic.avg,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val timeseries = metricReader.getTimeSeries("globalLatency", start, end,
-            statistic, interval)
+          val gtimeseries = metricReader.getTimeSeries("globalLatency", start, end,
+            statistic, interval);
+          val qtimeseries = metricReader.getTimeSeries("query", start, end,
+            statistic, interval);
+          val map = TimeDataPointUtil.createMergeMap(java.util.Arrays.asList(gtimeseries, qtimeseries), 2);
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map);
           DataSet(
             xLabel = Some("time"),
             yLabel = Some("latency (ms)"),
             xHeaders = List(DataHeader.Timestamp),
-            xValues = List(timeseries map (d => d.x) toList),
-            yHeaders = List("ALL"),
-            yValues = List(timeseries map (d => d.y) toList))
+            xValues = List(tslist toList),
+            yHeaders = List("Global", "Query"),
+            yValues = List(TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList,
+                           TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList))
         }),
 
       MetricHandle(Latency, "postEntityHeader") -> Metric(
@@ -627,25 +632,6 @@ object MetricSet {
             xHeaders = List(DataHeader.Timestamp),
             xValues = List(timeseries map (d => d.x) toList),
             yHeaders = List("GEB"),
-            yValues = List(timeseries map (d => d.y) toList))
-        }),
-
-      MetricHandle(Latency, "query") -> Metric(
-        name = "Query Latencies",
-        description = "Latency in milliseconds for the query REST API.",
-        start = 7,
-        end = 0,
-        interval = Interval.hour,
-        statistic = Statistic.avg,
-        dataSet = (start, end, interval, statistic, page, text) => {
-          val timeseries = metricReader.getTimeSeries("query", start, end,
-            statistic, interval)
-          DataSet(
-            xLabel = Some("time"),
-            yLabel = Some("latency (ms)"),
-            xHeaders = List(DataHeader.Timestamp),
-            xValues = List(timeseries map (d => d.x) toList),
-            yHeaders = List("QRY"),
             yValues = List(timeseries map (d => d.y) toList))
         }),
 
@@ -716,8 +702,8 @@ object MetricSet {
         }),
 
       MetricHandle(Unique, "certifiedUser") -> Metric(
-        name = "Unique Users vs New Certified Users",
-        description = "The number of unique users vs the number of new certified users during a period of time.",
+        name = "Unique Users and New Certified Users",
+        description = "The number of unique users and the number of new certified users during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
@@ -741,8 +727,8 @@ object MetricSet {
         }),
 
       MetricHandle(Unique, "cumulativeCertifiedUser") -> Metric(
-        name = "Cumulative Certified Users vs New Certified Users",
-        description = "The total number of certified users vs the number of new certified users during a period of time.",
+        name = "Cumulative Certified Users and New Certified Users",
+        description = "The total number of certified users and the number of new certified users during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
@@ -761,8 +747,8 @@ object MetricSet {
         }),
 
       MetricHandle(Summary, "questions") -> Metric(
-        name = "Question: Correct vs Incorrect",
-        description = "The number correct responses vs incorrect responses for each question index.",
+        name = "Question: Correct and Incorrect",
+        description = "The number correct responses and incorrect responses for each question index.",
         start = 7,
         end = 0,
         interval = Interval.day,

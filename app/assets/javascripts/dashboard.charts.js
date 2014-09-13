@@ -367,6 +367,7 @@ dashboard.charts = (function() {
       .attr('y', margin.top + i*verticalSpace)
       .attr("class", "legend")
       .attr('id', data.ySeries[i].header)
+      .attr('title', 'show or hide '+data.ySeries[i].header)
       .style("fill", color(data.ySeries[i].header))
       .text(data.ySeries[i].header)
       .on('click', function(){
@@ -392,20 +393,27 @@ dashboard.charts = (function() {
       .text(data.yLabel);
 
     // Reset the max on y ticks
-    chart.selectAll('.y.axis g text').on('click', function(tickText) {
-      if (!data.yMaxOriginal) {
-        data.yMaxOriginal = data.yMax;
-      }
-      data.yMax = Number(tickText);
-      line(data, width, height, margin);
-    });
-    chart.selectAll('.y.axis path').on('click', function(axis) {
-      if (data.yMaxOriginal) {
-        data.yMax = data.yMaxOriginal;
-        delete data['yMaxOriginal'];
-        line(data, width, height, margin);
-      }
-    });
+    chart.selectAll('.y.axis g text')
+      .on('click', function(tickText) {
+          if (!data.yMaxOriginal) {
+            data.yMaxOriginal = data.yMax;
+          }
+          data.yMax = Number(tickText);
+          line(data, width, height, margin);
+      })
+      .attr('title', 'set y max to this value');
+
+    chart.selectAll('.y.axis path')
+      .on('click', function(axis) {
+          if (data.yMaxOriginal) {
+            data.yMax = data.yMaxOriginal;
+            delete data['yMaxOriginal'];
+            line(data, width, height, margin);
+          }
+      })
+      .attr('title', 'reset y max');
+
+    $( document ).tooltip();
   };
 
   //=============================================
@@ -441,7 +449,7 @@ dashboard.charts = (function() {
     headers = "<tr>";
     data.xHeaders.map(function(header) {
       if (header != "url" && header != "id") {
-        headers += "<th class='lead' >" + header + "</th>";
+        headers += "<th class='lead' title='sort on " + header + "'>" + header + "</th>";
       }
     });
     headers += "</tr>";
@@ -469,6 +477,20 @@ dashboard.charts = (function() {
     // Add the summary and table
     $('#chart').append(summary);
     $('#chart').append(tableData);
+
+    $('th').click(function(){
+        var index = $.inArray($(this).html(), data.xHeaders);
+        data.rows.sort(function(a, b) {
+            if (typeof a.x[index].value == "string" || a.x[index].value instanceof String) {
+                return a.x[index].value.localeCompare(b.x[index].value);
+            } else {
+                return a.x[index].value - b.x[index].value;
+            }
+        });
+        table(data, width, height, margin);
+    });
+
+    $( document ).tooltip();
     return;
 
   };
