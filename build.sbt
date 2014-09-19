@@ -8,7 +8,7 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  "org.sagebionetworks" % "dashboard" % "0.5.27+",
+  "org.sagebionetworks" % "dashboard" % "0.6.0+",
   "org.springframework" % "spring-context" % "3.2.10.RELEASE",
   "org.springframework" % "spring-jdbc" % "3.2.10.RELEASE",
   "org.apache.commons" % "commons-dbcp2" % "2.0.1",
