@@ -5,6 +5,7 @@ version := "1.0-SNAPSHOT"
 resolvers += "Sage Repository" at "http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local"
 
 libraryDependencies ++= Seq(
+cache,
   "org.sagebionetworks" % "dashboard" % "0.6.0+",
   "org.springframework" % "spring-context" % "3.2.10.RELEASE",
   "org.springframework" % "spring-jdbc" % "3.2.10.RELEASE",
