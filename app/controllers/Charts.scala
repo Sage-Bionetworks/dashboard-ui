@@ -7,7 +7,6 @@ import play.api.mvc.{Action, Controller}
 import org.sagebionetworks.dashboard.model.{Interval, Statistic}
 import org.sagebionetworks.dashboard.service.MetricReader
 import models.{MetricHandle, MetricSet, MetricType}
-import context.SpringContext
 
 object Charts extends Controller with Security {
 
