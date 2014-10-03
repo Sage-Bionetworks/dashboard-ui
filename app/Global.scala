@@ -6,7 +6,7 @@ import context.SpringContext
 // 2) There is a corresponding change in application.conf.
 // 3) The DEV mode (the run command) does not support this.
 object Global extends GlobalSettings {
-  override def onStart(app: Application) {
+  override def beforeStart(app: Application) {
     SpringContext.start
   }
 }
