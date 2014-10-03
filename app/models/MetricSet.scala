@@ -688,8 +688,8 @@ object MetricSet {
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
           val x = (0 until 30) map (d => d toString) toList
-          val pData = metricReader.getTotalCount("questionPass", x asJava) asScala
-          val fData = metricReader.getTotalCount("questionFail", x asJava) asScala
+          val pData = metricReader.getTotalCount("questionPassMetric", x asJava) asScala
+          val fData = metricReader.getTotalCount("questionFailMetric", x asJava) asScala
 
           DataSet(
             xLabel = Some("questionIndex"),
