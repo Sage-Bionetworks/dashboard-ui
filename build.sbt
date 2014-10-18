@@ -19,6 +19,4 @@ libraryDependencies ++= Seq(
   "org.openid4java" % "openid4java" % "0.9.8"
 )
 
-play.Project.playScalaSettings
-
-scalacOptions ++= Seq("-feature")
+lazy val root = (project in file(".")).enablePlugins(PlayScala)

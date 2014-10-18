@@ -5,7 +5,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get autoclean
 apt-get autoremove
 
-echo 'deb http://mirrors.kernel.org/debian wheezy-backports main' >> /etc/apt/sources.list
+cp --force /vagrant/vagrant-scripts/sources.list /etc/apt/sources.list
+
 apt-get --quiet --yes update
 apt-get --quiet --yes --target-release wheezy-backports upgrade
 
@@ -21,10 +22,11 @@ apt-get --quiet --yes --target-release wheezy-backports install nfs-common
 apt-get --quiet --yes --target-release wheezy-backports install openjdk-7-jdk
 
 # Play
-su - vagrant -c "wget http://downloads.typesafe.com/play/2.2.4/play-2.2.4.zip"
-su - vagrant -c "unzip play-2.2.4.zip"
-su - vagrant -c "rm play-2.2.4.zip"
-echo "export PATH=$PATH:/home/vagrant/play-2.2.4" >> /etc/profile
+su - vagrant -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.10/typesafe-activator-1.2.10-minimal.zip"
+su - vagrant -c "rm -rf activator-1.2.10-minimal"
+su - vagrant -c "unzip typesafe-activator-1.2.10-minimal.zip"
+su - vagrant -c "rm typesafe-activator-1.2.10-minimal.zip"
+echo "export PATH=$PATH:/home/vagrant/activator-1.2.10-minimal" >> /etc/profile
 
 # JavaScript
 apt-get --quiet --yes --target-release wheezy-backports install nodejs
@@ -43,6 +45,7 @@ apt-get --quiet --yes --target-release wheezy-backports install postgresql
 apt-get --quiet --yes --target-release wheezy-backports install postgresql-client
 echo "listen_addresses = '*'" >> /etc/postgresql/9.1/main/postgresql.conf
 echo "host all all 10.0.0.0/16 trust" >> /etc/postgresql/9.1/main/pg_hba.conf
+su - postgres -c "psql -f /vagrant/vagrant-scripts/dw-bootstrap.sql"
 service postgresql restart
 
 # Redis
