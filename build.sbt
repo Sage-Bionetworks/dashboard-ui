@@ -6,7 +6,7 @@ resolvers += "Sage Repository" at "http://sagebionetworks.artifactoryonline.com/
 
 libraryDependencies ++= Seq(
   cache,
-  "org.sagebionetworks" % "dashboard" % "0.6.2+",
+  "org.sagebionetworks" % "dashboard" % "0.7.0+",
   "org.springframework" % "spring-context" % "3.2.10.RELEASE",
   "org.springframework" % "spring-jdbc" % "3.2.10.RELEASE",
   "org.apache.commons" % "commons-dbcp2" % "2.0.1",
