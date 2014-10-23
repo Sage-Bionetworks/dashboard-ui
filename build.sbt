@@ -2,6 +2,8 @@ name := "dashboard-ui"
 
 version := "1.0-SNAPSHOT"
 
+scalaVersion := "2.11.2"
+
 resolvers += "Sage Repository" at "http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local"
 
 libraryDependencies ++= Seq(
@@ -20,3 +22,4 @@ libraryDependencies ++= Seq(
 )
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
