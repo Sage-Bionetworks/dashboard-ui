@@ -22,11 +22,11 @@ apt-get --quiet --yes --target-release wheezy-backports install nfs-common
 apt-get --quiet --yes --target-release wheezy-backports install openjdk-7-jdk
 
 # Play
-su - vagrant -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.10/typesafe-activator-1.2.10-minimal.zip"
-su - vagrant -c "rm -rf activator-1.2.10-minimal"
-su - vagrant -c "unzip typesafe-activator-1.2.10-minimal.zip"
-su - vagrant -c "rm typesafe-activator-1.2.10-minimal.zip"
-echo "export PATH=$PATH:/home/vagrant/activator-1.2.10-minimal" >> /etc/profile
+su - vagrant -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.10/typesafe-activator-1.2.10.zip"
+su - vagrant -c "rm -rf activator-1.2.10"
+su - vagrant -c "unzip typesafe-activator-1.2.10.zip"
+su - vagrant -c "rm typesafe-activator-1.2.10.zip"
+echo "export PATH=$PATH:/home/vagrant/activator-1.2.10" >> /etc/profile
 
 # JavaScript
 apt-get --quiet --yes --target-release wheezy-backports install nodejs
