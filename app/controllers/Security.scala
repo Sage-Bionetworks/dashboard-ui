@@ -18,7 +18,7 @@ import play.api.mvc.ActionBuilder
 import play.api.mvc.Request
 import play.api.mvc.Results.Redirect
 import play.api.mvc.Results.Unauthorized
-import play.api.mvc.SimpleResult
+import play.api.mvc.Result
 
 trait Security {
 
@@ -41,7 +41,7 @@ trait Security {
     private val tokenKey = "token"
     private val tokenExpire = 3 // Expire after 3 hours on the server side
 
-    def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+    def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]) = {
       request.session.get(tokenKey).map { token =>
         Cache.get(token).map { t =>
           Logger.info("Session tokens match, continue with the request.")
@@ -59,7 +59,7 @@ trait Security {
       }
     }
 
-    private def login[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+    private def login[A](request: Request[A], block: Request[A] => Future[Result]) = {
       // Check if this is OpenID callback
       request.queryString.get(GoogleOpenId.CallbackQueryParameter) match {
         case Some(p) => openIdCallback(request, block)
@@ -70,7 +70,7 @@ trait Security {
     /**
      * Verifies the OpenID login and reads the user email address.
      */
-    private def openIdCallback[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+    private def openIdCallback[A](request: Request[A], block: Request[A] => Future[Result]) = {
       val receivingURL = scheme(request) + "://" + request.host + request.uri
       val parameterMap = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
       val verification = GoogleOpenId.Manager.verify(
