@@ -19,3 +19,4 @@ dist
 bin
 .vagrant
 node_modules
+*.min.js
