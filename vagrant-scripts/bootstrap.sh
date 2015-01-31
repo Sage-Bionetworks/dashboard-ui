@@ -37,11 +37,11 @@ apt-get --quiet --yes --target-release wheezy-backports install openjdk-7-jdk
 
 # Play
 su - ${TARGET_USER} -c "cd ~"
-su - ${TARGET_USER} -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.10/typesafe-activator-1.2.10.zip"
-su - ${TARGET_USER} -c "rm -rf activator-1.2.10"
-su - ${TARGET_USER} -c "unzip typesafe-activator-1.2.10.zip"
-su - ${TARGET_USER} -c "rm typesafe-activator-1.2.10.zip"
-su - ${TARGET_USER} -c "echo 'export PATH=${PATH}:~/activator-1.2.10' >> ~/.bash_profile"
+su - ${TARGET_USER} -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.12/typesafe-activator-1.2.12.zip"
+su - ${TARGET_USER} -c "rm -rf activator-1.2.12"
+su - ${TARGET_USER} -c "unzip typesafe-activator-1.2.12.zip"
+su - ${TARGET_USER} -c "rm typesafe-activator-1.2.12.zip"
+su - ${TARGET_USER} -c "echo 'export PATH=${PATH}:~/activator-1.2.12' >> ~/.bash_profile"
 
 # JavaScript
 # As npm is not in Debian Wheezy, install it via nodejs
