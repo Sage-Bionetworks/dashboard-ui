@@ -20,12 +20,16 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc.Result
 
+import org.sagebionetworks.dashboard.config.DashboardConfig
+import context.SpringContext
+
 trait Security {
 
   object AuthorizedAction extends ActionBuilder[Request] {
 
     private object Whitelist {
-      val whitelist = Set[String]() // TODO: Initialize the whitelist
+      val whitelist = SpringContext.getBean(
+          classOf[DashboardConfig]).getUserWhitelist.split(":").toSet
       def contains(item: String) = {
         whitelist.contains(item)
       }
@@ -38,7 +42,7 @@ trait Security {
       val CallbackQueryParameter = "openid.mode"
     }
 
-    private val tokenKey = "token"
+    private val tokenKey = "dbdtoken"
     private val tokenExpire = 3 // Expire after 3 hours on the server side
 
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]) = {
@@ -77,34 +81,28 @@ trait Security {
           receivingURL.toString(),
           parameterMap,
           GoogleOpenId.Discovered)
-      val verifiedId = verification.getVerifiedId()
-      if (verifiedId == null) {
-        // Invalid callback, log in again
-        openIdLogin(request)
+      val authSuccess = verification.getAuthResponse().asInstanceOf[AuthSuccess]
+      val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
+      val emails = fetchResp.getAttributeValues("email")
+      val email = emails.get(0).toString
+      val ids = fetchResp.getAttributeValues("user_id")
+      val id = ids.get(0).toString
+      if (email == null && id == null) {
+        Future.successful(Unauthorized("Missing both email address and user id from the login."))
+      } else if (isAuthorizedByEmail(email) || isAuthorizedById(id)) {
+        // Save the session on the server side
+        val session = java.util.UUID.randomUUID.toString
+        Cache.set(session, session, Duration(tokenExpire, HOURS))
+        // Continue with the original request
+        // and save the session token in the response
+        block(request).map { result =>
+          result.withSession(tokenKey -> session)
+        }
       } else {
-        val authSuccess = verification.getAuthResponse().asInstanceOf[AuthSuccess]
-        val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
-        val emails = fetchResp.getAttributeValues("email")
-        val email = emails.get(0).toString
-        val ids = fetchResp.getAttributeValues("user_id")
-        val id = ids.get(0).toString
-        if (email == null && id == null) {
-          Future.successful(Unauthorized("Missing both email address and user id from the login."))
-        } else if (isAuthorizedByEmail(email) || isAuthorizedById(id)) {
-          // Save the session on the server side
-          val session = java.util.UUID.randomUUID.toString
-          Cache.set(session, session, Duration(tokenExpire, HOURS))
-          // Continue with the original request
-          // and save the session token in the response
-          block(request).map { result =>
-            result.withSession(tokenKey -> session)
-          }
+        if (email != null) {
+          Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
         } else {
-          if (email != null) {
-            Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
-          } else {
-            Future.successful(Unauthorized(id + " is not authorized to access dashboard."))
-          }
+          Future.successful(Unauthorized(id + " is not authorized to access dashboard."))
         }
       }
     }
