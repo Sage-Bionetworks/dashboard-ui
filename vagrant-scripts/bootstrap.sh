@@ -2,50 +2,61 @@
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get autoclean
-apt-get autoremove
+# All the commands will run as root by vagrant provisioning unless the user is explicitly set
+# Add '/usr/local/bin' to root's $PATH for this session as programs installed there may be needed
+export PATH=${PATH}:/usr/local/bin
 
-cp --force /vagrant/vagrant-scripts/sources.list /etc/apt/sources.list
+# Some packages need to be installed locally for the user 'vagrant'
+export TARGET_USER=vagrant
 
+# Create ~/.bash_profile if it does not exist
+su - ${TARGET_USER} -c "cd ~"
+su - ${TARGET_USER} -c "bash /${TARGET_USER}/vagrant-scripts/bash-profile.sh"
+
+# Add wheezy-backports to the sources list
+cp --force /${TARGET_USER}/vagrant-scripts/sources.list /etc/apt/sources.list
+
+# Debian maintenance
+apt-get --quiet --yes autoremove
+apt-get --quiet --yes autoclean
 apt-get --quiet --yes update
+apt-get --quiet --yes upgrade
+apt-get --quiet --yes --target-release wheezy-backports update
 apt-get --quiet --yes --target-release wheezy-backports upgrade
+apt-get --quiet --yes autoremove
+apt-get --quiet --yes autoclean
 
 # Tools
-apt-get --quiet --yes install curl
-apt-get --quiet --yes install g++
-apt-get --quiet --yes install zip
+apt-get --quiet --yes install wget curl g++ zip
 
 # NFS Client
-apt-get --quiet --yes --target-release wheezy-backports install nfs-common
+apt-get --quiet --yes --target-release install nfs-common
 
 # Java
 apt-get --quiet --yes --target-release wheezy-backports install openjdk-7-jdk
 
 # Play
-su - vagrant -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.10/typesafe-activator-1.2.10.zip"
-su - vagrant -c "rm -rf activator-1.2.10"
-su - vagrant -c "unzip typesafe-activator-1.2.10.zip"
-su - vagrant -c "rm typesafe-activator-1.2.10.zip"
-echo "export PATH=$PATH:/home/vagrant/activator-1.2.10" >> /etc/profile
+su - ${TARGET_USER} -c "cd ~"
+su - ${TARGET_USER} -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.12/typesafe-activator-1.2.12.zip"
+su - ${TARGET_USER} -c "rm -rf activator-1.2.12"
+su - ${TARGET_USER} -c "unzip typesafe-activator-1.2.12.zip"
+su - ${TARGET_USER} -c "rm typesafe-activator-1.2.12.zip"
+su - ${TARGET_USER} -c "echo 'export PATH=${PATH}:~/activator-1.2.12' >> ~/.bash_profile"
 
 # JavaScript
+# As npm is not in Debian Wheezy, install it via nodejs
 apt-get --quiet --yes --target-release wheezy-backports install nodejs
-ln -s /usr/bin/nodejs /usr/bin/node
-curl https://www.npmjs.org/install.sh | sudo clean=yes sh
+update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
+curl https://www.npmjs.com/install.sh | sudo clean=yes bash
+npm install -g grunt-cli
 npm install -g mocha
-pushd .
-su - vagrant -c "cd /vagrant"
-su - vagrant -c "npm install jsdom"
-su - vagrant -c "npm install jquery"
-su - vagrant -c "npm install d3"
-popd
 
 # PostgreSQL
-apt-get --quiet --yes --target-release wheezy-backports install postgresql
-apt-get --quiet --yes --target-release wheezy-backports install postgresql-client
+apt-get --quiet --yes install postgresql-9.1
+apt-get --quiet --yes install postgresql-client-9.1
 echo "listen_addresses = '*'" >> /etc/postgresql/9.1/main/postgresql.conf
 echo "host all all 10.0.0.0/16 trust" >> /etc/postgresql/9.1/main/pg_hba.conf
-su - postgres -c "psql -f /vagrant/vagrant-scripts/dw-bootstrap.sql"
+su - postgres -c "psql -f /${TARGET_USER}/vagrant-scripts/dw-bootstrap.sql"
 service postgresql restart
 
 # Redis
@@ -53,4 +64,3 @@ apt-get --quiet --yes --target-release wheezy-backports install redis-server
 # Comment out binding to specific IPs
 sed 's/^[[:space:]]*bind[[:space:]]/# &/g' /etc/redis/redis.conf | tee /etc/redis/redis.conf
 service redis-server restart
-

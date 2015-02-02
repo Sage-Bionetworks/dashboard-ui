@@ -1,8 +1,8 @@
-window = require('jsdom').jsdom().createWindow();
+window = require('jsdom').jsdom().defaultView;
 jQuery = require('jquery');
 d3 = require('d3');
-dashboard = require('../app/assets/javascripts/dashboard.js');
-require('../app/assets/javascripts/dashboard.models.js');
+dashboard = require('../public/javascripts/dashboard.js');
+require('../public/javascripts/dashboard.models.js');
 var assert = require('assert');
 describe('dashboard.models', function() {
   describe('unpack()', function() {

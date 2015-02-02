@@ -1,0 +1,11 @@
+language: scala
+scala:
+- 2.11
+jdk:
+- openjdk7
+install:
+- npm install -g grunt-cli
+script:
+- npm install
+- grunt
+- sbt test
