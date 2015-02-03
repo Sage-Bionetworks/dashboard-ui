@@ -3,8 +3,11 @@ scala:
 - 2.11
 jdk:
 - openjdk7
+services: redis-server
 install:
 - npm install -g grunt-cli
+before_script:
+- psql -U postgres -f 'vagrant-scripts/dw-bootstrap.sql'
 script:
 - npm install
 - grunt
