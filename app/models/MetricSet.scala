@@ -703,9 +703,31 @@ object MetricSet {
     
      "Tables" -> collection.immutable.ListMap(
 
+      MetricHandle(Top, "tables") -> Metric(
+        name = "Top Tables (Session Count)",
+        description = "List of the top 10 most accessed table entities.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("uniqueTable", interval, start, page * 10, (page + 1) * 10)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+         
       MetricHandle(Unique, "uniqueTable") -> Metric(
         name = "Count of Unique Tables",
-        description = "The number of unique tables during a period of time.",
+        description = "The number of unique tables that have been touched per day/week/month.",
         start = 7,
         end = 0,
         interval = Interval.day,
