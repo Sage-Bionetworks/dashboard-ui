@@ -703,7 +703,7 @@ object MetricSet {
     
      "Tables" -> collection.immutable.ListMap(
 
-      MetricHandle(Trending, "table-client") -> Metric(
+      MetricHandle(Trending, "table-client-p") -> Metric(
         name = "Trending Table Clients (Percentage)",
         description = "List of trending Table Clients.",
         start = 30,
@@ -727,9 +727,9 @@ object MetricSet {
               TimeDataPointUtil.getPercentageList(tslist, map, d) toList) toList)
         }), 
         
-      MetricHandle(Trending, "table-uri") -> Metric(
-        name = "Trending Table Uri (Percentage)",
-        description = "List of trending Table Uri.",
+      MetricHandle(Trending, "table-uri-p") -> Metric(
+        name = "Trending Table URI (Percentage)",
+        description = "List of trending Table URI.",
         start = 30,
         end = 1,
         interval = Interval.day,
@@ -750,6 +750,52 @@ object MetricSet {
             yValues = (0 until (trendingData size)) map (d => 
               TimeDataPointUtil.getPercentageList(tslist, map, d) toList) toList)
         }),   
+        
+      MetricHandle(Trending, "table-client") -> Metric(
+        name = "Trending Table Clients (Session Count)",
+        description = "List of trending Table Clients.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("tableClient", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("tableClient", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
+        }),
+        
+      MetricHandle(Trending, "table-uri") -> Metric(
+        name = "Trending Table URI (Session Count)",
+        description = "List of trending Table URI.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("tableUri", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("tableUri", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
+        }),  
          
       MetricHandle(Top, "topTables") -> Metric(
         name = "Top Tables (Session Count)",
