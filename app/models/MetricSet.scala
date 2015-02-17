@@ -700,6 +700,26 @@ object MetricSet {
             yValues = List(x map (k => pData(k)) toList,
                            x map (k => fData(k)) toList))
         })),
+    
+     "Tables" -> collection.immutable.ListMap(
+
+      MetricHandle(Unique, "uniqueTable") -> Metric(
+        name = "Count of Unique Tables",
+        description = "The number of unique tables during a period of time.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val data = metricReader.getUniqueCount("uniqueTable", interval, start, end)
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("count of unique users"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(data map (d => d.x) toList),
+            yHeaders = List("all tables"),
+            yValues = List(data map (d => d.y) toList))
+        })),    
 
     "Report" -> collection.immutable.ListMap(
 

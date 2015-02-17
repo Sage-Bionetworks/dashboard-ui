@@ -37,6 +37,7 @@ to experience this site.</p><![endif]-->
     <li><a href="#apis_clients" data-toggle="tab">APIs & Clients</a></li>
     <li><a href="#latencies_errors" data-toggle="tab">Latencies & Errors</a></li>
     <li><a href="#certified_users" data-toggle="tab">Certified Users</a></li>
+    <li><a href="#tables" data-toggle="tab">Tables</a></li>
     <li><a href="#report" data-toggle="tab">Report</a></li>
   </ul>
   <!-- Tab panes -->
@@ -93,6 +94,18 @@ to experience this site.</p><![endif]-->
       <section class="metric-list">
         <dl>
           @for(metricTuple <- metrics("Certified Users")) {
+            @defining(metricTuple) { metric =>
+              <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
+              <dd>@metric._2.description</dd>
+            }
+          }
+        </dl>
+      </section>
+    </div>
+    <div class="tab-pane" id="tables">
+      <section class="metric-list">
+        <dl>
+          @for(metricTuple <- metrics("Tables")) {
             @defining(metricTuple) { metric =>
               <dt><a href='chart?type=@metric._1.metricType&metric=@metric._1.metricName' target='@metric._2.name'>@metric._2.name</a></dt>
               <dd>@metric._2.description</dd>
