@@ -700,6 +700,208 @@ object MetricSet {
             yValues = List(x map (k => pData(k)) toList,
                            x map (k => fData(k)) toList))
         })),
+    
+     "Tables" -> collection.immutable.ListMap(
+
+      MetricHandle(Trending, "table-client-p") -> Metric(
+        name = "Trending Table Clients (Percentage)",
+        description = "List of trending Table Clients.",
+        start = 30,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("tableClient", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("tableClient", d.id, interval, start, end)
+          })
+          val map = TimeDataPointUtil.createMergeMap(trendingData asJava, trendingData size)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Percentage"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = (0 until (trendingData size)) map (d => 
+              TimeDataPointUtil.getPercentageList(tslist, map, d) toList) toList)
+        }), 
+        
+      MetricHandle(Trending, "table-uri-p") -> Metric(
+        name = "Trending Table URI (Percentage)",
+        description = "List of trending Table URI.",
+        start = 30,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("tableUri", interval, end, 0, 5)
+          val trendingData = topData map (d => {
+            metricReader.getCount("tableUri", d.id, interval, start, end)
+          })
+          val map = TimeDataPointUtil.createMergeMap(trendingData asJava, trendingData size)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Percentage"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = (0 until (trendingData size)) map (d => 
+              TimeDataPointUtil.getPercentageList(tslist, map, d) toList) toList)
+        }),   
+        
+      MetricHandle(Trending, "table-client") -> Metric(
+        name = "Trending Table Clients (Session Count)",
+        description = "List of trending Table Clients.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("tableClient", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("tableClient", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
+        }),
+        
+      MetricHandle(Trending, "table-uri") -> Metric(
+        name = "Trending Table URI (Session Count)",
+        description = "List of trending Table URI.",
+        start = 60,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val topData = metricReader.getTop("tableUri", interval, end, 0, 10)
+          val trendingData = topData map (d => {
+            metricReader.getCount("tableUri", d.id, interval, start, end)
+          })
+          DataSet(
+            xLabel = Some("Date & Time"),
+            yLabel = Some("Session Count"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(trendingData(0) map (d => d.x) toList),
+            yHeaders = topData map (d => d.id) toList,
+            yValues = trendingData map (series => {
+              series map (d => d.y) toList
+            }) toList)
+        }),  
+         
+      MetricHandle(Top, "topTables") -> Metric(
+        name = "Top Tables (Session Count)",
+        description = "List of the top 10 most accessed table entities.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("uniqueTable", interval, start, page * 10, (page + 1) * 10)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),
+        
+      MetricHandle(Top, "topUpdateTables") -> Metric(
+        name = "Top Updated Tables (Session Count)",
+        description = "List of the top 10 most updated table entities.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("updateTable", interval, start, page * 10, (page + 1) * 10)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),  
+        
+      MetricHandle(Top, "topQueriedTables") -> Metric(
+        name = "Top Queried Tables (Session Count)",
+        description = "List of the top 10 most queried table entities.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("queryTable", interval, start, page * 10, (page + 1) * 10)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),   
+        
+      MetricHandle(Top, "topDownloadedTables") -> Metric(
+        name = "Top Downloaded Tables (Session Count)",
+        description = "List of the top 10 most downloaded table entities.",
+        start = 1,
+        end = 1,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val baseUrl = "https://www.synapse.org/#!Synapse:"
+          val data = metricReader.getTop("downloadTable", interval, start, page * 10, (page + 1) * 10)
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL),
+            xValues = List(
+              data map (d => entityIdToName.convert(d).x) toList,
+              data map (d => d.x) toList,
+              data map (d => baseUrl + d.x) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => d.y) toList))
+        }),   
+         
+      MetricHandle(Unique, "uniqueTable") -> Metric(
+        name = "Count of Unique Tables",
+        description = "The number of unique tables that have been touched per day/week/month.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val data = metricReader.getUniqueCount("uniqueTable", interval, start, end)
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("count of unique users"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(data map (d => d.x) toList),
+            yHeaders = List("all tables"),
+            yValues = List(data map (d => d.y) toList))
+        })),    
 
     "Report" -> collection.immutable.ListMap(
 

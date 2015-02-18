@@ -62,6 +62,7 @@
 text.label {
   font-family: monospace;
   white-space: pre;
+  font-size: 1em;
 }
 
 #tableSummary {
