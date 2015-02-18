@@ -701,7 +701,7 @@ object MetricSet {
                            x map (k => fData(k)) toList))
         })),
     
-     "Tables" -> collection.immutable.ListMap(
+    "Tables" -> collection.immutable.ListMap(
 
       MetricHandle(Trending, "table-client-p") -> Metric(
         name = "Trending Table Clients (Percentage)",
@@ -735,7 +735,7 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val topData = metricReader.getTop("tableUri", interval, end, 0, 5)
+          val topData = metricReader.getTop("tableUri", interval, end, 0, 10)
           val trendingData = topData map (d => {
             metricReader.getCount("tableUri", d.id, interval, start, end)
           })
