@@ -1046,13 +1046,13 @@ object MetricSet {
             xValues = List(data map (d => d.x) toList),
             yHeaders = List("all tables"),
             yValues = List(data map (d => d.y) toList))
-        })),    
+        }),    
 
     "Report" -> collection.immutable.ListMap(
 
       MetricHandle(Report, "fileDownloadReport") -> Metric(
         name = "File Download Report",
-        description = "The list of users who downloaded a specific file.",
+        description = "Enter an entityId to look for the list of users who downloaded that file.",
         start = 1,
         end = 1,
         interval = Interval.day,
@@ -1063,6 +1063,56 @@ object MetricSet {
             case null | "" | "syn" => metricReader.getAllReport("fileDownloadReport", "somerandomstring")
             case _ => metricReader.getAllReport("fileDownloadReport", entityId)
           }
+
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL, DataHeader.Timestamp, DataHeader.Client),
+            xValues = List(
+                data map (d => userIdToName.convert(new CountDataPoint(d.userId, 0)).x) toList,
+                data map (d => d.userId) toList,
+                data map (d => baseUrl + d.userId) toList,
+                data map (d => d.timestamp) toList,
+                data map (d => d.client) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => "1") toList))
+        })),
+
+      MetricHandle(Report, "rClientReport") -> Metric(
+        name = "R Client Report",
+        description = "Enter the R Client version to look for the list of users who used this client.",
+        start = 1,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, entityId) => {
+          val baseUrl = "https://www.synapse.org/#!Profile:"
+          val data = metricReader.getAllReport("rClientReport", entityId)
+
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Name, DataHeader.ID, DataHeader.URL, DataHeader.Timestamp, DataHeader.Client),
+            xValues = List(
+                data map (d => userIdToName.convert(new CountDataPoint(d.userId, 0)).x) toList,
+                data map (d => d.userId) toList,
+                data map (d => baseUrl + d.userId) toList,
+                data map (d => d.timestamp) toList,
+                data map (d => d.client) toList),
+            yHeaders = List("count"),
+            yValues = List(data map (d => "1") toList))
+        }),
+
+      MetricHandle(Report, "pythonClientReport") -> Metric(
+        name = "Python Client Report",
+        description = "Enter the Python Client version to look for the list of users who used this client.",
+        start = 1,
+        end = 1,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, entityId) => {
+          val baseUrl = "https://www.synapse.org/#!Profile:"
+          val data = metricReader.getAllReport("pythonClientReport", entityId)
 
           DataSet(
             xLabel = None,
