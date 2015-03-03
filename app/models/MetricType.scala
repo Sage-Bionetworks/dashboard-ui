@@ -45,8 +45,13 @@ object MetricType extends Enumeration {
    */
   val Report = Value("report")
 
-  /*
+  /**
    * Combine two or more charts together. No controllers.
    */
   val Summary = Value("summary")
+
+  /**
+   * An overview that includes different kinds of information. No controllers.
+   */
+  val Overview = Value("overview")
 }

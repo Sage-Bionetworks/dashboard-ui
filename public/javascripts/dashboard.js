@@ -68,10 +68,15 @@ var dashboard = (function($) {
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height * (1 + payload.page), margin);
         break;
+      case 'overview':
+        margin = {top: 20, right: 60, bottom: 20, left: 60};
+        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
+        dashboard.charts.tableOverview(data, configMap.width, configMap.height * (1 + payload.page), margin);
+        break;
       case 'report':
         margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
-        dashboard.charts.table(data, configMap.width, configMap.height * (1 + payload.page), margin);
+        dashboard.charts.downloadTable(data, configMap.width, configMap.height * (1 + payload.page), margin);
         break;
       case 'trending':
       case 'latency':

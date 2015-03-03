@@ -703,6 +703,95 @@ object MetricSet {
     
     "Tables" -> collection.immutable.ListMap(
 
+      MetricHandle(Overview, "tableOverview") -> Metric(
+        name = "Overview",
+        description = "A quick summary about how the table feature were used in the last 6 months.",
+        start = 6 * 30,
+        end = 0,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val table = 
+            try { 
+              metricReader.getTotalCount("uniqueTable")
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val access = 
+            try {
+              metricReader.getSessionCount("uniqueTable", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val update = 
+            try {
+              metricReader.getSessionCount("uniqueTableUpdate", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val query = 
+            try {
+              metricReader.getSessionCount("uniqueTableQuery", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val upload = 
+            try {
+              metricReader.getSessionCount("uniqueTableUpload", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val download = 
+            try {
+              metricReader.getSessionCount("uniqueTableDownload", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val user = 
+            try {
+              metricReader.getTotalCount("uniqueUserTable")
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val r = 
+            try {
+              metricReader.getSessionCount("uniqueUserTableR", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val python = 
+            try { 
+              metricReader.getSessionCount("uniqueUserTablePython", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val web = 
+            try { 
+              metricReader.getSessionCount("uniqueUserTableWeb", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val description = List ("Number of table ",
+                                  "Number of user ",
+                                  "Total session count ",
+                                  "Update session count",
+                                  "Query session count",
+                                  "Upload session count",
+                                  "Download session count",
+                                  "R client session count ",
+                                  "Python client session count ",
+                                  "Web client session count")
+          val values = List(table, user, access, update, query, upload, download, r, python, web)
+
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Description, DataHeader.Val),
+            xValues = List( description, values),
+            yHeaders = List("count"),
+            yValues = List(description map (d => "1") toList))
+        }),
+
       MetricHandle(Unique, "user-table-client") -> Metric(
         name = "Client Users",
         description = "The number of unique users used R/Python/Web Client to access a table during a period of time.",
@@ -732,7 +821,7 @@ object MetricSet {
 
       MetricHandle(Unique, "user-table-uri") -> Metric(
         name = "Access Type Users",
-        description = "The number of unique users Update/Query/Upload/Download a table during a period of time.",
+        description = "The number of unique users update/query/upload/download a table during a period of time.",
         start = 7,
         end = 0,
         interval = Interval.day,
