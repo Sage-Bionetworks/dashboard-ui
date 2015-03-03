@@ -1046,7 +1046,7 @@ object MetricSet {
             xValues = List(data map (d => d.x) toList),
             yHeaders = List("all tables"),
             yValues = List(data map (d => d.y) toList))
-        }),    
+        })),    
 
     "Report" -> collection.immutable.ListMap(
 
@@ -1076,7 +1076,7 @@ object MetricSet {
                 data map (d => d.client) toList),
             yHeaders = List("count"),
             yValues = List(data map (d => "1") toList))
-        })),
+        }),
 
       MetricHandle(Report, "rClientReport") -> Metric(
         name = "R Client Report",
