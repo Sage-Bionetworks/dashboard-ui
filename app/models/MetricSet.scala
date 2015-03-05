@@ -712,7 +712,7 @@ object MetricSet {
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
           val start = new DateTime(2015, 1, 1, 0, 0)
-          val end = new DateTime
+          val end = new DateTime()
           val table = 
             try { 
               metricReader.getTotalCount("uniqueTable")
