@@ -705,12 +705,14 @@ object MetricSet {
 
       MetricHandle(Overview, "tableOverview") -> Metric(
         name = "Overview",
-        description = "A quick summary about how the table feature were used in the last 6 months.",
-        start = 6 * 30,
-        end = 0,
+        description = "A quick summary about how the table feature were used since 2015.",
+        start = 1,
+        end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
+          val start = new DateTime(2015, 1, 1, 0, 0)
+          val end = new DateTime
           val table = 
             try { 
               metricReader.getTotalCount("uniqueTable")
