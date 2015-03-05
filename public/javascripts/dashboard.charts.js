@@ -2,7 +2,7 @@ dashboard.charts = (function() {
 
   var isEmptyData, removeSvg, removeTable, countUniqueUsers,
       addSvg, addEmptyChart, addChart, addAxisX, addAxisY, addPlot,
-      spin, bar, hbar, line, table;
+      spin, bar, hbar, line, downloadTable, tableOverview;
 
   ////// Private Functions //////
 
@@ -417,9 +417,9 @@ dashboard.charts = (function() {
   };
 
   //=============================================
-  // Renders a table.
+  // Renders a table for file download report.
   //=============================================
-  table = function(data, width, height, margin) {
+  downloadTable = function(data, width, height, margin) {
 
     var tableData, headers, rows, summary, idIndex, urlIndex, noUsers, total;
 
@@ -487,10 +487,60 @@ dashboard.charts = (function() {
                 return a.x[index].value - b.x[index].value;
             }
         });
-        table(data, width, height, margin);
+        downloadTable(data, width, height, margin);
     });
 
     $( document ).tooltip();
+    return;
+
+  };
+
+  //=============================================
+  // Renders a table for table overview.
+  //=============================================
+  tableOverview = function(data, width, height, margin) {
+
+    console.log(data);
+    var tableData, headers, rows, summary, idIndex, urlIndex, noUsers, total;
+
+    // Remove any existing chart or table
+    removeSvg();
+    removeTable();
+
+    // Empty data set
+    if (isEmptyData(data)) {
+      addEmptyChart(width, height);
+      return;
+    }
+
+    // get the indexes and the total # of results
+    total = data.rows.length;
+
+    // Get the table data 
+    tableData = "<table class='table table-hover'>";
+
+    headers = "<tr>";
+    data.xHeaders.map(function(header) {
+      headers += "<th class='lead'>" + header + "</th>";
+    });
+    headers += "</tr>";
+    tableData += headers;
+
+    rows = "";
+    data.rows.map(function(row) {
+      var rowData = "<tr>";
+      row.x.map(function(obj) {
+        rowData += "<td>" + obj.value + "</td>";
+      });
+      rowData += "</tr>";
+      rows += rowData;
+    });
+    tableData += rows;
+    tableData += "</table>";
+
+    // Add the summary and table
+    $('#chart').append(summary);
+    $('#chart').append(tableData);
     return;
 
   };
@@ -500,7 +550,8 @@ dashboard.charts = (function() {
     bar: bar,
     hbar: hbar,
     line: line,
-    table: table
+    downloadTable: downloadTable,
+    tableOverview : tableOverview
   };
 })();
 

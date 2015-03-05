@@ -701,7 +701,152 @@ object MetricSet {
                            x map (k => fData(k)) toList))
         })),
     
-     "Tables" -> collection.immutable.ListMap(
+    "Tables" -> collection.immutable.ListMap(
+
+      MetricHandle(Overview, "tableOverview") -> Metric(
+        name = "Overview",
+        description = "A quick summary about how the table feature were used in the last 6 months.",
+        start = 6 * 30,
+        end = 0,
+        interval = Interval.month,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val table = 
+            try { 
+              metricReader.getTotalCount("uniqueTable")
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val access = 
+            try {
+              metricReader.getSessionCount("uniqueTable", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val update = 
+            try {
+              metricReader.getSessionCount("uniqueTableUpdate", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val query = 
+            try {
+              metricReader.getSessionCount("uniqueTableQuery", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val upload = 
+            try {
+              metricReader.getSessionCount("uniqueTableUpload", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val download = 
+            try {
+              metricReader.getSessionCount("uniqueTableDownload", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val user = 
+            try {
+              metricReader.getTotalCount("uniqueUserTable")
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val r = 
+            try {
+              metricReader.getSessionCount("uniqueUserTableR", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val python = 
+            try { 
+              metricReader.getSessionCount("uniqueUserTablePython", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val web = 
+            try { 
+              metricReader.getSessionCount("uniqueUserTableWeb", interval, start, end)
+            } catch {
+              case _ : Throwable => "0"
+            }
+          val description = List ("Number of table ",
+                                  "Number of user ",
+                                  "Total session count ",
+                                  "Update session count",
+                                  "Query session count",
+                                  "Upload session count",
+                                  "Download session count",
+                                  "R client session count ",
+                                  "Python client session count ",
+                                  "Web client session count")
+          val values = List(table, user, access, update, query, upload, download, r, python, web)
+
+          DataSet(
+            xLabel = None,
+            yLabel = None,
+            xHeaders = List(DataHeader.Description, DataHeader.Val),
+            xValues = List( description, values),
+            yHeaders = List("count"),
+            yValues = List(description map (d => "1") toList))
+        }),
+
+      MetricHandle(Unique, "user-table-client") -> Metric(
+        name = "Client Users",
+        description = "The number of unique users used R/Python/Web Client to access a table during a period of time.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val rData = metricReader.getUniqueCount("uniqueUserTableR", interval, start, end)
+          val pData = metricReader.getUniqueCount("uniqueUserTablePython", interval, start, end)
+          val wData = metricReader.getUniqueCount("uniqueUserTableWeb", interval, start, end)
+          val map = TimeDataPointUtil.createMergeMap(
+                java.util.Arrays.asList(rData, pData, wData), 3)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
+          val rusers = TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList
+          val pusers = TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList
+          val wusers = TimeDataPointUtil.getMergeValueList(tslist, map, 2) toList
+
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("R/Python/Web Users"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = List("R Users", "Python Users", "Web Users"),
+            yValues = List(rusers, pusers, wusers))
+        }),
+
+      MetricHandle(Unique, "user-table-uri") -> Metric(
+        name = "Access Type Users",
+        description = "The number of unique users update/query/upload/download a table during a period of time.",
+        start = 7,
+        end = 0,
+        interval = Interval.day,
+        statistic = Statistic.n,
+        dataSet = (start, end, interval, statistic, page, text) => {
+          val updateData = metricReader.getUniqueCount("uniqueUserTableUpdate", interval, start, end)
+          val queryData = metricReader.getUniqueCount("uniqueUserTableQuery", interval, start, end)
+          val uploadData = metricReader.getUniqueCount("uniqueUserTableUpload", interval, start, end)
+          val downloadData = metricReader.getUniqueCount("uniqueUserTableDownload", interval, start, end)
+          val map = TimeDataPointUtil.createMergeMap(
+                java.util.Arrays.asList(updateData, queryData, uploadData, downloadData), 4)
+          val tslist = TimeDataPointUtil.getMergeTimeStampList(map)
+          val updateusers = TimeDataPointUtil.getMergeValueList(tslist, map, 0) toList
+          val queryusers = TimeDataPointUtil.getMergeValueList(tslist, map, 1) toList
+          val uploadusers = TimeDataPointUtil.getMergeValueList(tslist, map, 2) toList
+          val downloadusers = TimeDataPointUtil.getMergeValueList(tslist, map, 3) toList
+
+          DataSet(
+            xLabel = Some("date"),
+            yLabel = Some("Update/Query/Upload/Download Users"),
+            xHeaders = List(DataHeader.Timestamp),
+            xValues = List(tslist toList),
+            yHeaders = List("Update", "Query", "Upload", "Download"),
+            yValues = List(updateusers, queryusers, uploadusers, downloadusers))
+        }),
 
       MetricHandle(Trending, "table-client-p") -> Metric(
         name = "Trending Table Clients (Percentage)",
@@ -735,7 +880,7 @@ object MetricSet {
         interval = Interval.day,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
-          val topData = metricReader.getTop("tableUri", interval, end, 0, 5)
+          val topData = metricReader.getTop("tableUri", interval, end, 0, 10)
           val trendingData = topData map (d => {
             metricReader.getCount("tableUri", d.id, interval, start, end)
           })
