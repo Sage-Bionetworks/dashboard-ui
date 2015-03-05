@@ -705,71 +705,73 @@ object MetricSet {
 
       MetricHandle(Overview, "tableOverview") -> Metric(
         name = "Overview",
-        description = "A quick summary about how the table feature were used in the last 6 months.",
-        start = 6 * 30,
-        end = 0,
+        description = "A quick summary about how the table feature were used since 2015.",
+        start = 1,
+        end = 1,
         interval = Interval.month,
         statistic = Statistic.n,
         dataSet = (start, end, interval, statistic, page, text) => {
+          val start = new DateTime(2015, 1, 1, 0, 0)
+          val end = new DateTime()
           val table = 
             try { 
               metricReader.getTotalCount("uniqueTable")
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val access = 
             try {
               metricReader.getSessionCount("uniqueTable", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val update = 
             try {
-              metricReader.getSessionCount("uniqueTableUpdate", interval, start, end)
+              metricReader.getSessionCount("updateTable", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val query = 
             try {
-              metricReader.getSessionCount("uniqueTableQuery", interval, start, end)
+              metricReader.getSessionCount("queryTable", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val upload = 
             try {
-              metricReader.getSessionCount("uniqueTableUpload", interval, start, end)
+              metricReader.getSessionCount("uploadTable", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val download = 
             try {
-              metricReader.getSessionCount("uniqueTableDownload", interval, start, end)
+              metricReader.getSessionCount("downloadTable", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val user = 
             try {
               metricReader.getTotalCount("uniqueUserTable")
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val r = 
             try {
               metricReader.getSessionCount("uniqueUserTableR", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val python = 
             try { 
               metricReader.getSessionCount("uniqueUserTablePython", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val web = 
             try { 
               metricReader.getSessionCount("uniqueUserTableWeb", interval, start, end)
             } catch {
-              case _ : Throwable => "0"
+              case _ : Throwable => "NA"
             }
           val description = List ("Number of table ",
                                   "Number of user ",
