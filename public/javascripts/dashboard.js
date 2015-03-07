@@ -68,11 +68,6 @@ var dashboard = (function($) {
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
         dashboard.charts.hbar(data, configMap.width, configMap.height * (1 + payload.page), margin);
         break;
-      case 'overview':
-        margin = {top: 20, right: 60, bottom: 20, left: 60};
-        data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
-        dashboard.charts.tableOverview(data, configMap.width, configMap.height * (1 + payload.page), margin);
-        break;
       case 'report':
         margin = {top: 20, right: 60, bottom: 20, left: 60};
         data = dashboard.models.unpack(data, { rows: true, yMinMax: true });
@@ -313,17 +308,17 @@ var dashboard = (function($) {
     $('#nextDay').click(nextIntvlOnClick);
 
     // Text input
-    $('#entityId').bind("enterKey", function(e) {
-        var entityId = $('#entityId').val();
+    $('#input').bind("enterKey", function(e) {
+        var entityId = $('#input').val();
         payload.metric.text = entityId;
         makeChart();
     });
-    $('#entityId').keyup(function(e){
+    $('#input').keyup(function(e){
       if(e.keyCode == 13) {
         $(this).trigger("enterKey");
       }
     });
-    $('#entityId').focusout(function(){
+    $('#input').focusout(function(){
       $(this).trigger("enterKey");
     });
 
