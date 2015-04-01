@@ -5,7 +5,6 @@ import scala.concurrent.Future
 
 import org.sagebionetworks.dashboard.config.DashboardConfig
 
-import context.SpringContext
 import play.api.Logger
 import play.api.Play.current
 import play.api.cache.Cache
@@ -13,6 +12,8 @@ import play.api.mvc.ActionBuilder
 import play.api.mvc.Request
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
+
+import context.SpringContext
 
 trait Security {
 
