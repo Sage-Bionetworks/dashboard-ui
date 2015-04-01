@@ -1,46 +1,22 @@
 package controllers
 
-import org.openid4java.consumer.ConsumerManager
-import org.openid4java.message.AuthSuccess
-import org.openid4java.message.ParameterList
-import org.openid4java.message.ax.AxMessage
-import org.openid4java.message.ax.FetchRequest
-import org.openid4java.message.ax.FetchResponse
-import scala.collection.JavaConversions.mapAsJavaMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration.Duration
-import scala.concurrent.duration.HOURS
+
+import org.sagebionetworks.dashboard.config.DashboardConfig
+
+import context.SpringContext
 import play.api.Logger
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.mvc.ActionBuilder
 import play.api.mvc.Request
-import play.api.mvc.Results.Redirect
-import play.api.mvc.Results.Unauthorized
 import play.api.mvc.Result
-
-import org.sagebionetworks.dashboard.config.DashboardConfig
-import context.SpringContext
+import play.api.mvc.Results.Redirect
 
 trait Security {
 
   object AuthorizedAction extends ActionBuilder[Request] {
-
-    private object Whitelist {
-      val whitelist = SpringContext.getBean(
-          classOf[DashboardConfig]).getUserWhitelist.split(":").toSet
-      def contains(item: String) = {
-        whitelist.contains(item)
-      }
-    }
-
-    private object GoogleOpenId {
-      val ProviderUrl = "https://www.google.com/accounts/o8/id"
-      val Manager = new ConsumerManager
-      val Discovered = Manager.associate(Manager.discover(ProviderUrl))
-      val CallbackQueryParameter = "openid.mode"
-    }
 
     private val tokenKey = "dbdtoken"
     private val tokenExpire = 3 // Expire after 3 hours on the server side
@@ -55,89 +31,29 @@ trait Security {
           }
         } getOrElse {
           Logger.info("Missing session on the server side, log in.")
-          login(request, block)
+          googleOAuth2(request, block)
         }
       } getOrElse {
         Logger.info("Missing session in the request, log in.")
-        login(request, block)
+        googleOAuth2(request, block)
       }
     }
 
-    private def login[A](request: Request[A], block: Request[A] => Future[Result]) = {
-      // Check if this is OpenID callback
-      request.queryString.get(GoogleOpenId.CallbackQueryParameter) match {
-        case Some(p) => openIdCallback(request, block)
-        case None => openIdLogin(request) // When this is not a callback, log in 
-      }
+    private def googleOAuth2[A](request: Request[A], block: Request[A] => Future[Result]) = {
+      val googleClientId = SpringContext.getBean(classOf[DashboardConfig]).getGoogleClientId
+      val schemeHost = scheme(request) + "://" + request.host
+      val state = schemeHost + "/" + request.uri
+      val redirectUri = schemeHost + "/google/oauth2callback"
+      val url = "https://accounts.google.com/o/oauth2/auth?response_type=code&" +
+        "client_id=" + urlEncode(googleClientId) + "&" +
+        "redirect_uri=" + urlEncode(redirectUri) + "&" +
+        "scope=" + urlEncode("https://www.googleapis.com/auth/userinfo.email") + "&" +
+        "state=" + urlEncode(state)
+      Future.successful(Redirect(url))
     }
 
-    /**
-     * Verifies the OpenID login and reads the user email address.
-     */
-    private def openIdCallback[A](request: Request[A], block: Request[A] => Future[Result]) = {
-      val receivingURL = scheme(request) + "://" + request.host + request.uri
-      val parameterMap = new ParameterList(request.queryString.map { case (k,v) => k -> v.mkString })
-      val verification = GoogleOpenId.Manager.verify(
-          receivingURL.toString(),
-          parameterMap,
-          GoogleOpenId.Discovered)
-      val authSuccess = verification.getAuthResponse().asInstanceOf[AuthSuccess]
-      val fetchResp = authSuccess.getExtension(AxMessage.OPENID_NS_AX).asInstanceOf[FetchResponse]
-      val emails = fetchResp.getAttributeValues("email")
-      val email = emails.get(0).toString
-      val ids = fetchResp.getAttributeValues("user_id")
-      val id = ids.get(0).toString
-      if (email == null && id == null) {
-        Future.successful(Unauthorized("Missing both email address and user id from the login."))
-      } else if (isAuthorizedByEmail(email) || isAuthorizedById(id)) {
-        // Save the session on the server side
-        val session = java.util.UUID.randomUUID.toString
-        Cache.set(session, session, Duration(tokenExpire, HOURS))
-        // Continue with the original request
-        // and save the session token in the response
-        block(request).map { result =>
-          result.withSession(tokenKey -> session)
-        }
-      } else {
-        if (email != null) {
-          Future.successful(Unauthorized(email + " is not authorized to access dashboard."))
-        } else {
-          Future.successful(Unauthorized(id + " is not authorized to access dashboard."))
-        }
-      }
-    }
-
-    /**
-     * Logs in the user using Google OpenID 2.0.
-     */
-    private def openIdLogin[A](request: Request[A]) = {
-      // Skip the query parameters if they are polluted with 'openid' parameters
-      val skipQueryStr = request.queryString.filterKeys(key => key.startsWith("openid")).size > 0
-      val uri = skipQueryStr match {
-        case true => "/"
-        case false => request.uri
-      }
-      val returnToUrl = scheme(request) + "://" + request.host + uri
-      val authReq = GoogleOpenId.Manager.authenticate(GoogleOpenId.Discovered, returnToUrl)
-      val fetchReq = FetchRequest.createFetchRequest
-      fetchReq.addAttribute(
-          "email",
-          "http://schema.openid.net/contact/email",
-          true)
-      fetchReq.addAttribute(
-          "user_id",
-          "http://schemas.openid.net/ax/api/user_id",
-          true)
-      authReq.addExtension(fetchReq)
-      Future.successful(Redirect(authReq.getDestinationUrl(true)))
-    }
-
-    private def isAuthorizedByEmail(email: String) = {
-      email != null && (email.toLowerCase().endsWith("sagebase.org") || Whitelist.contains(email));
-    }
-
-    private def isAuthorizedById(id: String) = {
-      id != null && Whitelist.contains(id);
+    private def urlEncode(url: String) = {
+      java.net.URLEncoder.encode(url, "UTF-8")
     }
 
     private def scheme[A](request: Request[A]) = {

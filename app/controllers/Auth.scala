@@ -1,13 +1,33 @@
 package controllers
 
+import play.api.mvc.Action
 import play.api.mvc.Controller
 
-object Auth extends Controller with Security {
+import org.sagebionetworks.dashboard.config.DashboardConfig
+import context.SpringContext
+
+object Auth extends Controller {
+
+  private object Whitelist {
+    val whitelist = SpringContext.getBean(
+        classOf[DashboardConfig]).getUserWhitelist.split(":").toSet
+    def contains(item: String) = {
+      whitelist.contains(item)
+    }
+  }
 
   /**
    * Authenticates and authorizes.
    */
-  def auth = AuthorizedAction { implicit request =>
-    Ok("You are authorized to access Synapse dashboard.")
+  def googleOAuth2 = Action { implicit request =>
+    Ok(request.queryString)
+  }
+
+  private def isAuthorizedByEmail(email: String) = {
+    email != null && (email.toLowerCase().endsWith("sagebase.org") || Whitelist.contains(email));
+  }
+
+  private def isAuthorizedById(id: String) = {
+    id != null && Whitelist.contains(id);
   }
 }
