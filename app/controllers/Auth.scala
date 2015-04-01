@@ -2,58 +2,69 @@ package controllers
 
 import org.sagebionetworks.dashboard.config.DashboardConfig
 
+import play.api.Logger
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.ws.WS
-import play.api.mvc.Action
-import play.api.mvc.Controller
-import play.api.mvc.Request
+import play.api.libs.json._
+import play.api.libs.ws._
+import play.api.mvc._
 
 import context.SpringContext
 
-object Auth extends Controller {
+object Auth extends Controller with Security {
 
   private object Whitelist {
-    val whitelist = SpringContext.getBean(
-        classOf[DashboardConfig]).getUserWhitelist.split(":").toSet
+    val whitelist = config.getUserWhitelist.split(":").toSet
     def contains(item: String) = {
       whitelist.contains(item)
     }
   }
 
   /**
-   * Authenticates and authorizes.
+   * Authenticates and authorizes using Google OAuth 2.
    */
-  def googleOAuth2 = Action.async { implicit request =>
-    val state = request.queryString.get("state") match {
-      case Some(state) => state(0)
-      case None => "/"
-    }
+  def googleOAuth2 = Action { implicit request =>
     request.queryString.get("code") match {
-      case None => scala.concurrent.Future(Unauthorized("Google OAuth 2 failed."))
+      case None => Unauthorized("Google OAuth failed at obtaining authorization code.")
       case Some(code) => {
-        val endPoint = "https://www.googleapis.com/oauth2/v3/token"
-        val clientId = SpringContext.getBean(classOf[DashboardConfig]).getGoogleClientId
-        val clientSecret = SpringContext.getBean(classOf[DashboardConfig]).getGoogleClientSecret
-        val redirectUri = scheme(request) + "://" + request.host + "/google/oauth2callback"
-        val body = Map("code" -> Seq((code(0))),
-          "client_id" -> Seq((clientId)),
-          "client_secret" -> Seq((clientSecret)),
-          "redirect_uri" -> Seq((redirectUri)),
-          "grant_type" -> Seq(("authorization_code")))
-        WS.url(endPoint).post(body).map { response =>
-          Ok(response.json \ "access_token")
-        }
-      } 
+        getIdToken(request, code(0))
+      }
     }
   }
 
-  private def scheme[A](request: Request[A]) = {
-    // $X-Scheme is set by the nginx reverse proxy
-    request.headers.get("X-Scheme") match {
-      case Some(scheme) => scheme
-      case None => "http"
+  private def getIdToken[A](request: Request[A], code: String) = {
+    val endPoint = "https://www.googleapis.com/oauth2/v3/token"
+    val clientId = config.getGoogleClientId
+    val clientSecret = config.getGoogleClientSecret
+    val redirectUri = scheme(request) + "://" + request.host + "/google/oauth2callback"
+    val body = Map(
+      "code" -> Seq(code),
+      "client_id" -> Seq(clientId),
+      "client_secret" -> Seq(clientSecret),
+      "redirect_uri" -> Seq(redirectUri),
+      "grant_type" -> Seq("authorization_code"))
+    val idToken = WS.url(endPoint).post(body) map { response =>
+      (response.json \ "id_token").as[String]
     }
+    idToken onSuccess {
+      case idToken => decryptIdToken(idToken)
+    }
+    Unauthorized("Google OAuth failed at obtaining id token.")
+  }
+
+  private def decryptIdToken(idToken: String) = {
+    val url = "https://www.googleapis.com/oauth2/v1/tokeninfo"
+    val userId = WS.url(url).withQueryString("id_token" -> idToken).get map {
+      response => response.json
+    }
+    userId onSuccess {
+      case userInfo => checkUserEmail(userInfo)
+    }
+    Unauthorized("Google OAuth failed decrypting id token.")
+  }
+
+  def checkUserEmail(userInfo: JsValue) {
+    Logger.info(userInfo.toString)
   }
 
   private def isAuthorizedByEmail(email: String) = {

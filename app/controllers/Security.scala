@@ -8,27 +8,38 @@ import org.sagebionetworks.dashboard.config.DashboardConfig
 import play.api.Logger
 import play.api.Play.current
 import play.api.cache.Cache
-import play.api.mvc.ActionBuilder
-import play.api.mvc.Request
-import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
+import play.api.mvc._
+import play.api.mvc.Results._
 
 import context.SpringContext
 
 trait Security {
 
+  val sessionTokenKey = "dbd-token"
+  val sessionTokenExpireHours = 24
+  val config = SpringContext.getBean(classOf[DashboardConfig])
+
+  def scheme[A](request: Request[A]) = {
+    // $X-Scheme is set by the nginx reverse proxy
+    request.headers.get("X-Scheme") match {
+      case Some(scheme) => scheme
+      case None => "http"
+    }
+  }
+
+  def urlEncode(url: String) = {
+    java.net.URLEncoder.encode(url, "UTF-8")
+  }
+
   object AuthorizedAction extends ActionBuilder[Request] {
 
-    private val tokenKey = "dbdtoken"
-    private val tokenExpire = 3 // Expire after 3 hours on the server side
-
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]) = {
-      request.session.get(tokenKey).map { token =>
+      request.session.get(sessionTokenKey).map { token =>
         Cache.get(token).map { t =>
           Logger.info("Session tokens match, continue with the request.")
           block(request).map { result =>
             // Save the session token in the response
-            result.withSession(tokenKey -> token)
+            result.withSession(sessionTokenKey -> token)
           }
         } getOrElse {
           Logger.info("Missing session on the server side, log in.")
@@ -41,7 +52,7 @@ trait Security {
     }
 
     private def googleOAuth2[A](request: Request[A], block: Request[A] => Future[Result]) = {
-      val googleClientId = SpringContext.getBean(classOf[DashboardConfig]).getGoogleClientId
+      val googleClientId = config.getGoogleClientId
       val schemeHost = scheme(request) + "://" + request.host
       val state = schemeHost + "/" + request.uri
       val redirectUri = schemeHost + "/google/oauth2callback"
@@ -50,19 +61,7 @@ trait Security {
         "redirect_uri=" + urlEncode(redirectUri) + "&" +
         "scope=" + urlEncode("https://www.googleapis.com/auth/userinfo.email") + "&" +
         "state=" + urlEncode(state)
-      Future.successful(Redirect(url))
-    }
-
-    private def urlEncode(url: String) = {
-      java.net.URLEncoder.encode(url, "UTF-8")
-    }
-
-    private def scheme[A](request: Request[A]) = {
-      // $X-Scheme is set by the nginx reverse proxy
-      request.headers.get("X-Scheme") match {
-        case Some(scheme) => scheme
-        case None => "http"
-      }
+      Future(Redirect(url))
     }
   }
 }

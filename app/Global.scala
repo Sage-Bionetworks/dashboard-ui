@@ -14,7 +14,7 @@ object Global extends GlobalSettings {
   }
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
     request.headers.get(X_FORWARDED_FOR) match {
-      case ip:Any => Logger.info("X-Forwarded-For: " + ip)
+      case ip => Logger.info("X-Forwarded-For: " + ip)
       super.onRouteRequest(request)
     }
   }
