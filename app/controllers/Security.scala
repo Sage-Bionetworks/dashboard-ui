@@ -54,7 +54,7 @@ trait Security {
     private def googleOAuth2[A](request: Request[A], block: Request[A] => Future[Result]) = {
       val googleClientId = config.getGoogleClientId
       val schemeHost = scheme(request) + "://" + request.host
-      val state = schemeHost + "/" + request.uri
+      val state = schemeHost + request.uri
       val redirectUri = schemeHost + "/google/oauth2callback"
       val url = "https://accounts.google.com/o/oauth2/auth?response_type=code&" +
         "client_id=" + urlEncode(googleClientId) + "&" +
