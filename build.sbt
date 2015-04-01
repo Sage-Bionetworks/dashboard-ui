@@ -18,9 +18,7 @@ libraryDependencies ++= Seq(
   "redis.clients" % "jedis" % "2.4.1",
   "joda-time" % "joda-time" % "2.5",
   "net.sf.opencsv" % "opencsv" % "2.3",
-  "com.amazonaws" % "aws-java-sdk" % "1.8.11",
-  "org.openid4java" % "openid4java" % "0.9.8"
+  "com.amazonaws" % "aws-java-sdk" % "1.8.11"
 )
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
