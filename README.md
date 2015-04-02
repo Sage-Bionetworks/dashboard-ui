@@ -19,7 +19,9 @@ Development
 6. Launch the Play console `activator`.
 7. Then in the Play console, use the command `run` to start a local dashboard web server.
 8. If you want to pull in real data, again within the Play console,
-    `run -Daws.access.key=<prod-access-key> -Daws.secret.key=<prod-secret-key> -Daccess.record.bucket=<prod-bucket> -Dstack=prod`
+```
+run -Daws.access.key=<prod-access-key> -Daws.secret.key=<prod-secret-key> -Daccess.record.bucket=<prod-bucket> -Dstack=prod
+```
 
 Deployment
 ------------------
