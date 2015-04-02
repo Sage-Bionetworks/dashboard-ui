@@ -50,6 +50,6 @@ Deployment
 Design
 ------------------
 
-* Based on [Play](https://github.com/playframework/playframework) , [D3](https://github.com/mbostock/d3))
+* Based on [Play](https://github.com/playframework/playframework) , [D3](https://github.com/mbostock/d3)
 * [Design](https://github.com/eric-wu/dashboard/wiki)
 * [Cache Layer](https://github.com/Sage-Bionetworks/dashboard)
