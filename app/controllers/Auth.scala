@@ -77,7 +77,7 @@ object Auth extends Controller with Security {
     }
   }
 
-  def authorizeByUserEmail[A](request: Request[A], userInfo: JsValue) = {
+  private def authorizeByUserEmail[A](request: Request[A], userInfo: JsValue) = {
     (userInfo \ "email").asOpt[String] match {
       case Some(email) => {
         if (isAuthorizedByEmail(email) || isInWhitelist(email)) {

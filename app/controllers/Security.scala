@@ -43,15 +43,15 @@ trait Security {
           }
         } getOrElse {
           Logger.info("Missing session on the server side, log in.")
-          googleOAuth2(request, block)
+          googleOAuth2(request)
         }
       } getOrElse {
         Logger.info("Missing session in the request, log in.")
-        googleOAuth2(request, block)
+        googleOAuth2(request)
       }
     }
 
-    private def googleOAuth2[A](request: Request[A], block: Request[A] => Future[Result]) = {
+    private def googleOAuth2[A](request: Request[A]) = {
       val googleClientId = config.getGoogleClientId
       val schemeHost = scheme(request) + "://" + request.host
       val state = schemeHost + request.uri
