@@ -1,21 +1,8 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
-
-# Home
-# ~~~~
 GET     /                       controllers.Application.index
-
-# Static content
-# ~~~~
 GET     /assets/*file           controllers.Assets.at(path="/public", file)
 
-# Authentication and authorization
-# ~~~~
-GET     /auth                   controllers.Auth.auth
-
-# Metrics
-# ~~~~
+# Google OAuth 2.0 callback
+GET     /google/oauth2callback  controllers.Auth.googleOAuth2
 
 # Gets all the available metrics, their names and ids
 GET     /metrics                controllers.Metrics.all
@@ -30,7 +17,7 @@ GET     /metrics                controllers.Metrics.all
 #   interval: optional, is one of 3m, h, d, default is d
 #   stat: optional, statistic, one of the n, sum, avg, max, the default is n
 #
-# ~~~~
+
 # Renders a chart page
 GET     /chart                  controllers.Charts.chart(type, metric)
 
