@@ -42,7 +42,7 @@ Deployment
 1. Generate a distribution package. Run the Play `dist` command.
 2. Launch a m3.medium EC2 instance from the customized AMI.
 3. Once the instance is active, upload the distribution package to the instance using `scp`.
-4. Go to the EC2 instance, unpack the package, and launch the dashboard app. Example: `dashboard-ui-1.0-20140127/bin/dashboard-ui -Dstack=prod -Dhttp.port=9001 2> /dev/null &`.
+4. Go to the EC2 instance, unpack the package, and launch the dashboard app. Example: `dashboard-ui-1.0-20140127/bin/dashboard-ui -Dhttp.port=9001 2> /dev/null &`.
 5. After maybe 3 hours, cross-validate with the current dashboard.
 6. Once validated, swap the instance at the dashboard load balancer.
 
