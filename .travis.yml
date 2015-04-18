@@ -9,4 +9,4 @@ install:
 script:
 - npm install
 - grunt
-- sbt test
+- sbt test --debug
