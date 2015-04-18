@@ -37,11 +37,11 @@ apt-get --quiet --yes --target-release wheezy-backports install openjdk-7-jdk
 
 # Play
 su - ${TARGET_USER} -c "cd ~"
-su - ${TARGET_USER} -c "wget http://downloads.typesafe.com/typesafe-activator/1.2.12/typesafe-activator-1.2.12.zip"
-su - ${TARGET_USER} -c "rm -rf activator-1.2.12"
-su - ${TARGET_USER} -c "unzip typesafe-activator-1.2.12.zip"
-su - ${TARGET_USER} -c "rm typesafe-activator-1.2.12.zip"
-su - ${TARGET_USER} -c "echo 'export PATH=${PATH}:~/activator-1.2.12' >> ~/.bash_profile"
+su - ${TARGET_USER} -c "wget http://downloads.typesafe.com/typesafe-activator/1.3.2/typesafe-activator-1.3.2.zip"
+su - ${TARGET_USER} -c "rm -rf activator-1.3.2"
+su - ${TARGET_USER} -c "unzip typesafe-activator-1.3.2.zip"
+su - ${TARGET_USER} -c "rm typesafe-activator-1.3.2.zip"
+su - ${TARGET_USER} -c "echo 'export PATH=${PATH}:~/activator-1.3.2' >> ~/.bash_profile"
 
 # JavaScript
 # As npm is not in Debian Wheezy, install it via nodejs
@@ -50,14 +50,6 @@ update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
 curl https://www.npmjs.com/install.sh | sudo clean=yes bash
 npm install -g grunt-cli
 npm install -g mocha
-
-# PostgreSQL
-apt-get --quiet --yes install postgresql-9.1
-apt-get --quiet --yes install postgresql-client-9.1
-echo "listen_addresses = '*'" >> /etc/postgresql/9.1/main/postgresql.conf
-echo "host all all 10.0.0.0/16 trust" >> /etc/postgresql/9.1/main/pg_hba.conf
-su - postgres -c "psql -f /${TARGET_USER}/vagrant-scripts/dw-bootstrap.sql"
-service postgresql restart
 
 # Redis
 apt-get --quiet --yes --target-release wheezy-backports install redis-server

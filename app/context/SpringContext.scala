@@ -7,7 +7,7 @@ import play.api.Logger
 object SpringContext {
 
   private val context = new ClassPathXmlApplicationContext(
-      "/META-INF/spring/scheduler-context.xml")
+      "/spring/scheduler-context.xml")
 
   def start = {
     Logger.info("Starting Spring context...")

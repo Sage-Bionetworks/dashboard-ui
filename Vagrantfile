@@ -6,12 +6,11 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "chef/debian-7.7"
+  config.vm.box = "chef/debian-7.8"
   config.vm.provision :shell, path: "vagrant-scripts/bootstrap.sh"
   config.vm.network :forwarded_port, host: 6379, guest: 6379 # Redis
-  config.vm.network :forwarded_port, host: 5432, guest: 5432 # PostgreSQL
   config.vm.network :forwarded_port, host: 9000, guest: 9000 # Play
-  config.vm.network "private_network", ip: "192.168.55.103"
+  config.vm.network "private_network", ip: "192.168.55.137"
   config.vm.synced_folder "~/.sbt", "/home/vagrant/.sbt", nfs: true
   config.vm.synced_folder "~/.dashboard", "/home/vagrant/.dashboard", nfs: true
 
