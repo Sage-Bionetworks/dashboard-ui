@@ -1,6 +1,8 @@
 Dashboard UI
 =====================================
 
+[![Build Status](https://travis-ci.org/Sage-Bionetworks/dashboard-ui.svg?branch=master)](https://travis-ci.org/Sage-Bionetworks/dashboard-ui)
+
 Development
 ------------------
 
