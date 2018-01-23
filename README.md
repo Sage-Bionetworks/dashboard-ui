@@ -1,3 +1,5 @@
+# This project is deprecated and should not be used.
+
 Dashboard UI
 =====================================
 
